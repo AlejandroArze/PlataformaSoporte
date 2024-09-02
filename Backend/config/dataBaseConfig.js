@@ -1,5 +1,7 @@
-const { Pool } = require('pg');// Importar la librería pg
-require('dotenv').config(); // Asegúrate de cargar las variables de entorno
+// dataBaseConfig.js
+const { Pool } = require('pg');
+const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -8,8 +10,7 @@ const pool = new Pool({
   password: process.env.DB_PASS,
   port: process.env.DB_PORT,
 });
+// Configuración de Sequelize
+const sequelize = new Sequelize(`postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`);
+module.exports = {pool, sequelize };
 
-pool.query('SELECT NOW()', (err, res) => {
-  console.log(err, res);
-  pool.end();
-});
