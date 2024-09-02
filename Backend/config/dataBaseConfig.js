@@ -1,4 +1,6 @@
-const { Pool } = require('pg');
+const { Pool } = require('pg');// Importar la librería pg
+require('dotenv').config(); // Asegúrate de cargar las variables de entorno
+
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
