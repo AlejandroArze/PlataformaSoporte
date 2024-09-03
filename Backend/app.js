@@ -2,18 +2,8 @@ require('dotenv').config();
 
 const express = require('express');
 const app = express();
-const port = process.env.SERVER_PORT ; // Asegúrate de que SERVER_PORT está definido o usa un valor por defecto
-//const { sequelize } = require('./config/dataBaseConfig');
+const port = process.env.SERVER_PORT ;
 
-
-// Inicialización de Sequelize
-//const sequelize = new Sequelize(`postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`);
-// Importar sequelize desde dataBaseConfig.js
-//const { sequelize } = require('./config/dataBaseConfig');
-
-
-
-// Importar el pool de conexiones
 const { pool, sequelize } = require('./config/dataBaseConfig');
 
 app.get('/api/v1/', (req, res) => {
@@ -26,10 +16,6 @@ app.get('/api/v1/', (req, res) => {
         res.send(`La fecha y hora actual es: ${currentTime}`);
     });
 });
-
-
-
-
 
 (async () => {
     try {
