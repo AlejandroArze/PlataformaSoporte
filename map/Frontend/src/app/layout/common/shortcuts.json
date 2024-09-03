@@ -1,0 +1,114 @@
+{
+	"id": "sfcabvj3fa",
+	"x": 8,
+	"y": 72,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link95gbhhbnqmo",
+			"from": {
+				"path": [
+					{
+						"boxId": "hd5pmo3qulo",
+						"boxName": "shortcuts.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "4rp6kcap43o",
+						"boxName": "shortcuts.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link5jdgjr9tau",
+			"from": {
+				"path": [
+					{
+						"boxId": "1kkirjrkcb8",
+						"boxName": "shortcuts.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "4rp6kcap43o",
+						"boxName": "shortcuts.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link220fdc5gvt",
+			"from": {
+				"path": [
+					{
+						"boxId": "1kkirjrkcb8",
+						"boxName": "shortcuts.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "6drsha8ulho",
+						"boxName": "shortcuts.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link89hujdka07o",
+			"from": {
+				"path": [
+					{
+						"boxId": "1kkirjrkcb8",
+						"boxName": "shortcuts.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "hd5pmo3qulo",
+						"boxName": "shortcuts.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

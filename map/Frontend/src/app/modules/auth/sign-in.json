@@ -1,0 +1,62 @@
+{
+	"id": "ep60495scao",
+	"x": 8,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link5n5sjd08aig",
+			"from": {
+				"path": [
+					{
+						"boxId": "8p7teskgbog",
+						"boxName": "sign-in.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "s3mt0g9qs58",
+						"boxName": "sign-in.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkb3i9vsamfm8",
+			"from": {
+				"path": [
+					{
+						"boxId": "aqamro3eecg",
+						"boxName": "sign-in.routes.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "s3mt0g9qs58",
+						"boxName": "sign-in.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

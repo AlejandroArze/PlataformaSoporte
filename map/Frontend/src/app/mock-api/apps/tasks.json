@@ -1,0 +1,36 @@
+{
+	"id": "hbu61iipjo8",
+	"x": 31,
+	"y": 55,
+	"width": 14,
+	"height": 14,
+	"links": [
+		{
+			"id": "linkcq194bff09o",
+			"from": {
+				"path": [
+					{
+						"boxId": "e266tver8d8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "1f270qh9te",
+						"boxName": "data.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

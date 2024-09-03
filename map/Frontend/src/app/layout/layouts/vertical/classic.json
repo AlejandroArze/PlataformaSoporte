@@ -1,0 +1,36 @@
+{
+	"id": "8nqt977msn",
+	"x": 8,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkehesmj8e9i",
+			"from": {
+				"path": [
+					{
+						"boxId": "n0cp1s41fsg",
+						"boxName": "classic.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "qtkug63059",
+						"boxName": "classic.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

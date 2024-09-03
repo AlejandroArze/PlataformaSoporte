@@ -1,0 +1,178 @@
+{
+	"id": "t7upkllb5h",
+	"x": 40,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link8k3ug6ippc8",
+			"from": {
+				"path": [
+					{
+						"boxId": "ngunm8lpsi",
+						"boxName": "confirmation.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0bu16k32oe",
+						"boxName": "confirmation.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkihunca7hic8",
+			"from": {
+				"path": [
+					{
+						"boxId": "ngunm8lpsi",
+						"boxName": "confirmation.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "qdgmn002t7g",
+						"boxName": "dialog",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "11hlkqlghlo",
+						"boxName": "dialog.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linki1knpucj14g",
+			"from": {
+				"path": [
+					{
+						"boxId": "mvjr8plhov",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "d2pis63bgsg",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkvv7hpjvl27o",
+			"from": {
+				"path": [
+					{
+						"boxId": "d2pis63bgsg",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0bu16k32oe",
+						"boxName": "confirmation.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linktdken1n9fao",
+			"from": {
+				"path": [
+					{
+						"boxId": "d2pis63bgsg",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ngunm8lpsi",
+						"boxName": "confirmation.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkq6sir3i0h98",
+			"from": {
+				"path": [
+					{
+						"boxId": "qdgmn002t7g",
+						"boxName": "dialog",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "0la2p431e2g",
+						"boxName": "dialog.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0bu16k32oe",
+						"boxName": "confirmation.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

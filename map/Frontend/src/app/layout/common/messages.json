@@ -1,0 +1,114 @@
+{
+	"id": "dggottue6r8",
+	"x": 40,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkuhdfqdodo4o",
+			"from": {
+				"path": [
+					{
+						"boxId": "ttit7coetd",
+						"boxName": "messages.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5q09dfabvm8",
+						"boxName": "messages.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkggv9diljsho",
+			"from": {
+				"path": [
+					{
+						"boxId": "85ebptgn9po",
+						"boxName": "messages.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5q09dfabvm8",
+						"boxName": "messages.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link641g6r83158",
+			"from": {
+				"path": [
+					{
+						"boxId": "85ebptgn9po",
+						"boxName": "messages.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ttit7coetd",
+						"boxName": "messages.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linko4iv0109hi8",
+			"from": {
+				"path": [
+					{
+						"boxId": "85ebptgn9po",
+						"boxName": "messages.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "65sup0ta4to",
+						"boxName": "messages.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

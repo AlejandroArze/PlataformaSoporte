@@ -1,0 +1,62 @@
+{
+	"id": "0p88fns1esg",
+	"x": 72,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link035ir01nlrg",
+			"from": {
+				"path": [
+					{
+						"boxId": "9i7co9mfnoo",
+						"boxName": "sign-up.routes.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "nj2096vvfv",
+						"boxName": "sign-up.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkb1fapq54rl8",
+			"from": {
+				"path": [
+					{
+						"boxId": "fga9s6tfhko",
+						"boxName": "sign-up.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "nj2096vvfv",
+						"boxName": "sign-up.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

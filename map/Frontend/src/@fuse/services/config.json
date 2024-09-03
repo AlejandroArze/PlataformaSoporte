@@ -1,0 +1,114 @@
+{
+	"id": "3go38jo7a4g",
+	"x": 8,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkjbo7inpa3i",
+			"from": {
+				"path": [
+					{
+						"boxId": "0nfuvmacjr",
+						"boxName": "config.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "odqq4tqhdi8",
+						"boxName": "config.constants.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linklnt8em7fu4o",
+			"from": {
+				"path": [
+					{
+						"boxId": "ctd855ogl5",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "qnsnedqtv8o",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link8ajr8np82l",
+			"from": {
+				"path": [
+					{
+						"boxId": "qnsnedqtv8o",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0nfuvmacjr",
+						"boxName": "config.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkultvajq4kog",
+			"from": {
+				"path": [
+					{
+						"boxId": "qnsnedqtv8o",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "546iv3qocro",
+						"boxName": "config.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

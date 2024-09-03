@@ -1,0 +1,36 @@
+{
+	"id": "nbcm5q5j2m",
+	"x": 12,
+	"y": 12,
+	"width": 28,
+	"height": 28,
+	"links": [
+		{
+			"id": "link9vd403ib0do",
+			"from": {
+				"path": [
+					{
+						"boxId": "qpmr0bkg0k8",
+						"boxName": "centered.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "pjl01eb14d",
+						"boxName": "centered.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

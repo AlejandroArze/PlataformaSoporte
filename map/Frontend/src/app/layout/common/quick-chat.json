@@ -1,0 +1,140 @@
+{
+	"id": "imi1jknvui",
+	"x": 8,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "links7ueffq12i8",
+			"from": {
+				"path": [
+					{
+						"boxId": "cjjietg9mvg",
+						"boxName": "quick-chat.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "c6di7o5nsn",
+						"boxName": "quick-chat.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link1qiqkgn2tn8",
+			"from": {
+				"path": [
+					{
+						"boxId": "bv3l29avo1o",
+						"boxName": "quick-chat.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "c6di7o5nsn",
+						"boxName": "quick-chat.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "links1094f27tag",
+			"from": {
+				"path": [
+					{
+						"boxId": "bv3l29avo1o",
+						"boxName": "quick-chat.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "cjjietg9mvg",
+						"boxName": "quick-chat.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link116d7jaj77o",
+			"from": {
+				"path": [
+					{
+						"boxId": "bv3l29avo1o",
+						"boxName": "quick-chat.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0dnhujgt9oo",
+						"boxName": "quick-chat.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkb037mo0kjkg",
+			"from": {
+				"path": [
+					{
+						"boxId": "bv3l29avo1o",
+						"boxName": "quick-chat.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "po3shld1e9",
+						"boxName": "quick-chat.component.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

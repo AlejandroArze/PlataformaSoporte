@@ -1,0 +1,62 @@
+{
+	"id": "s219ch8u1r",
+	"x": 40,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkae84jpm15n8",
+			"from": {
+				"path": [
+					{
+						"boxId": "spjjmh5ktr",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "d8jih39f8i",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkd7fli8vs4t8",
+			"from": {
+				"path": [
+					{
+						"boxId": "d8jih39f8i",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "pbbqfpeskpo",
+						"boxName": "platform.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

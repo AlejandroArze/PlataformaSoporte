@@ -1,0 +1,202 @@
+{
+	"id": "tmg44bh6sk8",
+	"x": 7,
+	"y": 55,
+	"width": 14,
+	"height": 14,
+	"links": [
+		{
+			"id": "linkmbs4u97lt1g",
+			"from": {
+				"path": [
+					{
+						"boxId": "j0s1d79lgpg",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "egqqn2iust",
+						"boxName": "components",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "u6h8e3o0rsg",
+						"boxName": "example-viewer.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkppfflke21s",
+			"from": {
+				"path": [
+					{
+						"boxId": "j0s1d79lgpg",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "egqqn2iust",
+						"boxName": "components",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "ft5edn3mkto",
+						"boxName": "input.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkfqng410j2cg",
+			"from": {
+				"path": [
+					{
+						"boxId": "j0s1d79lgpg",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ddh60sqfmf8",
+						"boxName": "overrides",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "nslagos53mo",
+						"boxName": "angular-material.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkm3v0hc7n74o",
+			"from": {
+				"path": [
+					{
+						"boxId": "j0s1d79lgpg",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ddh60sqfmf8",
+						"boxName": "overrides",
+						"x": 74,
+						"y": 74
+					},
+					{
+						"boxId": "2h3u20lurog",
+						"boxName": "quill.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkiole4jdmgno",
+			"from": {
+				"path": [
+					{
+						"boxId": "j0s1d79lgpg",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ddh60sqfmf8",
+						"boxName": "overrides",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "k7eotgrr83",
+						"boxName": "highlightjs.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link420og35asdg",
+			"from": {
+				"path": [
+					{
+						"boxId": "j0s1d79lgpg",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ddh60sqfmf8",
+						"boxName": "overrides",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "6j2kkl34ot",
+						"boxName": "perfect-scrollbar.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

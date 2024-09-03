@@ -1,0 +1,88 @@
+{
+	"id": "g1vfj74amhg",
+	"x": 8,
+	"y": 72,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkk41frgro3k",
+			"from": {
+				"path": [
+					{
+						"boxId": "tri0qom023g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "dsjh13hn3vg",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkmgc0omjqdm8",
+			"from": {
+				"path": [
+					{
+						"boxId": "5ucs73dhsl8",
+						"boxName": "masonry.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0uikhorp6vg",
+						"boxName": "masonry.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkk9905fgn9f8",
+			"from": {
+				"path": [
+					{
+						"boxId": "dsjh13hn3vg",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0uikhorp6vg",
+						"boxName": "masonry.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

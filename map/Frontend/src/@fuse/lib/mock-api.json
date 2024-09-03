@@ -1,0 +1,296 @@
+{
+	"id": "rqc5iqvbpe",
+	"x": 4,
+	"y": 8,
+	"width": 92,
+	"height": 88,
+	"links": [
+		{
+			"id": "linkdtdqp553rk",
+			"from": {
+				"path": [
+					{
+						"boxId": "1o2t9iuh2lg",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "sq3fjltpkuo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link2r2vgpgpido",
+			"from": {
+				"path": [
+					{
+						"boxId": "rjpe6i03ifo",
+						"boxName": "mock-api.interceptor.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "errc46iadj",
+						"boxName": "mock-api.constants.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkfoud6ngaft8",
+			"from": {
+				"path": [
+					{
+						"boxId": "rjpe6i03ifo",
+						"boxName": "mock-api.interceptor.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "m753bjd7cr8",
+						"boxName": "mock-api.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link1b4doaitpeg",
+			"from": {
+				"path": [
+					{
+						"boxId": "hflksguueh",
+						"boxName": "mock-api.request-handler.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "prb8bqffoqo",
+						"boxName": "mock-api.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link68s368uqdrg",
+			"from": {
+				"path": [
+					{
+						"boxId": "m753bjd7cr8",
+						"boxName": "mock-api.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "prb8bqffoqo",
+						"boxName": "mock-api.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkqklvuaej09g",
+			"from": {
+				"path": [
+					{
+						"boxId": "m753bjd7cr8",
+						"boxName": "mock-api.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "hflksguueh",
+						"boxName": "mock-api.request-handler.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkr1mvqa0m0ag",
+			"from": {
+				"path": [
+					{
+						"boxId": "sq3fjltpkuo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "errc46iadj",
+						"boxName": "mock-api.constants.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link7pt5vnrsb7g",
+			"from": {
+				"path": [
+					{
+						"boxId": "sq3fjltpkuo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "m753bjd7cr8",
+						"boxName": "mock-api.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linka97smq5g6ko",
+			"from": {
+				"path": [
+					{
+						"boxId": "sq3fjltpkuo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "prb8bqffoqo",
+						"boxName": "mock-api.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkg5s47mkrob",
+			"from": {
+				"path": [
+					{
+						"boxId": "sq3fjltpkuo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "rjpe6i03ifo",
+						"boxName": "mock-api.interceptor.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkkqm11qpnsf",
+			"from": {
+				"path": [
+					{
+						"boxId": "sq3fjltpkuo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "oe6aiu909n",
+						"boxName": "mock-api.utils.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

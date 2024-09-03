@@ -1,0 +1,244 @@
+{
+	"id": "f15tuqg3it8",
+	"x": 72,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkfifs0v5bgno",
+			"from": {
+				"path": [
+					{
+						"boxId": "49bueop66k8",
+						"boxName": "drawer.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ssufnj8qhsg",
+						"boxName": "drawer.component.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link3544djg1nfg",
+			"from": {
+				"path": [
+					{
+						"boxId": "49bueop66k8",
+						"boxName": "drawer.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ejs4vv6ge7o",
+						"boxName": "drawer.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkbt9kfhag1ng",
+			"from": {
+				"path": [
+					{
+						"boxId": "49bueop66k8",
+						"boxName": "drawer.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "avb1m9bqp9g",
+						"boxName": "drawer.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linktaf7age2to",
+			"from": {
+				"path": [
+					{
+						"boxId": "49bueop66k8",
+						"boxName": "drawer.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "72mpt6iom08",
+						"boxName": "drawer.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link6sbjp2gohio",
+			"from": {
+				"path": [
+					{
+						"boxId": "avb1m9bqp9g",
+						"boxName": "drawer.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ejs4vv6ge7o",
+						"boxName": "drawer.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkr8u6fci9fh8",
+			"from": {
+				"path": [
+					{
+						"boxId": "gk57vl73jeo",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "uajkl7g1t9",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link725k2qubs7g",
+			"from": {
+				"path": [
+					{
+						"boxId": "uajkl7g1t9",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ejs4vv6ge7o",
+						"boxName": "drawer.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linklk4bli571l",
+			"from": {
+				"path": [
+					{
+						"boxId": "uajkl7g1t9",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "avb1m9bqp9g",
+						"boxName": "drawer.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkh4544e8jsrg",
+			"from": {
+				"path": [
+					{
+						"boxId": "uajkl7g1t9",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "72mpt6iom08",
+						"boxName": "drawer.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

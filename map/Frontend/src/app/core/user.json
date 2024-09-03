@@ -1,0 +1,36 @@
+{
+	"id": "43841geu5p8",
+	"x": 40,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "links8iq4p07jso",
+			"from": {
+				"path": [
+					{
+						"boxId": "1fhhpa5eshg",
+						"boxName": "user.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "fqog2irhjio",
+						"boxName": "user.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

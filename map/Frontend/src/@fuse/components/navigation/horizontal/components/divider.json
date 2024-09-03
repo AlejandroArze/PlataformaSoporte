@@ -1,0 +1,36 @@
+{
+	"id": "gvj8t4d0vn",
+	"x": 12,
+	"y": 60,
+	"width": 28,
+	"height": 28,
+	"links": [
+		{
+			"id": "link86ofbh5bp2",
+			"from": {
+				"path": [
+					{
+						"boxId": "p5o6i2hb4t",
+						"boxName": "divider.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "eq3016q1jj",
+						"boxName": "divider.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

@@ -1,0 +1,114 @@
+{
+	"id": "skltgn1js0g",
+	"x": 79,
+	"y": 55,
+	"width": 14,
+	"height": 14,
+	"links": [
+		{
+			"id": "linku1jqnrphvk",
+			"from": {
+				"path": [
+					{
+						"boxId": "t08db8ooir8",
+						"boxName": "fuse-version.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "mr9jmdhh4u8",
+						"boxName": "version.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkgn4m9v28eg8",
+			"from": {
+				"path": [
+					{
+						"boxId": "jjjt7fths6g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "m4m6r2tmke8",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkclefakbenrg",
+			"from": {
+				"path": [
+					{
+						"boxId": "m4m6r2tmke8",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "mr9jmdhh4u8",
+						"boxName": "version.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkaq9o714eun8",
+			"from": {
+				"path": [
+					{
+						"boxId": "m4m6r2tmke8",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "t08db8ooir8",
+						"boxName": "fuse-version.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

@@ -1,0 +1,36 @@
+{
+	"id": "a0osssrv5o8",
+	"x": 72,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linktnl1nqmdk2o",
+			"from": {
+				"path": [
+					{
+						"boxId": "a7s89g6ad2",
+						"boxName": "spacer.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "o0o1mbgjdo8",
+						"boxName": "spacer.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

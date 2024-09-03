@@ -1,0 +1,36 @@
+{
+	"id": "atgcrbiugvg",
+	"x": 40,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkddifs2okk68",
+			"from": {
+				"path": [
+					{
+						"boxId": "7t5b9b9tg3",
+						"boxName": "basic.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "3r6925fu238",
+						"boxName": "basic.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

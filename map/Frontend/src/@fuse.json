@@ -1,0 +1,1124 @@
+{
+	"id": "f1v7363nla8",
+	"x": 8,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkai1qmif6l78",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ekle0t298uo",
+						"boxName": "lib",
+						"x": 50,
+						"y": 52
+					},
+					{
+						"boxId": "rqc5iqvbpe",
+						"boxName": "mock-api",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link7e5rhej6st8",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 18,
+						"y": 18
+					},
+					{
+						"boxId": "3go38jo7a4g",
+						"boxName": "config",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkka3ac2gkaro",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 11.6,
+						"y": 11.6
+					},
+					{
+						"boxId": "3go38jo7a4g",
+						"boxName": "config",
+						"x": 18,
+						"y": 18
+					},
+					{
+						"boxId": "odqq4tqhdi8",
+						"boxName": "config.constants.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link8e7oj83uv98",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 50,
+						"y": 18
+					},
+					{
+						"boxId": "t7upkllb5h",
+						"boxName": "confirmation",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link4lmsghshqtg",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 82,
+						"y": 50
+					},
+					{
+						"boxId": "sd5t47iqqg",
+						"boxName": "splash-screen",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link6j1bc2pje4g",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "prkqgti8v5g",
+						"boxName": "loading",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link2eubeca0pk8",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 50,
+						"y": 50
+					},
+					{
+						"boxId": "s219ch8u1r",
+						"boxName": "platform",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkuaf77h9onhg",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 18,
+						"y": 50
+					},
+					{
+						"boxId": "1ji5glv0ue8",
+						"boxName": "media-watcher",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linktodciu483ko",
+			"from": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 18,
+						"y": 82
+					},
+					{
+						"boxId": "mhib6rqrtn8",
+						"boxName": "utils",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkpjp0f23u64g",
+			"from": {
+				"path": [
+					{
+						"boxId": "f5q32io2erg",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "6pt5avt9tfg",
+						"boxName": "fuse.provider.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linktq478cul8n8",
+			"from": {
+				"path": [
+					{
+						"boxId": "51f579bvhe",
+						"boxName": "tailwind",
+						"x": 32.72,
+						"y": 19.28
+					},
+					{
+						"boxId": "es2ck8stilg",
+						"boxName": "plugins",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "b86h76kh84",
+						"boxName": "theming.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "tmg44bh6sk8",
+						"boxName": "styles",
+						"x": 82,
+						"y": 50
+					},
+					{
+						"boxId": "3hjj01j1t28",
+						"boxName": "user-themes.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkfrs57eq2hno",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 24.4,
+						"y": 11.6
+					},
+					{
+						"boxId": "rflnd571j48",
+						"boxName": "alert",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "jcjce939i6",
+						"boxName": "alert.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "22dteftt8",
+						"boxName": "animations",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkd8qp6eb48k8",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 24.4,
+						"y": 11.6
+					},
+					{
+						"boxId": "rflnd571j48",
+						"boxName": "alert",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "jcjce939i6",
+						"boxName": "alert.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 13.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "mhib6rqrtn8",
+						"boxName": "utils",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "04cm0ie7hig",
+						"boxName": "utils.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link1pvurhrgeu8",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 56.4,
+						"y": 11.6
+					},
+					{
+						"boxId": "2qgg9tpolr",
+						"boxName": "card",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "ahsis2r721g",
+						"boxName": "card.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "22dteftt8",
+						"boxName": "animations",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link2km61bk82f8",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 88.4,
+						"y": 11.6
+					},
+					{
+						"boxId": "f15tuqg3it8",
+						"boxName": "drawer",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "49bueop66k8",
+						"boxName": "drawer.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 13.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "mhib6rqrtn8",
+						"boxName": "utils",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "04cm0ie7hig",
+						"boxName": "utils.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link8faf04ur1lo",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 75.6,
+						"y": 50
+					},
+					{
+						"boxId": "4v26k0dm8b8",
+						"boxName": "loading-bar",
+						"x": 18,
+						"y": 50
+					},
+					{
+						"boxId": "i8qle4jfi28",
+						"boxName": "loading-bar.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "prkqgti8v5g",
+						"boxName": "loading",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link3uq53tpi36o",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 13.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "g1vfj74amhg",
+						"boxName": "masonry",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "5ucs73dhsl8",
+						"boxName": "masonry.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 18,
+						"y": 50
+					},
+					{
+						"boxId": "1ji5glv0ue8",
+						"boxName": "media-watcher",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linksil3m3925m8",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 13.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "g1vfj74amhg",
+						"boxName": "masonry",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "5ucs73dhsl8",
+						"boxName": "masonry.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "22dteftt8",
+						"boxName": "animations",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link8lj5cuo6b7",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 44.56,
+						"y": 76.56
+					},
+					{
+						"boxId": "l27bo7j8v3o",
+						"boxName": "navigation",
+						"x": 22.8,
+						"y": 22.8
+					},
+					{
+						"boxId": "70oi8ubp2lg",
+						"boxName": "horizontal",
+						"x": 74,
+						"y": 74
+					},
+					{
+						"boxId": "kj8qvkula7o",
+						"boxName": "horizontal.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "22dteftt8",
+						"boxName": "animations",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link5a11jaiag9o",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 44.56,
+						"y": 76.56
+					},
+					{
+						"boxId": "l27bo7j8v3o",
+						"boxName": "navigation",
+						"x": 22.8,
+						"y": 22.8
+					},
+					{
+						"boxId": "70oi8ubp2lg",
+						"boxName": "horizontal",
+						"x": 74,
+						"y": 74
+					},
+					{
+						"boxId": "kj8qvkula7o",
+						"boxName": "horizontal.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 13.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "mhib6rqrtn8",
+						"boxName": "utils",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "04cm0ie7hig",
+						"boxName": "utils.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linktag6i7rb2rg",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 42.446,
+						"y": 74.296
+					},
+					{
+						"boxId": "l27bo7j8v3o",
+						"boxName": "navigation",
+						"x": 12.232,
+						"y": 11.48
+					},
+					{
+						"boxId": "70oi8ubp2lg",
+						"boxName": "horizontal",
+						"x": 21.162,
+						"y": 17.398
+					},
+					{
+						"boxId": "5c5oom2se18",
+						"boxName": "components",
+						"x": 32.72,
+						"y": 19.28
+					},
+					{
+						"boxId": "ha1h4vd6o2",
+						"boxName": "basic",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "579hhbfdklo",
+						"boxName": "basic.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 13.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "mhib6rqrtn8",
+						"boxName": "utils",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "04cm0ie7hig",
+						"boxName": "utils.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkrsbr66ctjr",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 56.4,
+						"y": 82
+					},
+					{
+						"boxId": "l27bo7j8v3o",
+						"boxName": "navigation",
+						"x": 82,
+						"y": 50
+					},
+					{
+						"boxId": "2g7kcj9kgio",
+						"boxName": "vertical",
+						"x": 50,
+						"y": 50
+					},
+					{
+						"boxId": "ukpptncmg2",
+						"boxName": "vertical.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "22dteftt8",
+						"boxName": "animations",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link5tkdl9pbor8",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 56.4,
+						"y": 82
+					},
+					{
+						"boxId": "l27bo7j8v3o",
+						"boxName": "navigation",
+						"x": 82,
+						"y": 50
+					},
+					{
+						"boxId": "2g7kcj9kgio",
+						"boxName": "vertical",
+						"x": 50,
+						"y": 50
+					},
+					{
+						"boxId": "ukpptncmg2",
+						"boxName": "vertical.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ta7j2cja2ko",
+						"boxName": "directives",
+						"x": 67.28,
+						"y": 32.72
+					},
+					{
+						"boxId": "g5uljfn8scg",
+						"boxName": "scrollbar",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "p8psgm8627o",
+						"boxName": "scrollbar.directive.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linktbapc1leu2g",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 56.4,
+						"y": 82
+					},
+					{
+						"boxId": "l27bo7j8v3o",
+						"boxName": "navigation",
+						"x": 82,
+						"y": 50
+					},
+					{
+						"boxId": "2g7kcj9kgio",
+						"boxName": "vertical",
+						"x": 50,
+						"y": 50
+					},
+					{
+						"boxId": "ukpptncmg2",
+						"boxName": "vertical.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 13.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "mhib6rqrtn8",
+						"boxName": "utils",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "04cm0ie7hig",
+						"boxName": "utils.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkec58sip4e6g",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 55.158,
+						"y": 80.426
+					},
+					{
+						"boxId": "l27bo7j8v3o",
+						"boxName": "navigation",
+						"x": 75.792,
+						"y": 42.128
+					},
+					{
+						"boxId": "2g7kcj9kgio",
+						"boxName": "vertical",
+						"x": 18.96,
+						"y": 10.64
+					},
+					{
+						"boxId": "feu9r4d2ql",
+						"boxName": "components",
+						"x": 54.8,
+						"y": 13.2
+					},
+					{
+						"boxId": "atgcrbiugvg",
+						"boxName": "basic",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "7t5b9b9tg3",
+						"boxName": "basic.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "8lq1p294r7",
+						"boxName": "services",
+						"x": 13.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "mhib6rqrtn8",
+						"boxName": "utils",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "04cm0ie7hig",
+						"boxName": "utils.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkub7os2rqsjg",
+			"from": {
+				"path": [
+					{
+						"boxId": "ccgtal65uso",
+						"boxName": "components",
+						"x": 55.414,
+						"y": 80.426
+					},
+					{
+						"boxId": "l27bo7j8v3o",
+						"boxName": "navigation",
+						"x": 77.072,
+						"y": 42.128
+					},
+					{
+						"boxId": "2g7kcj9kgio",
+						"boxName": "vertical",
+						"x": 25.36,
+						"y": 10.64
+					},
+					{
+						"boxId": "feu9r4d2ql",
+						"boxName": "components",
+						"x": 86.8,
+						"y": 13.2
+					},
+					{
+						"boxId": "t5c4ivgke18",
+						"boxName": "collapsable",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "fl9gh7nfc",
+						"boxName": "collapsable.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "22dteftt8",
+						"boxName": "animations",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

@@ -1,0 +1,36 @@
+{
+	"id": "uircndk9kb",
+	"x": 40,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link52rc2leff28",
+			"from": {
+				"path": [
+					{
+						"boxId": "t2k3jv9soa8",
+						"boxName": "classy.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "m0t0nclhio8",
+						"boxName": "classy.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

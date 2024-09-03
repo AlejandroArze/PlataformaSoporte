@@ -1,0 +1,36 @@
+{
+	"id": "7rqgv3jd7mg",
+	"x": 40,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkcbuubkl8v38",
+			"from": {
+				"path": [
+					{
+						"boxId": "lmkrirff4fo",
+						"boxName": "search.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "1hjg4lm4lf",
+						"boxName": "search.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

@@ -1,0 +1,86 @@
+{
+	"id": "51f579bvhe",
+	"x": 31,
+	"y": 55,
+	"width": 14,
+	"height": 14,
+	"links": [
+		{
+			"id": "linko95pnvhssc8",
+			"from": {
+				"path": [
+					{
+						"boxId": "es2ck8stilg",
+						"boxName": "plugins",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "b86h76kh84",
+						"boxName": "theming.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "4ejplhjgh5g",
+						"boxName": "utils",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "cdubimd2up",
+						"boxName": "generate-contrasts.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link7e7vujuqpp",
+			"from": {
+				"path": [
+					{
+						"boxId": "es2ck8stilg",
+						"boxName": "plugins",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "b86h76kh84",
+						"boxName": "theming.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "4ejplhjgh5g",
+						"boxName": "utils",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "bokkr4c9fi8",
+						"boxName": "json-to-sass-map.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

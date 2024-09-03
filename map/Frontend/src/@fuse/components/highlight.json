@@ -1,0 +1,166 @@
+{
+	"id": "d7vutfl976g",
+	"x": 40,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkqpqlgidi2c",
+			"from": {
+				"path": [
+					{
+						"boxId": "5q9otk10k7g",
+						"boxName": "highlight.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ksmubhkr02",
+						"boxName": "highlight.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linke9lp2fh65v8",
+			"from": {
+				"path": [
+					{
+						"boxId": "5q9otk10k7g",
+						"boxName": "highlight.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ho385mdo9o",
+						"boxName": "highlight.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkndsqsfmedao",
+			"from": {
+				"path": [
+					{
+						"boxId": "5q9otk10k7g",
+						"boxName": "highlight.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "dbpsiqou0a",
+						"boxName": "highlight.component.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkm4idrcmbqlo",
+			"from": {
+				"path": [
+					{
+						"boxId": "e54bnsfd50g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "v6kj0nso1a",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link7fjf05voflo",
+			"from": {
+				"path": [
+					{
+						"boxId": "v6kj0nso1a",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ho385mdo9o",
+						"boxName": "highlight.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkvvcs2ct09vo",
+			"from": {
+				"path": [
+					{
+						"boxId": "v6kj0nso1a",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ksmubhkr02",
+						"boxName": "highlight.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

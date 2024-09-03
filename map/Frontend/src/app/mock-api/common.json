@@ -1,0 +1,86 @@
+{
+	"id": "g67bim28j8",
+	"x": 40,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linko9q3lapkl9o",
+			"from": {
+				"path": [
+					{
+						"boxId": "rdat0khi2lo",
+						"boxName": "auth",
+						"x": 50,
+						"y": 52
+					},
+					{
+						"boxId": "al2am22knkg",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "380465jeq8g",
+						"boxName": "user",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "g7k0o0ahl28",
+						"boxName": "data.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link6voqftr1kag",
+			"from": {
+				"path": [
+					{
+						"boxId": "hqci7l8nd08",
+						"boxName": "search",
+						"x": 50,
+						"y": 52
+					},
+					{
+						"boxId": "85aer9o3j8g",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "a20kvn7phio",
+						"boxName": "navigation",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "r361sr2p1bg",
+						"boxName": "data.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

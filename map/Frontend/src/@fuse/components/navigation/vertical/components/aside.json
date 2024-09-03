@@ -1,0 +1,36 @@
+{
+	"id": "04p9fh8hts",
+	"x": 8,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linko1f5k4aemt",
+			"from": {
+				"path": [
+					{
+						"boxId": "escd2d19q9o",
+						"boxName": "aside.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "sclg4jjvp7",
+						"boxName": "aside.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

@@ -1,0 +1,88 @@
+{
+	"id": "g5uljfn8scg",
+	"x": 60,
+	"y": 12,
+	"width": 28,
+	"height": 28,
+	"links": [
+		{
+			"id": "link192o1i7trgg",
+			"from": {
+				"path": [
+					{
+						"boxId": "p8psgm8627o",
+						"boxName": "scrollbar.directive.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "mjtknv8cuig",
+						"boxName": "scrollbar.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkgn3p6n4ogpo",
+			"from": {
+				"path": [
+					{
+						"boxId": "i2ugddi66eg",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "rb0144jkim",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link27vs27edft",
+			"from": {
+				"path": [
+					{
+						"boxId": "rb0144jkim",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "p8psgm8627o",
+						"boxName": "scrollbar.directive.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

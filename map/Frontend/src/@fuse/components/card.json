@@ -1,0 +1,140 @@
+{
+	"id": "2qgg9tpolr",
+	"x": 40,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linktl7di0avcno",
+			"from": {
+				"path": [
+					{
+						"boxId": "ahsis2r721g",
+						"boxName": "card.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "qc4pla8ikm",
+						"boxName": "card.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkkqorsp5l1no",
+			"from": {
+				"path": [
+					{
+						"boxId": "ahsis2r721g",
+						"boxName": "card.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g8pimnc25po",
+						"boxName": "card.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linko2gog924ouo",
+			"from": {
+				"path": [
+					{
+						"boxId": "ahsis2r721g",
+						"boxName": "card.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "qfsqbc71p48",
+						"boxName": "card.component.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link28dfu5sav68",
+			"from": {
+				"path": [
+					{
+						"boxId": "3cm9ae5oogg",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "hccih1jogo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linke58j715n3ug",
+			"from": {
+				"path": [
+					{
+						"boxId": "hccih1jogo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g8pimnc25po",
+						"boxName": "card.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

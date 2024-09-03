@@ -1,0 +1,36 @@
+{
+	"id": "u4guq7dlap",
+	"x": 40,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link4rt4pf7i0t",
+			"from": {
+				"path": [
+					{
+						"boxId": "pd2np0ad7t",
+						"boxName": "futuristic.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "p73isr5b79o",
+						"boxName": "futuristic.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

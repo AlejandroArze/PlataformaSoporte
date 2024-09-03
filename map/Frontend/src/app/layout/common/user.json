@@ -1,0 +1,36 @@
+{
+	"id": "c5ikiv124j8",
+	"x": 40,
+	"y": 72,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link4fmfds57h7",
+			"from": {
+				"path": [
+					{
+						"boxId": "joigcr7rsao",
+						"boxName": "user.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "fnj6p3r4df",
+						"boxName": "user.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

@@ -1,0 +1,822 @@
+{
+	"id": "27hbd43i3q",
+	"x": 72,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkdrfbod0r43",
+			"from": {
+				"path": [
+					{
+						"boxId": "p0p2hbrakh8",
+						"boxName": ".gitignore",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bgeksat3pbg",
+						"boxName": "node_modules",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link0aq8kgp8mno",
+			"from": {
+				"path": [
+					{
+						"boxId": "p0p2hbrakh8",
+						"boxName": ".gitignore",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "hppll0h0prg",
+						"boxName": ".angular",
+						"x": 50,
+						"y": 52
+					},
+					{
+						"boxId": "kv1su8nu3co",
+						"boxName": "cache",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link9h9b2fqh2j",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 18,
+						"y": 50
+					},
+					{
+						"boxId": "grbmk64b3a",
+						"boxName": "favicon-16x16.png",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link4hembumn3ro",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 50,
+						"y": 50
+					},
+					{
+						"boxId": "l3ml7eddk18",
+						"boxName": "favicon-32x32.png",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linki066h2k6fm8",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 10.8,
+						"y": 20.4
+					},
+					{
+						"boxId": "f1v7363nla8",
+						"boxName": "@fuse",
+						"x": 14,
+						"y": 62
+					},
+					{
+						"boxId": "tmg44bh6sk8",
+						"boxName": "styles",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkvrbg5adh6ao",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "ubmd7clb5do",
+						"boxName": "assets",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link4shrho3l0h8",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 45.2,
+						"y": 77.2
+					},
+					{
+						"boxId": "p4ho86apshg",
+						"boxName": "styles",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "t0hkbufcsso",
+						"boxName": "styles.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link8ep9st1mm2o",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 10.8,
+						"y": 19.504
+					},
+					{
+						"boxId": "f1v7363nla8",
+						"boxName": "@fuse",
+						"x": 14,
+						"y": 57.52
+					},
+					{
+						"boxId": "tmg44bh6sk8",
+						"boxName": "styles",
+						"x": 50,
+						"y": 18
+					},
+					{
+						"boxId": "j0s1d79lgpg",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkhnbka8lvvng",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 82,
+						"y": 50
+					},
+					{
+						"boxId": "5f17o2vgkko",
+						"boxName": "index.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link5lbrqd7gdm",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 45.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "p4ho86apshg",
+						"boxName": "styles",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "6b9fvqan4qg",
+						"boxName": "vendors.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link35its09d1jg",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 9.904,
+						"y": 20.4
+					},
+					{
+						"boxId": "f1v7363nla8",
+						"boxName": "@fuse",
+						"x": 9.52,
+						"y": 62
+					},
+					{
+						"boxId": "tmg44bh6sk8",
+						"boxName": "styles",
+						"x": 18,
+						"y": 50
+					},
+					{
+						"boxId": "49eqcaeqj78",
+						"boxName": "tailwind.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkouhnlsad7so",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 18,
+						"y": 82
+					},
+					{
+						"boxId": "tp6mhmm41ng",
+						"boxName": "main.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkcvnflmpluho",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 54.8,
+						"y": 77.2
+					},
+					{
+						"boxId": "p4ho86apshg",
+						"boxName": "styles",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "5pd4ksas1j",
+						"boxName": "tailwind.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link7u0stild8ug",
+			"from": {
+				"path": [
+					{
+						"boxId": "oft1cdmpn9",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 10.8,
+						"y": 20.4
+					},
+					{
+						"boxId": "f1v7363nla8",
+						"boxName": "@fuse",
+						"x": 14,
+						"y": 62
+					},
+					{
+						"boxId": "tmg44bh6sk8",
+						"boxName": "styles",
+						"x": 50,
+						"y": 50
+					},
+					{
+						"boxId": "29d4af8ugio",
+						"boxName": "themes.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link5d2pcvd8nc",
+			"from": {
+				"path": [
+					{
+						"boxId": "c7upm6jo9n8",
+						"boxName": "tailwind.config.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 16.46,
+						"y": 19.54
+					},
+					{
+						"boxId": "f1v7363nla8",
+						"boxName": "@fuse",
+						"x": 42.301,
+						"y": 57.699
+					},
+					{
+						"boxId": "51f579bvhe",
+						"boxName": "tailwind",
+						"x": 80.72,
+						"y": 19.28
+					},
+					{
+						"boxId": "4ejplhjgh5g",
+						"boxName": "utils",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "3ru1g6fk8oo",
+						"boxName": "generate-palette.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkl8lpnrrli1g",
+			"from": {
+				"path": [
+					{
+						"boxId": "c7upm6jo9n8",
+						"boxName": "tailwind.config.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 15.116,
+						"y": 19.54
+					},
+					{
+						"boxId": "f1v7363nla8",
+						"boxName": "@fuse",
+						"x": 35.581,
+						"y": 57.699
+					},
+					{
+						"boxId": "51f579bvhe",
+						"boxName": "tailwind",
+						"x": 32.72,
+						"y": 19.28
+					},
+					{
+						"boxId": "es2ck8stilg",
+						"boxName": "plugins",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "b86h76kh84",
+						"boxName": "theming.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkeraemsr9vh8",
+			"from": {
+				"path": [
+					{
+						"boxId": "c7upm6jo9n8",
+						"boxName": "tailwind.config.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 14.74,
+						"y": 19.916
+					},
+					{
+						"boxId": "f1v7363nla8",
+						"boxName": "@fuse",
+						"x": 33.699,
+						"y": 59.581
+					},
+					{
+						"boxId": "51f579bvhe",
+						"boxName": "tailwind",
+						"x": 19.28,
+						"y": 32.72
+					},
+					{
+						"boxId": "es2ck8stilg",
+						"boxName": "plugins",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "u6q2b5fvm58",
+						"boxName": "utilities.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link59uajr87dp",
+			"from": {
+				"path": [
+					{
+						"boxId": "c7upm6jo9n8",
+						"boxName": "tailwind.config.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 14.74,
+						"y": 19.54
+					},
+					{
+						"boxId": "f1v7363nla8",
+						"boxName": "@fuse",
+						"x": 33.699,
+						"y": 57.699
+					},
+					{
+						"boxId": "51f579bvhe",
+						"boxName": "tailwind",
+						"x": 19.28,
+						"y": 19.28
+					},
+					{
+						"boxId": "es2ck8stilg",
+						"boxName": "plugins",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "c53f64rj57o",
+						"boxName": "icon-size.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkdd6rnc7os1g",
+			"from": {
+				"path": [
+					{
+						"boxId": "bt20mie1278",
+						"boxName": "tsconfig.app.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 18,
+						"y": 82
+					},
+					{
+						"boxId": "tp6mhmm41ng",
+						"boxName": "main.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkjfo1o82l0vo",
+			"from": {
+				"path": [
+					{
+						"boxId": "bt20mie1278",
+						"boxName": "tsconfig.app.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ra1sgfpth5",
+						"boxName": "tsconfig.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkveq48ojedrg",
+			"from": {
+				"path": [
+					{
+						"boxId": "ra1sgfpth5",
+						"boxName": "tsconfig.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bmfskpl9qng",
+						"boxName": "src",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkrn68i887rf",
+			"from": {
+				"path": [
+					{
+						"boxId": "g07to2sgnd8",
+						"boxName": "tsconfig.spec.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ra1sgfpth5",
+						"boxName": "tsconfig.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

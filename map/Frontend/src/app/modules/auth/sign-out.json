@@ -1,0 +1,62 @@
+{
+	"id": "j1rg5unmlg8",
+	"x": 40,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link5vf52s6iltg",
+			"from": {
+				"path": [
+					{
+						"boxId": "ulfduriun8",
+						"boxName": "sign-out.routes.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "6cnclg09rp8",
+						"boxName": "sign-out.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link4ebj4c5aung",
+			"from": {
+				"path": [
+					{
+						"boxId": "kicofsi1e2o",
+						"boxName": "sign-out.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "6cnclg09rp8",
+						"boxName": "sign-out.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

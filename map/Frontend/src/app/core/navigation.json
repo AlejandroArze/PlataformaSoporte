@@ -1,0 +1,36 @@
+{
+	"id": "l0lif4655mg",
+	"x": 72,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link0l4d1npa3j8",
+			"from": {
+				"path": [
+					{
+						"boxId": "ltouop7jh5o",
+						"boxName": "navigation.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "kp7eplp6kn",
+						"boxName": "navigation.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

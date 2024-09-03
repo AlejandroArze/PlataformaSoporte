@@ -1,0 +1,990 @@
+{
+	"id": "iuuroosp56o",
+	"x": 7,
+	"y": 55,
+	"width": 14,
+	"height": 14,
+	"links": [
+		{
+			"id": "link2kv4d9aku2g",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 10.64,
+						"y": 10.64
+					},
+					{
+						"boxId": "k8ufcp24hpo",
+						"boxName": "academy",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "3jfgr6p92f8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkk9k3u74bo7g",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 34.64,
+						"y": 10.64
+					},
+					{
+						"boxId": "qsre81vrg28",
+						"boxName": "chat",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "3unf47fgmi8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkrj9k6blnke",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 82.64,
+						"y": 34.64
+					},
+					{
+						"boxId": "613t0ba0or8",
+						"boxName": "notes",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "dlld87ccli",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkdiroo90pjro",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 58.64,
+						"y": 10.64
+					},
+					{
+						"boxId": "h1ugfunebp8",
+						"boxName": "contacts",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "itjmt488pf",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkosqr1rl29u8",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 10.64,
+						"y": 34.64
+					},
+					{
+						"boxId": "4sci1fr8hjg",
+						"boxName": "file-manager",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "kl4kuu7jh7",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link53g3i1m4k1o",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 34.64,
+						"y": 34.64
+					},
+					{
+						"boxId": "q8e6c2tas",
+						"boxName": "help-center",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "09a1khraelg",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkishopsfcsno",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 58.64,
+						"y": 34.64
+					},
+					{
+						"boxId": "ujtsc0vtug",
+						"boxName": "mailbox",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "str3lis7qvo",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkj7a41jv4hko",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 10.64,
+						"y": 58.64
+					},
+					{
+						"boxId": "rubggdimv28",
+						"boxName": "scrumboard",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "b3745sq6qe8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkd42vbbcc7so",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 34.64,
+						"y": 58.64
+					},
+					{
+						"boxId": "hbu61iipjo8",
+						"boxName": "tasks",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "e266tver8d8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkesdle3sl6h",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 18,
+						"y": 18.4
+					},
+					{
+						"boxId": "rdat0khi2lo",
+						"boxName": "auth",
+						"x": 50,
+						"y": 52
+					},
+					{
+						"boxId": "al2am22knkg",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkrs3rgoshm6o",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 45.2,
+						"y": 13.2
+					},
+					{
+						"boxId": "cmk0dcoubcg",
+						"boxName": "messages",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "taucalqoa5",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link9a6pnh9284g",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 77.2,
+						"y": 13.2
+					},
+					{
+						"boxId": "a20kvn7phio",
+						"boxName": "navigation",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "kf7bl1jsdm",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linki5crs2d7lro",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 13.2,
+						"y": 45.2
+					},
+					{
+						"boxId": "6i9uk0rlef8",
+						"boxName": "notifications",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "qkv21uvpsao",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linki3ckh5gq04g",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 50,
+						"y": 50.4
+					},
+					{
+						"boxId": "hqci7l8nd08",
+						"boxName": "search",
+						"x": 50,
+						"y": 52
+					},
+					{
+						"boxId": "85aer9o3j8g",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link7kr1cubdo",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 77.2,
+						"y": 45.2
+					},
+					{
+						"boxId": "3un42iq9ldo",
+						"boxName": "shortcuts",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "1kp7g5ornu8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkflbmv8bgptg",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 13.2,
+						"y": 77.2
+					},
+					{
+						"boxId": "380465jeq8g",
+						"boxName": "user",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "k8arv7psfo8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkl93ueo3hit8",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "q7a49tfjb7",
+						"boxName": "dashboards",
+						"x": 19.28,
+						"y": 67.28
+					},
+					{
+						"boxId": "sglij94lus",
+						"boxName": "finance",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "369de9l0ui",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkcsk4sjki5to",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "q7a49tfjb7",
+						"boxName": "dashboards",
+						"x": 19.28,
+						"y": 19.28
+					},
+					{
+						"boxId": "m6t1eq185v",
+						"boxName": "analytics",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "7o4tq851fg8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link316o7ai4j0o",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "q7a49tfjb7",
+						"boxName": "dashboards",
+						"x": 67.28,
+						"y": 19.28
+					},
+					{
+						"boxId": "gvdtsm63nug",
+						"boxName": "crypto",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "a18a6djsnr8",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkicm7ggichc8",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "q7a49tfjb7",
+						"boxName": "dashboards",
+						"x": 67.28,
+						"y": 67.28
+					},
+					{
+						"boxId": "d688g560jh8",
+						"boxName": "project",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "ibj9n8mppjg",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkfefqfofs6co",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "errrgpk42i8",
+						"boxName": "ui",
+						"x": 27.92,
+						"y": 30.88
+					},
+					{
+						"boxId": "h18jtscck5",
+						"boxName": "icons",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "1fdi9p57g5",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkvvpnkbk1ke8",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 82.909,
+						"y": 11.323
+					},
+					{
+						"boxId": "u385qnpn49",
+						"boxName": "ecommerce",
+						"x": 27.92,
+						"y": 30.88
+					},
+					{
+						"boxId": "g44v07bpslg",
+						"boxName": "inventory",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "on6k3neihr",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link6v3sipqmll",
+			"from": {
+				"path": [
+					{
+						"boxId": "kded3pgc12g",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "srkk2a63rag",
+						"boxName": "pages",
+						"x": 27.92,
+						"y": 30.88
+					},
+					{
+						"boxId": "j43psabouao",
+						"boxName": "activities",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "md1uatirdng",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkmmogv4rjn9",
+			"from": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 50,
+						"y": 50.4
+					},
+					{
+						"boxId": "hqci7l8nd08",
+						"boxName": "search",
+						"x": 50,
+						"y": 52
+					},
+					{
+						"boxId": "85aer9o3j8g",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 65.36,
+						"y": 10.64
+					},
+					{
+						"boxId": "h1ugfunebp8",
+						"boxName": "contacts",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "hpbujcnqeho",
+						"boxName": "data.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkdjjnetbad68",
+			"from": {
+				"path": [
+					{
+						"boxId": "g67bim28j8",
+						"boxName": "common",
+						"x": 50,
+						"y": 50.4
+					},
+					{
+						"boxId": "hqci7l8nd08",
+						"boxName": "search",
+						"x": 50,
+						"y": 52
+					},
+					{
+						"boxId": "85aer9o3j8g",
+						"boxName": "api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5ahg9vbesh",
+						"boxName": "apps",
+						"x": 41.36,
+						"y": 58.64
+					},
+					{
+						"boxId": "hbu61iipjo8",
+						"boxName": "tasks",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "1f270qh9te",
+						"boxName": "data.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}
