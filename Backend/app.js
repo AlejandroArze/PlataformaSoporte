@@ -1,8 +1,10 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
-const port = 3000;
-const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize('postgres://postgres:postgres@localhost:5432/laboratorio_bd')
+const port = process.env.SERVER_PORT ;
+
+const { pool, sequelize } = require('./config/dataBaseConfig');
 
 
 app.get('/api/v1/', (req,res)=>{
