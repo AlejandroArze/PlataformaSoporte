@@ -1,0 +1,36 @@
+{
+	"id": "1uqsr8qlcv8",
+	"x": 72,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkegkel1n2l1",
+			"from": {
+				"path": [
+					{
+						"boxId": "g5fbi8ficm8",
+						"boxName": "collapsable.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "94foo4mispo",
+						"boxName": "collapsable.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

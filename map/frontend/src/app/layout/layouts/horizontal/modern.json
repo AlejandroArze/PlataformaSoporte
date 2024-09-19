@@ -1,0 +1,36 @@
+{
+	"id": "s0cd1smi35o",
+	"x": 60,
+	"y": 60,
+	"width": 28,
+	"height": 28,
+	"links": [
+		{
+			"id": "linkq5hlk22s3j8",
+			"from": {
+				"path": [
+					{
+						"boxId": "2dauudv812o",
+						"boxName": "modern.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "mlsqqtmitl",
+						"boxName": "modern.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

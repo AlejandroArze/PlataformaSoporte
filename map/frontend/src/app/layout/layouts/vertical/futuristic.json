@@ -1,0 +1,36 @@
+{
+	"id": "jmb0e1n8fg",
+	"x": 40,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link4ts59e4s18g",
+			"from": {
+				"path": [
+					{
+						"boxId": "fjpsuuorm98",
+						"boxName": "futuristic.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "35r8usgqnlo",
+						"boxName": "futuristic.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

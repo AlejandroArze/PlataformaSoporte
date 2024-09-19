@@ -1,0 +1,36 @@
+{
+	"id": "srb8lmj5j9",
+	"x": 8,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link0eg5ubmb8to",
+			"from": {
+				"path": [
+					{
+						"boxId": "9trmlaka82",
+						"boxName": "dense.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "s1minc1h1p",
+						"boxName": "dense.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

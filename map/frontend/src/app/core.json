@@ -1,0 +1,48 @@
+{
+	"id": "mvhhk882018",
+	"x": 56,
+	"y": 32,
+	"width": 16,
+	"height": 16,
+	"links": [
+		{
+			"id": "link6eviffc4rkg",
+			"from": {
+				"path": [
+					{
+						"boxId": "d2224sejrbo",
+						"boxName": "auth",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "2nhl1hujfj8",
+						"boxName": "auth.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "fk8m6nk096",
+						"boxName": "user",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "v13os11vh5o",
+						"boxName": "user.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

@@ -1,0 +1,62 @@
+{
+	"id": "qim9u7r5co8",
+	"x": 4,
+	"y": 8,
+	"width": 92,
+	"height": 88,
+	"links": [
+		{
+			"id": "linkhrvglf0omrg",
+			"from": {
+				"path": [
+					{
+						"boxId": "b9co7njtbu8",
+						"boxName": "example.routes.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "6112in45vrg",
+						"boxName": "example.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linknek5g2a7pho",
+			"from": {
+				"path": [
+					{
+						"boxId": "s2oh1kn3tf",
+						"boxName": "example.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "6112in45vrg",
+						"boxName": "example.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

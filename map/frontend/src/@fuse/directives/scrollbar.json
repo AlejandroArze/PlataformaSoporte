@@ -1,0 +1,88 @@
+{
+	"id": "ui4o7c1lt08",
+	"x": 60,
+	"y": 12,
+	"width": 28,
+	"height": 28,
+	"links": [
+		{
+			"id": "link8sqft9iirpg",
+			"from": {
+				"path": [
+					{
+						"boxId": "c57tl3k03e8",
+						"boxName": "scrollbar.directive.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "suqef0brq6",
+						"boxName": "scrollbar.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkiqka5t5cts",
+			"from": {
+				"path": [
+					{
+						"boxId": "qig61mt7a9",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "uekno9u8fr",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkq7be99fcc7o",
+			"from": {
+				"path": [
+					{
+						"boxId": "uekno9u8fr",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "c57tl3k03e8",
+						"boxName": "scrollbar.directive.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

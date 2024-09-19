@@ -1,0 +1,36 @@
+{
+	"id": "heahkspj0rg",
+	"x": 72,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkhji2ild0ds",
+			"from": {
+				"path": [
+					{
+						"boxId": "vls8dks0jb",
+						"boxName": "dialog.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "t2bcoabgs7g",
+						"boxName": "dialog.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

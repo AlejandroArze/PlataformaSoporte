@@ -1,0 +1,114 @@
+{
+	"id": "qv83tcq27e",
+	"x": 72,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkhi2jee22rbg",
+			"from": {
+				"path": [
+					{
+						"boxId": "82sal10ou5",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "blgca089efo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkh0tndtc4nvo",
+			"from": {
+				"path": [
+					{
+						"boxId": "9n29e3087hg",
+						"boxName": "loading-bar.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bfg6jq8bito",
+						"boxName": "loading-bar.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link8mprn3la6p",
+			"from": {
+				"path": [
+					{
+						"boxId": "9n29e3087hg",
+						"boxName": "loading-bar.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "i0g8a5ngiu",
+						"boxName": "loading-bar.component.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link3kba89edeko",
+			"from": {
+				"path": [
+					{
+						"boxId": "blgca089efo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bfg6jq8bito",
+						"boxName": "loading-bar.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

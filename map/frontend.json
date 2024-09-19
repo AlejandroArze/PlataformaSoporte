@@ -1,0 +1,764 @@
+{
+	"id": "d29nfse1dio",
+	"x": 72,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkbni2sv6speo",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 18,
+						"y": 50
+					},
+					{
+						"boxId": "k4pgj7e8ajo",
+						"boxName": "favicon-16x16.png",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link4sluki90tto",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 50,
+						"y": 50
+					},
+					{
+						"boxId": "iqkl00kfuqo",
+						"boxName": "favicon-32x32.png",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkpi68fo0d658",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 82,
+						"y": 50
+					},
+					{
+						"boxId": "ct6m98de9mg",
+						"boxName": "index.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkv1fc7mfve9o",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 18,
+						"y": 82
+					},
+					{
+						"boxId": "89l2uposop8",
+						"boxName": "main.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkdc07g146a4o",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 10.8,
+						"y": 20.4
+					},
+					{
+						"boxId": "senmvn01kb",
+						"boxName": "@fuse",
+						"x": 14,
+						"y": 62
+					},
+					{
+						"boxId": "kvr0s1bd22",
+						"boxName": "styles",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkkh2f3k39m8g",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 54.8,
+						"y": 77.2
+					},
+					{
+						"boxId": "7nasgcf54bg",
+						"boxName": "styles",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "c6ko730m82",
+						"boxName": "tailwind.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkj5eprj0i8c8",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 45.2,
+						"y": 86.8
+					},
+					{
+						"boxId": "7nasgcf54bg",
+						"boxName": "styles",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "q1qr4rhrcuo",
+						"boxName": "vendors.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link7krhtgshgig",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 45.2,
+						"y": 77.2
+					},
+					{
+						"boxId": "7nasgcf54bg",
+						"boxName": "styles",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "gr0v35ehjk",
+						"boxName": "styles.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkmjsgtlu6u1",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 82,
+						"y": 18
+					},
+					{
+						"boxId": "6reui67g9ko",
+						"boxName": "assets",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link1uoqnpm81vg",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 10.8,
+						"y": 20.4
+					},
+					{
+						"boxId": "senmvn01kb",
+						"boxName": "@fuse",
+						"x": 14,
+						"y": 62
+					},
+					{
+						"boxId": "kvr0s1bd22",
+						"boxName": "styles",
+						"x": 50,
+						"y": 50
+					},
+					{
+						"boxId": "fkbpvjtd1hg",
+						"boxName": "themes.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link1buejhcoe9o",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 9.904,
+						"y": 20.4
+					},
+					{
+						"boxId": "senmvn01kb",
+						"boxName": "@fuse",
+						"x": 9.52,
+						"y": 62
+					},
+					{
+						"boxId": "kvr0s1bd22",
+						"boxName": "styles",
+						"x": 18,
+						"y": 50
+					},
+					{
+						"boxId": "if0ka7k6img",
+						"boxName": "tailwind.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linksu0gue9c85g",
+			"from": {
+				"path": [
+					{
+						"boxId": "uarnk77etb8",
+						"boxName": "angular.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 10.8,
+						"y": 19.504
+					},
+					{
+						"boxId": "senmvn01kb",
+						"boxName": "@fuse",
+						"x": 14,
+						"y": 57.52
+					},
+					{
+						"boxId": "kvr0s1bd22",
+						"boxName": "styles",
+						"x": 50,
+						"y": 18
+					},
+					{
+						"boxId": "2m110brko8g",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link057lqiat5ko",
+			"from": {
+				"path": [
+					{
+						"boxId": "8414l1rvm4",
+						"boxName": "tailwind.config.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 14.74,
+						"y": 19.916
+					},
+					{
+						"boxId": "senmvn01kb",
+						"boxName": "@fuse",
+						"x": 33.699,
+						"y": 59.581
+					},
+					{
+						"boxId": "j81c060eq2",
+						"boxName": "tailwind",
+						"x": 19.28,
+						"y": 32.72
+					},
+					{
+						"boxId": "iepeh4oie7",
+						"boxName": "plugins",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "6ivb15trud",
+						"boxName": "utilities.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link4qbnk9md38",
+			"from": {
+				"path": [
+					{
+						"boxId": "8414l1rvm4",
+						"boxName": "tailwind.config.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 16.46,
+						"y": 19.54
+					},
+					{
+						"boxId": "senmvn01kb",
+						"boxName": "@fuse",
+						"x": 42.301,
+						"y": 57.699
+					},
+					{
+						"boxId": "j81c060eq2",
+						"boxName": "tailwind",
+						"x": 80.72,
+						"y": 19.28
+					},
+					{
+						"boxId": "ful69vg1pe8",
+						"boxName": "utils",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "dv0aj4rrag8",
+						"boxName": "generate-palette.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link93465nh0lig",
+			"from": {
+				"path": [
+					{
+						"boxId": "8414l1rvm4",
+						"boxName": "tailwind.config.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 15.116,
+						"y": 19.54
+					},
+					{
+						"boxId": "senmvn01kb",
+						"boxName": "@fuse",
+						"x": 35.581,
+						"y": 57.699
+					},
+					{
+						"boxId": "j81c060eq2",
+						"boxName": "tailwind",
+						"x": 32.72,
+						"y": 19.28
+					},
+					{
+						"boxId": "iepeh4oie7",
+						"boxName": "plugins",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "i5fije4ijcg",
+						"boxName": "theming.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkk9bcj60jpio",
+			"from": {
+				"path": [
+					{
+						"boxId": "8414l1rvm4",
+						"boxName": "tailwind.config.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 14.74,
+						"y": 19.54
+					},
+					{
+						"boxId": "senmvn01kb",
+						"boxName": "@fuse",
+						"x": 33.699,
+						"y": 57.699
+					},
+					{
+						"boxId": "j81c060eq2",
+						"boxName": "tailwind",
+						"x": 19.28,
+						"y": 19.28
+					},
+					{
+						"boxId": "iepeh4oie7",
+						"boxName": "plugins",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "rd6vbua2gjg",
+						"boxName": "icon-size.js",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link1tg0k1noef8",
+			"from": {
+				"path": [
+					{
+						"boxId": "0qecjis0ilo",
+						"boxName": "tsconfig.app.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 18,
+						"y": 82
+					},
+					{
+						"boxId": "89l2uposop8",
+						"boxName": "main.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link6fupc66uolg",
+			"from": {
+				"path": [
+					{
+						"boxId": "0qecjis0ilo",
+						"boxName": "tsconfig.app.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "88o1vjf4f0g",
+						"boxName": "tsconfig.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linksgl31pt5a2g",
+			"from": {
+				"path": [
+					{
+						"boxId": "88o1vjf4f0g",
+						"boxName": "tsconfig.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "r7o6d593log",
+						"boxName": "src",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkh0g67r2mab",
+			"from": {
+				"path": [
+					{
+						"boxId": "rgfh2cb7pbg",
+						"boxName": "tsconfig.spec.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "88o1vjf4f0g",
+						"boxName": "tsconfig.json",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

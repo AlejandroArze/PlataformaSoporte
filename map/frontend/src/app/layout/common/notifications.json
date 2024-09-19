@@ -1,0 +1,114 @@
+{
+	"id": "6hg3poej1ko",
+	"x": 72,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "link2qf9r0ssjkg",
+			"from": {
+				"path": [
+					{
+						"boxId": "uq0ja1sq69",
+						"boxName": "notifications.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5pgmjvivfpg",
+						"boxName": "notifications.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linke9p1a30f8go",
+			"from": {
+				"path": [
+					{
+						"boxId": "v4ot2jkk62g",
+						"boxName": "notifications.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "5pgmjvivfpg",
+						"boxName": "notifications.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkvihannulhn8",
+			"from": {
+				"path": [
+					{
+						"boxId": "v4ot2jkk62g",
+						"boxName": "notifications.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "uq0ja1sq69",
+						"boxName": "notifications.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link0195fjtmpno",
+			"from": {
+				"path": [
+					{
+						"boxId": "v4ot2jkk62g",
+						"boxName": "notifications.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "51vmu7adrvg",
+						"boxName": "notifications.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

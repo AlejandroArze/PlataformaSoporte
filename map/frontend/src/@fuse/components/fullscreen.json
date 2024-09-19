@@ -1,0 +1,140 @@
+{
+	"id": "eslkmeiuq7o",
+	"x": 8,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkmvngo3o2gm8",
+			"from": {
+				"path": [
+					{
+						"boxId": "33kdog7bjf8",
+						"boxName": "fullscreen.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ssffe2upr6o",
+						"boxName": "fullscreen.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link45qpoc5e5pg",
+			"from": {
+				"path": [
+					{
+						"boxId": "33kdog7bjf8",
+						"boxName": "fullscreen.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "f8dfdqaejoo",
+						"boxName": "fullscreen.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkohiseg05kkg",
+			"from": {
+				"path": [
+					{
+						"boxId": "d530ibb0nd",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "7qhoqofmd3g",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link3m15l0brrj",
+			"from": {
+				"path": [
+					{
+						"boxId": "7qhoqofmd3g",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "f8dfdqaejoo",
+						"boxName": "fullscreen.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link14rthtle94o",
+			"from": {
+				"path": [
+					{
+						"boxId": "7qhoqofmd3g",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "ssffe2upr6o",
+						"boxName": "fullscreen.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

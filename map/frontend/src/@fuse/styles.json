@@ -1,0 +1,202 @@
+{
+	"id": "kvr0s1bd22",
+	"x": 7,
+	"y": 55,
+	"width": 14,
+	"height": 14,
+	"links": [
+		{
+			"id": "linkmaite5e9hrg",
+			"from": {
+				"path": [
+					{
+						"boxId": "2m110brko8g",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "esd9f9ebi78",
+						"boxName": "components",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "en8sdd4esv8",
+						"boxName": "input.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkee69bd28umg",
+			"from": {
+				"path": [
+					{
+						"boxId": "2m110brko8g",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "fntp9hq1dm",
+						"boxName": "overrides",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "jfs7am62nb8",
+						"boxName": "angular-material.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link6rq1jf82mdg",
+			"from": {
+				"path": [
+					{
+						"boxId": "2m110brko8g",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "esd9f9ebi78",
+						"boxName": "components",
+						"x": 26,
+						"y": 26
+					},
+					{
+						"boxId": "894fak4gmp8",
+						"boxName": "example-viewer.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkbb8e6dvjg98",
+			"from": {
+				"path": [
+					{
+						"boxId": "2m110brko8g",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "fntp9hq1dm",
+						"boxName": "overrides",
+						"x": 26,
+						"y": 74
+					},
+					{
+						"boxId": "s9ii4jcl9hg",
+						"boxName": "perfect-scrollbar.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkaqen4tbjfn",
+			"from": {
+				"path": [
+					{
+						"boxId": "2m110brko8g",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "fntp9hq1dm",
+						"boxName": "overrides",
+						"x": 74,
+						"y": 26
+					},
+					{
+						"boxId": "btbp6onslto",
+						"boxName": "highlightjs.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link6lauhajpcq",
+			"from": {
+				"path": [
+					{
+						"boxId": "2m110brko8g",
+						"boxName": "main.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "fntp9hq1dm",
+						"boxName": "overrides",
+						"x": 74,
+						"y": 74
+					},
+					{
+						"boxId": "9f6pjrfutj",
+						"boxName": "quill.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

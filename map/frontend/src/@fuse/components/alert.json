@@ -1,0 +1,218 @@
+{
+	"id": "e9blv8rhngo",
+	"x": 8,
+	"y": 8,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkse3j642oeo8",
+			"from": {
+				"path": [
+					{
+						"boxId": "pf0ph7u1hp",
+						"boxName": "alert.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0920977n26o",
+						"boxName": "alert.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linklfoumosm9l8",
+			"from": {
+				"path": [
+					{
+						"boxId": "pf0ph7u1hp",
+						"boxName": "alert.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "gvv35puu618",
+						"boxName": "alert.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "link6uvdpvc8dv",
+			"from": {
+				"path": [
+					{
+						"boxId": "pf0ph7u1hp",
+						"boxName": "alert.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "nfotbjaebuo",
+						"boxName": "alert.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkpceeucahouo",
+			"from": {
+				"path": [
+					{
+						"boxId": "pf0ph7u1hp",
+						"boxName": "alert.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "7v8cgqtenso",
+						"boxName": "alert.component.scss",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linko6bhad0qi7o",
+			"from": {
+				"path": [
+					{
+						"boxId": "6rscqpk5ee",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "hvet2tm20mo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkfhqb9fnb5kg",
+			"from": {
+				"path": [
+					{
+						"boxId": "hvet2tm20mo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "nfotbjaebuo",
+						"boxName": "alert.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linke6dblqcmuco",
+			"from": {
+				"path": [
+					{
+						"boxId": "hvet2tm20mo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "gvv35puu618",
+						"boxName": "alert.service.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkv571vqa05qg",
+			"from": {
+				"path": [
+					{
+						"boxId": "hvet2tm20mo",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "0920977n26o",
+						"boxName": "alert.types.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

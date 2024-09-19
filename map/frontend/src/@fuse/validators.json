@@ -1,0 +1,62 @@
+{
+	"id": "dl51h8bti3",
+	"x": 55,
+	"y": 55,
+	"width": 14,
+	"height": 14,
+	"links": [
+		{
+			"id": "linkvu6gjkg0388",
+			"from": {
+				"path": [
+					{
+						"boxId": "948njb548ao",
+						"boxName": "index.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "9feiudk3i2g",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		},
+		{
+			"id": "linkne04uba5tg8",
+			"from": {
+				"path": [
+					{
+						"boxId": "9feiudk3i2g",
+						"boxName": "public-api.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "bl821fpotqg",
+						"boxName": "validators.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}

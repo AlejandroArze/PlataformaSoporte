@@ -1,0 +1,36 @@
+{
+	"id": "o1c1athh998",
+	"x": 72,
+	"y": 40,
+	"width": 20,
+	"height": 20,
+	"links": [
+		{
+			"id": "linkfr5sbt46i2o",
+			"from": {
+				"path": [
+					{
+						"boxId": "cg96ac4oh08",
+						"boxName": "thin.component.ts",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"to": {
+				"path": [
+					{
+						"boxId": "nfujr02hv3o",
+						"boxName": "thin.component.html",
+						"x": 50,
+						"y": 50
+					}
+				]
+			},
+			"tags": [
+				"autoMaintained"
+			]
+		}
+	],
+	"nodes": []
+}
