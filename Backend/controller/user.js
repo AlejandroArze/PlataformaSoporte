@@ -8,7 +8,7 @@ const UserDTO = require("../http/request/user/responseDTO");
 const Joi = require("joi");
 
 class UserController {
-
+        //para git
     // Método estático asíncrono para crear un nuevo usuario
     static async store(req, res) {
         try {
