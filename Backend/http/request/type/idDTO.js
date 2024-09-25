@@ -1,11 +1,11 @@
 const Joi = require("joi"); // Importa la librería Joi para validación de datos.
-const { Type } = require("../../../models"); // Importa el modelo 'Type' desde los modelos de base de datos, para verificar la existencia de tipos por ID.
+const { Equipment } = require("../../../models"); // Importa el modelo 'Equipment' desde los modelos de base de datos, para verificar la existencia de tipos por ID.
 
 const idSchema = Joi.object({ // Define un esquema de validación de objeto utilizando Joi.
     tipos_id: Joi.number() // Define que el campo 'tipos_id' debe ser un número.
         .required() // Indica que el campo 'tipos_id' es obligatorio.
         .external(async (tipos_id) => { // Función asíncrona externa para validación personalizada.
-            const exists = await Type.findByPk(tipos_id); // Busca el tipo por su ID (tipos_id) en la base de datos utilizando el método `findByPk`.
+            const exists = await Equipment.findByPk(tipos_id); // Busca el tipo por su ID (tipos_id) en la base de datos utilizando el método `findByPk`.
             if (!exists) { // Si el tipo no existe, lanza un error de validación.
                 throw new Joi.ValidationError('tipos_id does not exist', [{ // Crea un nuevo error de validación con el mensaje de que el ID no existe.
                     message: 'tipos_id does not exist', // Mensaje del error.
