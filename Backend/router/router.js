@@ -37,5 +37,22 @@ router.delete("/type/:tipos_id", type.destroy);
 
 
 
+//-----------------------------------------------------------------------------------------------------------
+// Importa el módulo de controlador de usuario donde están definidos los métodos para manejar solicitudes relacionadas con usuarios
+const equipment = require("../controller/equipment");
+
+// Define una ruta POST para crear un nuevo usuario. Utiliza el método 'store' del controlador de usuario.
+router.post("/equipment", equipment.store);
+
+// Define una ruta GET para obtener los detalles de un usuario específico por ID. Utiliza el método 'show' del controlador de usuario.
+router.get("/equipment/:equipos_id", equipment.show);
+
+// Define una ruta PUT para actualizar un usuario existente por ID. Utiliza el método 'update' del controlador de usuario.
+router.put("/equipment/:equipos_id", equipment.update);
+
+// Define una ruta DELETE para eliminar un usuario por ID. Utiliza el método 'destroy' del controlador de usuario.
+router.delete("/equipment/:equipos_id", equipment.destroy);
+
+
 // Exporta el router para ser utilizado en otras partes de la aplicación, típicamente en el archivo principal del servidor.
 module.exports = router;
