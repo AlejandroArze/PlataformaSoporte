@@ -88,5 +88,23 @@ router.put("/task/:tareas_id", task.update);
 router.delete("/task/:tareas_id", task.destroy);
 
 
+
+//-----------------------------------------------------------------------------------------------------------
+// Importa el módulo de controlador de usuario donde están definidos los métodos para manejar solicitudes relacionadas con usuarios
+const management = require("../controller/management");
+
+// Define una ruta POST para crear un nuevo usuario. Utiliza el método 'store' del controlador de usuario.
+router.post("/management", management.store);
+
+// Define una ruta GET para obtener los detalles de un usuario específico por ID. Utiliza el método 'show' del controlador de usuario.
+router.get("/management/:gestions_id", management.show);
+
+// Define una ruta PUT para actualizar un usuario existente por ID. Utiliza el método 'update' del controlador de usuario.
+router.put("/management/:gestions_id", management.update);
+
+// Define una ruta DELETE para eliminar un usuario por ID. Utiliza el método 'destroy' del controlador de usuario.
+router.delete("/management/:gestions_id", management.destroy);
+
+
 // Exporta el router para ser utilizado en otras partes de la aplicación, típicamente en el archivo principal del servidor.
 module.exports = router;
