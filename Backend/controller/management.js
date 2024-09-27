@@ -1,32 +1,32 @@
-// Importa el servicio 'task' desde la carpeta 'service'
-const taskService = require("../service/task");
+// Importa el servicio 'management' desde la carpeta 'service'
+const managementService = require("../service/management");
 // Importa una utilidad para responder en formato JSON
 const jsonResponse = require("../http/response/jsonResponse");
-// Importa el Data Transfer Object (DTO) que define la estructura de una 'tarea'
-const TaskDTO = require("../http/request/task/responseDTO");
+// Importa el Data Transfer Object (DTO) que define la estructura de una 'gestión'
+const ManagementDTO = require("../http/request/management/responseDTO");
 // Importa Joi para validación de datos
 const Joi = require("joi");
 
-class TaskController {
+class ManagementController {
 
-    // Método estático asíncrono para crear una nueva tarea
+    // Método estático asíncrono para crear una nueva gestión
     static async store(req, res) {
         try {
-            // Desestructura los campos necesarios para la nueva tarea desde req.body
-            const { descripcion, servicio, fecha } = req.body;
+            // Desestructura los campos necesarios para la nueva gestión desde req.body
+            const { descripcion, numero, anio, estado } = req.body;
 
-            // Crea una nueva tarea utilizando el servicio 'taskService'
-            const { tareas_id } = await taskService.store({ descripcion, servicio, fecha });
+            // Crea una nueva gestión utilizando el servicio 'managementService'
+            const { gestions_id } = await managementService.store({ descripcion, numero, anio, estado });
 
-            // Crea un nuevo DTO de la tarea con los datos creados
-            const newTask = new TaskDTO(tareas_id, descripcion, servicio, fecha);
+            // Crea un nuevo DTO de la gestión con los datos creados
+            const newManagement = new ManagementDTO(gestions_id, descripcion, numero, anio, estado);
 
-            // Retorna una respuesta exitosa en formato JSON indicando que la tarea ha sido registrada
+            // Retorna una respuesta exitosa en formato JSON indicando que la gestión ha sido registrada
             return jsonResponse.successResponse(
                 res,
                 201,
-                "La tarea ha sido registrada exitosamente",
-                newTask
+                "La gestión ha sido registrada exitosamente",
+                newManagement
             );
         } catch (error) {
             // Si hay un error de validación de Joi, retorna una respuesta de validación
@@ -43,21 +43,21 @@ class TaskController {
         }
     }
 
-    // Método estático asíncrono para obtener información de una tarea
+    // Método estático asíncrono para obtener información de una gestión
     static async show(req, res) {
         try {
-            // Obtiene el ID de la tarea a través de req.params
-            const { tareas_id, descripcion, servicio, fecha } = await taskService.show(req.params.tareas_id);
+            // Obtiene el ID de la gestión a través de req.params
+            const { gestions_id, descripcion, numero, anio, estado } = await managementService.show(req.params.gestions_id);
 
-            // Crea un DTO con los datos obtenidos de la tarea
-            const task = new TaskDTO(tareas_id, descripcion, servicio, fecha);
+            // Crea un DTO con los datos obtenidos de la gestión
+            const management = new ManagementDTO(gestions_id, descripcion, numero, anio, estado);
 
-            // Retorna una respuesta exitosa en formato JSON indicando que la tarea existe
+            // Retorna una respuesta exitosa en formato JSON indicando que la gestión existe
             return jsonResponse.successResponse(
                 res,
                 200,
-                "La tarea existe",
-                task
+                "La gestión existe",
+                management
             );
         } catch (error) {
             // Si hay un error de validación de Joi, retorna una respuesta de validación
@@ -74,26 +74,26 @@ class TaskController {
         }
     }
 
-    // Método estático asíncrono para actualizar la información de una tarea
+    // Método estático asíncrono para actualizar la información de una gestión
     static async update(req, res) {
         try {
-            const { descripcion, servicio, fecha } = req.body;
-            const id = req.params.tareas_id;
+            const { descripcion, numero, anio, estado } = req.body;
+            const id = req.params.gestions_id;
 
             console.log("id ", id);
 
-            // Actualiza la tarea en la base de datos
-            await taskService.update({ tareas_id: req.params.tareas_id, descripcion, servicio, fecha }, req.params.tareas_id);
+            // Actualiza la gestión en la base de datos
+            await managementService.update({ gestions_id: req.params.gestions_id, descripcion, numero, anio, estado }, req.params.gestions_id);
 
-            // Crea un nuevo DTO con los datos actualizados de la tarea
-            const updatedTask = new TaskDTO(id, descripcion, servicio, fecha);
+            // Crea un nuevo DTO con los datos actualizados de la gestión
+            const updatedManagement = new ManagementDTO(id, descripcion, numero, anio, estado);
 
-            // Retorna una respuesta exitosa en formato JSON indicando que la tarea ha sido actualizada
+            // Retorna una respuesta exitosa en formato JSON indicando que la gestión ha sido actualizada
             return jsonResponse.successResponse(
                 res,
                 200,
-                "La tarea ha sido actualizada",
-                updatedTask
+                "La gestión ha sido actualizada",
+                updatedManagement
             );
         } catch (error) {
             // Si hay un error de validación de Joi, retorna una respuesta de validación
@@ -110,20 +110,20 @@ class TaskController {
         }
     }
 
-    // Método estático asíncrono para eliminar una tarea
+    // Método estático asíncrono para eliminar una gestión
     static async destroy(req, res) {
         try {
-            const id = req.params.tareas_id;
+            const id = req.params.gestions_id;
             console.log("id ", id);
 
-            // Elimina la tarea mediante el servicio 'taskService'
-            await taskService.destroy(req.params.tareas_id);
+            // Elimina la gestión mediante el servicio 'managementService'
+            await managementService.destroy(req.params.gestions_id);
 
-            // Retorna una respuesta exitosa en formato JSON indicando que la tarea ha sido eliminada
+            // Retorna una respuesta exitosa en formato JSON indicando que la gestión ha sido eliminada
             return jsonResponse.successResponse(
                 res,
                 200,
-                "La tarea ha sido eliminada"
+                "La gestión ha sido eliminada"
             );
         } catch (error) {
             // Si hay un error de validación de Joi, retorna una respuesta de validación
@@ -141,5 +141,5 @@ class TaskController {
     }
 }
 
-// Exporta la clase TaskController para que pueda ser utilizada en otros archivos
-module.exports = TaskController;
+// Exporta la clase ManagementController para que pueda ser utilizada en otros archivos
+module.exports = ManagementController;

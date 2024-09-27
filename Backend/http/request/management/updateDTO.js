@@ -29,18 +29,23 @@ const updateDTO = Joi.object({
     descripcion: Joi.string() // Define que el campo 'descripcion' debe ser una cadena de texto.
         .required() // El campo 'descripcion' es obligatorio.
         .min(1) // Asegura que no sea una cadena vacía.
-        .max(255), // Limita la longitud máxima (ajusta según tus necesidades).
-
-    // Validación del campo 'servicio', que es una referencia a la tabla 'servicios'.
-    servicio: Joi.number().integer() // Define que el campo 'servicio' debe ser un número entero.
-        .required(), // El campo 'servicio' es obligatorio.
-
-    // Validación del campo 'fecha', que es de tipo texto.
-    fecha: Joi.string() // Define que el campo 'fecha' debe ser una cadena de texto.
-        .required() // El campo 'fecha' es obligatorio.
-        .min(1) // Asegura que no sea una cadena vacía.
         .max(255), // Limita la longitud máxima.
+
+    // Validación del campo 'numero', que es un número entero.
+    numero: Joi.number().integer() // Define que el campo 'numero' debe ser un número entero.
+        .required(), // El campo 'numero' es obligatorio.
+
+    // Validación del campo 'anio', que es de tipo texto.
+    anio: Joi.string() // Define que el campo 'anio' debe ser una cadena de texto.
+        .required() // El campo 'anio' es obligatorio.
+        .min(4) // Asegura que sea una cadena de al menos 4 caracteres (por ejemplo, "2023").
+        .max(4), // Limita la longitud máxima a 4 caracteres.
+
+    // Validación del campo 'estado', que es un número entero.
+    estado: Joi.number().integer() // Define que el campo 'estado' debe ser un número entero.
+        .required() // El campo 'estado' es obligatorio.
 });
 
 // Exporta el esquema de validación para que pueda ser utilizado en otras partes de la aplicación.
 module.exports = updateDTO;
+
