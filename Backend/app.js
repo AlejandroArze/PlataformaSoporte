@@ -21,7 +21,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 // Obtiene el puerto del servidor desde la variable de entorno SERVER_PORT definida en el archivo .env
-const port = process.env.SERVER_PORT;
+const port = process.env.APP_PORT;
 
 // Importa la configuración de la base de datos: `pool` para conexiones comunes y `sequelize` para ORM
 //const { pool, sequelize } = require('./config/dataBaseConfig');
