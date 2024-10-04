@@ -62,7 +62,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 title: 'Recepción de Tareas',
                 type : 'basic',
                 icon : 'heroicons_outline:check-circle',
-                link : '/apps/scrumboard',
+                link : '/example',
             },
             {
                 id   : 'apps.scrumboard',
@@ -79,13 +79,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 link : '/dashboards/project',
             },
             
-            {
-                id   : 'pages.profile',
-                title: 'Perfil',
+             {
+                id   : 'pages.settings',
+                title: 'Settings',
                 type : 'basic',
-                icon : 'heroicons_outline:user-circle',
-                link : '/pages/profile',
-            }
+                icon : 'heroicons_outline:cog-8-tooth',
+                link : '/pages/settings',
+            },
         ]
     }
 ];
@@ -150,7 +150,7 @@ export const compactNavigation: FuseNavigationItem[] = [
                 title: 'Recepción de Tareas',
                 type : 'basic',
                 icon : 'heroicons_outline:check-circle',
-                link : '/apps/scrumboard',
+                link : '/example',
             },
             {
                 id   : 'apps.scrumboard',
@@ -160,13 +160,13 @@ export const compactNavigation: FuseNavigationItem[] = [
                 link : '/apps/scrumboard',
             },
             
-            {
-                id   : 'pages.profile',
-                title: 'Perfil',
+             {
+                id   : 'pages.settings',
+                title: 'Settings',
                 type : 'basic',
-                icon : 'heroicons_outline:user-circle',
-                link : '/pages/profile',
-            }
+                icon : 'heroicons_outline:cog-8-tooth',
+                link : '/pages/settings',
+            },
         ]
     }
 ];
@@ -238,7 +238,7 @@ export const futuristicNavigation: FuseNavigationItem[] = [
                 title: 'Recepción de Tareas',
                 type : 'basic',
                 icon : 'heroicons_outline:check-circle',
-                link : '/apps/scrumboard',
+                link : '/example',
             },
             {
                 id   : 'apps.scrumboard',
@@ -255,13 +255,13 @@ export const futuristicNavigation: FuseNavigationItem[] = [
                 link : '/dashboards/project',
             },
             
-            {
-                id   : 'pages.profile',
-                title: 'Perfil',
+             {
+                id   : 'pages.settings',
+                title: 'Settings',
                 type : 'basic',
-                icon : 'heroicons_outline:user-circle',
-                link : '/pages/profile',
-            }
+                icon : 'heroicons_outline:cog-8-tooth',
+                link : '/pages/settings',
+            },
         ]
     }
 
@@ -327,7 +327,7 @@ export const horizontalNavigation: FuseNavigationItem[] = [
                 title: 'Recepción de Tareas',
                 type : 'basic',
                 icon : 'heroicons_outline:check-circle',
-                link : '/apps/scrumboard',
+                link : '/example',
             },
             {
                 id   : 'apps.scrumboard',
@@ -344,12 +344,12 @@ export const horizontalNavigation: FuseNavigationItem[] = [
                 link : '/dashboards/project',
             },
             {
-                id   : 'pages.profile',
-                title: 'Perfil',
+                id   : 'pages.settings',
+                title: 'Settings',
                 type : 'basic',
-                icon : 'heroicons_outline:user-circle',
-                link : '/pages/profile',
-            }
+                icon : 'heroicons_outline:cog-8-tooth',
+                link : '/pages/settings',
+            },
         ]
     }
 ];
