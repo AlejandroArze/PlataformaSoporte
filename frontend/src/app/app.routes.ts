@@ -75,6 +75,12 @@ export const appRoutes: Route[] = [
         },
         children: [
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.routes')},
+            // Apps
+            {path: 'apps', children: [
+                
+                {path: 'help-center', loadChildren: () => import('app/modules/admin/apps/help-center/help-center.routes')},
+               
+            ]},
         ]
     }
 ];
