@@ -46,23 +46,17 @@ export const defaultNavigation: FuseNavigationItem[] = [
             {
                 id      : 'apps.ecommerce',
                 title   : 'Equipos',
-                type    : 'collapsable',
-                icon    : 'heroicons_outline:shopping-cart',
-                children: [
-                    {
-                        id   : 'apps.ecommerce.inventory',
-                        title: 'Inventario',
-                        type : 'basic',
-                        link : '/apps/ecommerce/inventory',
-                    },
-                ],
+                type    : 'basic',
+                icon    : 'heroicons_outline:computer-desktop',
+                link : '/apps/ecommerce/inventory',
+                    
             },
             {
                 id   : 'apps.scrumboard',
                 title: 'Recepción de Tareas',
                 type : 'basic',
                 icon : 'heroicons_outline:check-circle',
-                link : '/example',
+                link : '/apps/tasks',
             },
             {
                 id   : 'apps.scrumboard',
