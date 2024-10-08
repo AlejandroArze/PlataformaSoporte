@@ -80,6 +80,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
                 icon : 'heroicons_outline:cog-8-tooth',
                 link : '/pages/settings',
             },
+            {
+                id   : 'pages.settings',
+                title: 'Cerrar Sesión',
+                type : 'basic',
+                icon : 'mat_outline:logout',
+                link : '/pages/logout',
+            },
         ]
     }
 ];
