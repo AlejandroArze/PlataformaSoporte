@@ -9,11 +9,11 @@
                     [routerLink]="['../']"
                     [color]="'primary'">
                     <mat-icon [svgIcon]="'heroicons_outline:arrow-long-left'"></mat-icon>
-                    <span class="ml-2">Back to Help Center</span>
+                    <span class="ml-2">Volver al Centro de Ayuda</span>
                 </a>
             </div>
             <div class="mt-2 text-4xl sm:text-7xl font-extrabold tracking-tight leading-tight">
-                Frequently Asked Questions
+                Preguntas Frecuentes
             </div>
             <ng-container *ngFor="let faqCategory of faqCategories; trackBy: trackByFn">
                 <div class="mt-12 sm:mt-16 text-3xl font-bold leading-tight tracking-tight">{{faqCategory.title}}</div>

@@ -52,32 +52,32 @@ export class SettingsComponent implements OnInit, OnDestroy
             {
                 id         : 'account',
                 icon       : 'heroicons_outline:user-circle',
-                title      : 'Account',
-                description: 'Manage your public profile and private information',
+                title      : 'Cuenta',
+                description: 'Gestiona tu perfil público e información privada.',
             },
             {
                 id         : 'security',
                 icon       : 'heroicons_outline:lock-closed',
-                title      : 'Security',
-                description: 'Manage your password and 2-step verification preferences',
+                title      : 'Seguridad',
+                description: 'Gestiona tu contraseña y las preferencias de verificación en dos pasos.',
             },
             {
                 id         : 'plan-billing',
                 icon       : 'heroicons_outline:credit-card',
-                title      : 'Plan & Billing',
-                description: 'Manage your subscription plan, payment method and billing information',
+                title      : 'Plan y facturación',
+                description: 'Gestiona tu plan de suscripción, método de pago e información de facturación.',
             },
             {
                 id         : 'notifications',
                 icon       : 'heroicons_outline:bell',
-                title      : 'Notifications',
-                description: 'Manage when you\'ll be notified on which channels',
+                title      : 'Notificaciones',
+                description: 'Gestiona cuándo serás notificado y en qué canales.',
             },
             {
                 id         : 'team',
                 icon       : 'heroicons_outline:user-group',
-                title      : 'Team',
-                description: 'Manage your existing team and change roles/permissions',
+                title      : 'Equipo',
+                description: 'Gestiona tu equipo actual y cambia roles/permisos. ',
             },
         ];
 

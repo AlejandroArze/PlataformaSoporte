@@ -24,10 +24,10 @@
                 <div class="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between py-8 px-6 md:px-8">
                     <!-- Title -->
                     <div>
-                        <div class="text-4xl font-extrabold tracking-tight leading-none">Tasks</div>
+                        <div class="text-4xl font-extrabold tracking-tight leading-none">Tareas</div>
                         <div class="ml-0.5 font-medium text-secondary">
-                            <span *ngIf="tasksCount.incomplete === 0">All tasks completed!</span>
-                            <span *ngIf="tasksCount.incomplete !== 0">{{tasksCount.incomplete}} remaining tasks</span>
+                            <span *ngIf="tasksCount.incomplete === 0">¡Todas las Tareas Completadas!</span>
+                            <span *ngIf="tasksCount.incomplete !== 0">{{tasksCount.incomplete}} Tareas Restantes</span>
                         </div>
                     </div>
                     <!-- Actions -->
@@ -39,7 +39,7 @@
                             (click)="createTask('section')"
                             [matTooltip]="'Shortcut: Ctrl + .'">
                             <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                            <span class="ml-2 mr-1">Add Section</span>
+                            <span class="ml-2 mr-1">Añadir Sección</span>
                         </button>
                         <!-- Add task button -->
                         <button
@@ -49,7 +49,7 @@
                             (click)="createTask('task')"
                             [matTooltip]="'Shortcut: Ctrl + /'">
                             <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                            <span class="ml-2 mr-1">Add Task</span>
+                            <span class="ml-2 mr-1">Añadir Tarea</span>
                         </button>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                                                 <span>{{task.title}}</span>
                                             </ng-container>
                                             <ng-container *ngIf="!task.title">
-                                                <span class="select-none text-hint">{{task.type | titlecase}} title</span>
+                                                <span class="select-none text-hint">{{task.type | titlecase}} titulo</span>
                                             </ng-container>
                                         </div>
                                         <!-- Priority -->
@@ -163,7 +163,7 @@
                         <mat-icon
                             class="icon-size-24"
                             [svgIcon]="'heroicons_outline:clipboard-document-list'"></mat-icon>
-                        <div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">Add a task to start planning!</div>
+                        <div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">¡Agrega una tarea para comenzar a planificar!</div>
                     </div>
                 </ng-template>
 

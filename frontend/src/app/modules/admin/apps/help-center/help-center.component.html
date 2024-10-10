@@ -13,12 +13,12 @@
         </svg>
         <!-- @formatter:on -->
         <div class="z-10 relative flex flex-col items-center">
-            <h2 class="text-xl font-semibold">HELP CENTER</h2>
+            <h2 class="text-xl font-semibold">CENTRO DE AYUDA</h2>
             <div class="mt-1 text-4xl sm:text-7xl font-extrabold tracking-tight leading-tight text-center">
-                How can we help you today?
+                ¿Cómo podemos ayudarte hoy?
             </div>
             <div class="mt-3 sm:text-2xl text-center tracking-tight text-secondary">
-                Search for a topic or question, check out our FAQs and guides, contact us for detailed support
+                Busca un tema o pregunta, consulta nuestras preguntas frecuentes y guías, contáctanos para obtener soporte detallado
             </div>
             <mat-form-field
                 class="fuse-mat-rounded fuse-mat-bold w-full max-w-80 sm:max-w-120 mt-10 sm:mt-20"
@@ -39,15 +39,15 @@
             <!-- FAQs card -->
             <div class="relative flex flex-col rounded-2xl shadow hover:shadow-lg overflow-hidden bg-card transition-shadow ease-in-out duration-150">
                 <div class="flex flex-col flex-auto items-center p-8 text-center">
-                    <div class="text-2xl font-semibold">FAQs</div>
-                    <div class="md:max-w-40 mt-1 text-secondary">Frequently asked questions and answers</div>
+                    <div class="text-2xl font-semibold">Preguntas frecuentes</div>
+                    <div class="md:max-w-40 mt-1 text-secondary">Preguntas y respuestas frecuentes</div>
                 </div>
                 <div class="flex items-center justify-center py-4 px-8 text-primary-500 dark:text-primary-400 bg-gray-50 dark:bg-transparent dark:border-t">
                     <a
                         class="flex items-center"
                         [routerLink]="['faqs']">
                         <span class="absolute inset-0"></span>
-                        <span class="font-medium">Go to FAQs</span>
+                        <span class="font-medium">Ir a preguntas frecuentes</span>
                         <mat-icon
                             class="ml-2 icon-size-5 text-current"
                             [svgIcon]="'heroicons_mini:arrow-long-right'"></mat-icon>
@@ -57,15 +57,15 @@
             <!-- Guides card -->
             <div class="relative flex flex-col rounded-2xl shadow hover:shadow-lg overflow-hidden bg-card transition-shadow ease-in-out duration-150">
                 <div class="flex flex-col flex-auto items-center p-8 text-center">
-                    <div class="text-2xl font-semibold">Guides</div>
-                    <div class="md:max-w-40 mt-1 text-secondary">Articles and resources to guide you</div>
+                    <div class="text-2xl font-semibold">Guías</div>
+                    <div class="md:max-w-40 mt-1 text-secondary">Artículos y recursos para guiarte</div>
                 </div>
                 <div class="flex items-center justify-center py-4 px-8 text-primary-500 dark:text-primary-400 bg-gray-50 dark:bg-transparent dark:border-t">
                     <a
                         class="flex items-center"
                         [routerLink]="['guides']">
                         <span class="absolute inset-0"></span>
-                        <span class="font-medium">Check guides</span>
+                        <span class="font-medium">Consultar guías</span>
                         <mat-icon
                             class="ml-2 icon-size-5 text-current"
                             [svgIcon]="'heroicons_mini:arrow-long-right'"></mat-icon>
@@ -75,15 +75,15 @@
             <!-- Support card -->
             <div class="relative flex flex-col rounded-2xl shadow hover:shadow-lg overflow-hidden bg-card transition-shadow ease-in-out duration-150">
                 <div class="flex flex-col flex-auto items-center p-8 text-center">
-                    <div class="text-2xl font-semibold">Support</div>
-                    <div class="md:max-w-40 mt-1 text-secondary">Contact us for more detailed support</div>
+                    <div class="text-2xl font-semibold">Soporte</div>
+                    <div class="md:max-w-40 mt-1 text-secondary">Contáctanos para obtener soporte más detallado</div>
                 </div>
                 <div class="flex items-center justify-center py-4 px-8 text-primary-500 dark:text-primary-400 bg-gray-50 dark:bg-transparent dark:border-t">
                     <a
                         class="flex items-center"
                         [routerLink]="['support']">
                         <span class="absolute inset-0"></span>
-                        <span class="font-medium">Contact us</span>
+                        <span class="font-medium">Contáctanos</span>
                         <mat-icon
                             class="ml-2 icon-size-5 text-current"
                             [svgIcon]="'heroicons_mini:arrow-long-right'"></mat-icon>
@@ -92,8 +92,8 @@
             </div>
         </div>
         <!-- FAQs -->
-        <div class="mt-24 text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight text-center">Most frequently asked questions</div>
-        <div class="mt-2 text-xl text-center text-secondary">Here are the most frequently asked questions you may check before getting started</div>
+        <div class="mt-24 text-3xl sm:text-5xl font-extrabold leading-tight tracking-tight text-center">Preguntas más frecuentes</div>
+        <div class="mt-2 text-xl text-center text-secondary">Aquí están las preguntas más frecuentes que puedes consultar antes de empezar</div>
         <mat-accordion class="max-w-4xl mt-12">
             <ng-container *ngFor="let faq of faqCategory.faqs; trackBy: trackByFn">
                 <mat-expansion-panel>

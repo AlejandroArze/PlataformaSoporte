@@ -17,7 +17,7 @@
                 <ng-container *ngIf="!taskForm.get('completed').value">
                     <div class="flex items-center justify-center">
                         <mat-icon [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
-                        <span class="ml-2 font-semibold">MARK AS COMPLETE</span>
+                        <span class="ml-2 font-semibold">MARCAR COMO COMPLETADO</span>
                     </div>
                 </ng-container>
 
@@ -27,7 +27,7 @@
                         <mat-icon
                             class="text-primary"
                             [svgIcon]="'heroicons_outline:check-circle'"></mat-icon>
-                        <span class="ml-2 font-semibold">MARK AS INCOMPLETE</span>
+                        <span class="ml-2 font-semibold">MARCAR COMO INCOMPLETO</span>
                     </div>
                 </ng-container>
             </button>
@@ -96,14 +96,14 @@
                         <mat-icon
                             class="icon-size-5"
                             [svgIcon]="'heroicons_solid:pencil-square'"></mat-icon>
-                        <span class="ml-1.5 text-md font-medium whitespace-nowrap">Edit</span>
+                        <span class="ml-1.5 text-md font-medium whitespace-nowrap">Editar</span>
                     </ng-container>
 
                     <ng-container *ngIf="!task.tags.length">
                         <mat-icon
                             class="icon-size-5"
                             [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
-                        <span class="ml-1.5 text-md font-medium whitespace-nowrap">Add</span>
+                        <span class="ml-1.5 text-md font-medium whitespace-nowrap">Añadir</span>
                     </ng-container>
 
                     <!-- Tags panel -->
@@ -193,7 +193,7 @@
                                     <mat-icon
                                         class="mr-2 icon-size-5"
                                         [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
-                                    <div class="break-all">Create "<b>{{newTagInput.value}}</b>"</div>
+                                    <div class="break-all">Crear "<b>{{newTagInput.value}}</b>"</div>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +220,7 @@
                         <mat-icon
                             class="icon-size-4 text-current"
                             [svgIcon]="'heroicons_mini:arrow-long-down'"></mat-icon>
-                        <span class="ml-2 mr-1 text-md font-medium">Low</span>
+                        <span class="ml-2 mr-1 text-md font-medium">Baja</span>
                     </ng-container>
 
                     <!-- Normal -->
@@ -236,7 +236,7 @@
                         <mat-icon
                             class="icon-size-4 text-current"
                             [svgIcon]="'heroicons_mini:arrow-long-up'"></mat-icon>
-                        <span class="ml-2 mr-1 text-md font-medium">High</span>
+                        <span class="ml-2 mr-1 text-md font-medium">Alta</span>
                     </ng-container>
                 </div>
                 <mat-menu #priorityMenu="matMenu">
@@ -246,7 +246,7 @@
                         mat-menu-item
                         (click)="setTaskPriority(0)">
                         <span class="inline-flex items-center justify-between w-full min-w-30 leading-5">
-                            <span class="font-medium">Low</span>
+                            <span class="font-medium">Baja</span>
                             <mat-icon
                                 class="mr-0 icon-size-4 text-green-600 dark:text-green-500"
                                 [svgIcon]="'heroicons_mini:arrow-long-down'"></mat-icon>
@@ -272,7 +272,7 @@
                         mat-menu-item
                         (click)="setTaskPriority(2)">
                         <span class="inline-flex items-center justify-between w-full min-w-30 leading-5">
-                            <span class="font-medium">High</span>
+                            <span class="font-medium">Alta</span>
                             <mat-icon
                                 class="mr-0 icon-size-4 text-red-600 dark:text-red-500"
                                 [svgIcon]="'heroicons_mini:arrow-long-up'"></mat-icon>
@@ -283,7 +283,7 @@
 
             <!-- Due date -->
             <div class="ml-6">
-                <div class="font-medium">Due date</div>
+                <div class="font-medium">Fecha de Vencimiento</div>
                 <div
                     class="relative flex items-center mt-1.5 px-4 leading-9 rounded-full cursor-pointer"
                     [ngClass]="{'text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700': !task.dueDate,
@@ -295,7 +295,7 @@
                         [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
                     <span class="ml-2 text-md font-medium">
                         <ng-container *ngIf="task.dueDate">{{task.dueDate | date:'longDate'}}</ng-container>
-                        <ng-container *ngIf="!task.dueDate">Not set</ng-container>
+                        <ng-container *ngIf="!task.dueDate">No establecida</ng-container>
                     </span>
                     <mat-form-field
                         class="fuse-mat-dense invisible absolute inset-0 -mt-2.5 opacity-0 pointer-events-none"
@@ -309,13 +309,13 @@
                                 <button
                                     mat-button
                                     (click)="taskForm.get('dueDate').setValue(null)"
-                                    matDatepickerCancel>Clear
+                                    matDatepickerCancel>Limpiar
                                 </button>
                                 <button
                                     class=""
                                     mat-flat-button
                                     [color]="'primary'"
-                                    matDatepickerApply>Select
+                                    matDatepickerApply>Seleccionar
                                 </button>
                             </mat-datepicker-actions>
                         </mat-datepicker>
@@ -330,7 +330,7 @@
             <mat-form-field
                 class="w-full"
                 [subscriptSizing]="'dynamic'">
-                <mat-label>Notes</mat-label>
+                <mat-label>Notas</mat-label>
                 <textarea
                     matInput
                     [formControlName]="'notes'"

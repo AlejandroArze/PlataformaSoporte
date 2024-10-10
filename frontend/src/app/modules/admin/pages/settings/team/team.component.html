@@ -5,7 +5,7 @@
         <mat-form-field
             class="w-full"
             [subscriptSizing]="'dynamic'">
-            <mat-label>Add team members</mat-label>
+            <mat-label>Añadir miembros del equipo</mat-label>
             <mat-icon
                 class="icon-size-5"
                 [svgIcon]="'heroicons_solid:user'"
@@ -57,7 +57,7 @@
                                 disableOptionCentering
                                 #roleSelect="matSelect">
                                 <mat-select-trigger class="text-md">
-                                    <span>Role:</span>
+                                    <span>Rol:</span>
                                     <span class="ml-1 font-medium">{{roleSelect.value | titlecase}}</span>
                                 </mat-select-trigger>
                                 <ng-container *ngFor="let role of roles">
