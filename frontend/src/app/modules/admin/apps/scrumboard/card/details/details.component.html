@@ -2,7 +2,7 @@
 
     <!-- Header -->
     <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
-        <div class="text-lg font-medium">Card</div>
+        <div class="text-lg font-medium">Tarjeta</div>
         <button
             mat-icon-button
             (click)="matDialogRef.close()"
@@ -22,7 +22,7 @@
         <mat-form-field
             class="w-full"
             [subscriptSizing]="'dynamic'">
-            <mat-label>Title</mat-label>
+            <mat-label>Titulo</mat-label>
             <textarea
                 matInput
                 [formControlName]="'title'"
@@ -36,7 +36,7 @@
         <mat-form-field
             class="w-full"
             [subscriptSizing]="'dynamic'">
-            <mat-label>Description</mat-label>
+            <mat-label>Descripción</mat-label>
             <textarea
                 matInput
                 [formControlName]="'description'"
@@ -48,7 +48,7 @@
 
         <!-- Due date -->
         <div>
-            <div class="font-medium">Due date</div>
+            <div class="font-medium">Fecha de Vencimiento</div>
             <div
                 class="relative flex items-center mt-1.5 px-4 leading-9 rounded-full cursor-pointer"
                 [ngClass]="{'text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700': !card.dueDate,
@@ -60,7 +60,7 @@
                     [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
                 <span class="ml-2 text-md font-medium">
                     <ng-container *ngIf="card.dueDate">{{card.dueDate | date:'longDate'}}</ng-container>
-                    <ng-container *ngIf="!card.dueDate">Not set</ng-container>
+                    <ng-container *ngIf="!card.dueDate">No establecido</ng-container>
                 </span>
                 <mat-form-field
                     class="fuse-mat-dense invisible absolute inset-0 -mt-2.5 opacity-0 pointer-events-none"
@@ -75,13 +75,13 @@
                                 mat-button
                                 (click)="cardForm.get('dueDate').setValue(null)"
                                 matDatepickerCancel>
-                                Clear
+                                Limpiar
                             </button>
                             <button
                                 mat-flat-button
                                 [color]="'primary'"
                                 matDatepickerApply>
-                                Select
+                                Seleccionar
                             </button>
                         </mat-datepicker-actions>
                     </mat-datepicker>
@@ -91,7 +91,7 @@
 
         <!-- Labels -->
         <div class="w-full">
-            <div class="font-medium">Labels</div>
+            <div class="font-medium">Etiquetas</div>
             <div class="mt-1 rounded-md border border-gray-300 shadow-sm overflow-hidden">
                 <!-- Header -->
                 <div class="flex items-center my-2 mx-3">

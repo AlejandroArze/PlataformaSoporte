@@ -5,8 +5,8 @@
 
         <!-- Section -->
         <div class="w-full">
-            <div class="text-xl">Change your plan</div>
-            <div class="text-secondary">Upgrade or downgrade your current plan.</div>
+            <div class="text-xl">Cambiar tu plan</div>
+            <div class="text-secondary">Actualiza o cambia tu plan actual.</div>
         </div>
         <div class="grid sm:grid-cols-3 gap-6 w-full mt-8">
             <!-- Plan -->
@@ -14,7 +14,7 @@
                 <fuse-alert
                     [appearance]="'outline'"
                     [type]="'info'">
-                    Changing the plan will take effect immediately. You will be charged for the rest of the current month.
+                    Cambiar el plan tendrá efecto inmediato. Se te cobrará por el resto del mes actual.
                 </fuse-alert>
             </div>
             <mat-radio-group
@@ -51,8 +51,8 @@
 
         <!-- Section -->
         <div class="w-full">
-            <div class="text-xl">Payment Details</div>
-            <div class="text-secondary">Update your billing information. Make sure to set your location correctly as it could affect your tax rates.</div>
+            <div class="text-xl">Detalles del plan</div>
+            <div class="text-secondary">Actualiza tu información de facturación. Asegúrate de establecer correctamente tu ubicación, ya que podría afectar tus tasas de impuestos.</div>
         </div>
         <div class="grid grid-cols-4 gap-6 w-full mt-8">
             <!-- Card holder -->
@@ -60,7 +60,7 @@
                 <mat-form-field
                     class="w-full"
                     [subscriptSizing]="'dynamic'">
-                    <mat-label>Card holder</mat-label>
+                    <mat-label>Titular de la tarjeta</mat-label>
                     <mat-icon
                         class="icon-size-5"
                         [svgIcon]="'heroicons_solid:user'"
@@ -75,7 +75,7 @@
                 <mat-form-field
                     class="w-full"
                     [subscriptSizing]="'dynamic'">
-                    <mat-label>Card number</mat-label>
+                    <mat-label>Número de tarjeta</mat-label>
                     <mat-icon
                         class="icon-size-5"
                         [svgIcon]="'heroicons_solid:credit-card'"
@@ -90,7 +90,7 @@
                 <mat-form-field
                     class="w-full"
                     [subscriptSizing]="'dynamic'">
-                    <mat-label>Expiration date</mat-label>
+                    <mat-label>Fecha de vencimiento</mat-label>
                     <mat-icon
                         class="icon-size-5"
                         [svgIcon]="'heroicons_solid:calendar'"
@@ -121,18 +121,18 @@
                 <mat-form-field
                     class="w-full"
                     [subscriptSizing]="'dynamic'">
-                    <mat-label>Country</mat-label>
+                    <mat-label>País</mat-label>
                     <mat-icon
                         class="icon-size-5"
                         [svgIcon]="'heroicons_solid:map-pin'"
                         matPrefix></mat-icon>
                     <mat-select [formControlName]="'country'">
-                        <mat-option [value]="'usa'">United States</mat-option>
-                        <mat-option [value]="'canada'">Canada</mat-option>
+                        <mat-option [value]="'usa'">Estados Unidos</mat-option>
+                        <mat-option [value]="'canada'">Canadá</mat-option>
                         <mat-option [value]="'mexico'">Mexico</mat-option>
-                        <mat-option [value]="'france'">France</mat-option>
-                        <mat-option [value]="'germany'">Germany</mat-option>
-                        <mat-option [value]="'italy'">Italy</mat-option>
+                        <mat-option [value]="'france'">Francia</mat-option>
+                        <mat-option [value]="'germany'">Alemania</mat-option>
+                        <mat-option [value]="'italy'">Italia</mat-option>
                     </mat-select>
                 </mat-form-field>
             </div>
@@ -141,7 +141,7 @@
                 <mat-form-field
                     class="w-full"
                     [subscriptSizing]="'dynamic'">
-                    <mat-label>ZIP / Postal code</mat-label>
+                    <mat-label>Código postal</mat-label>
                     <mat-icon
                         class="icon-size-5"
                         [svgIcon]="'heroicons_solid:hashtag'"
@@ -159,13 +159,13 @@
             <button
                 mat-stroked-button
                 type="button">
-                Cancel
+                Cancelar
             </button>
             <button
                 class="ml-4"
                 mat-flat-button
                 type="button"
-                [color]="'primary'">Save
+                [color]="'primary'">Guardar
             </button>
         </div>
     </form>

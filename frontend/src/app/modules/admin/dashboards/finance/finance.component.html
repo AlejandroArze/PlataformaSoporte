@@ -5,8 +5,8 @@
         <!-- Title and action buttons -->
         <div class="flex items-center justify-between w-full">
             <div>
-                <h2 class="text-3xl font-semibold tracking-tight leading-8">Finance dashboard</h2>
-                <div class="font-medium tracking-tight text-secondary">Keep track of your financial status</div>
+                <h2 class="text-3xl font-semibold tracking-tight leading-8">Reportes</h2>
+                <div class="font-medium tracking-tight text-secondary">¡Mantén un seguimiento de los servicios realizados!</div>
             </div>
             <div class="flex items-center ml-6">
                 <button
@@ -15,7 +15,7 @@
                     <mat-icon
                         class="icon-size-5"
                         [svgIcon]="'heroicons_solid:document-chart-bar'"></mat-icon>
-                    <span class="ml-2">Reports</span>
+                    <span class="ml-2">Reportes</span>
                 </button>
                 <button
                     class="hidden sm:inline-flex ml-3"
@@ -23,7 +23,7 @@
                     <mat-icon
                         class="icon-size-5"
                         [svgIcon]="'heroicons_solid:cog-8-tooth'"></mat-icon>
-                    <span class="ml-2">Settings</span>
+                    <span class="ml-2">Configuración</span>
                 </button>
                 <button
                     class="hidden sm:inline-flex ml-3"
@@ -32,7 +32,7 @@
                     <mat-icon
                         class="icon-size-5"
                         [svgIcon]="'heroicons_solid:arrow-up-tray'"></mat-icon>
-                    <span class="ml-2">Export</span>
+                    <span class="ml-2">Exportar</span>
                 </button>
 
                 <!-- Actions menu (visible on xs) -->
@@ -43,9 +43,9 @@
                         <mat-icon [svgIcon]="'heroicons_mini:ellipsis-vertical'"></mat-icon>
                     </button>
                     <mat-menu #actionsMenu="matMenu">
-                        <button mat-menu-item>Export</button>
-                        <button mat-menu-item>Reports</button>
-                        <button mat-menu-item>Settings</button>
+                        <button mat-menu-item>Exportar</button>
+                        <button mat-menu-item>Reportes</button>
+                        <button mat-menu-item>Configuración</button>
                     </mat-menu>
                 </div>
             </div>
@@ -62,9 +62,9 @@
                     </div>
                     <div class="flex items-center">
                         <div class="flex flex-col">
-                            <div class="text-lg font-medium tracking-tight leading-6 truncate">Previous Statement</div>
+                            <div class="text-lg font-medium tracking-tight leading-6 truncate">Declaración anterior</div>
                             <div class="text-green-600 font-medium text-sm">
-                                Paid on {{data.previousStatement.date}}
+                                Pagado el {{data.previousStatement.date}}
                             </div>
                         </div>
                         <div class="ml-auto -mt-2">
@@ -81,7 +81,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:credit-card'"></mat-icon>
-                                        <span>View statement</span>
+                                        <span>Ver Declaración</span>
                                     </span>
                                 </button>
                                 <button mat-menu-item>
@@ -89,7 +89,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:banknotes'"></mat-icon>
-                                        <span>Spending breakdown</span>
+                                        <span>Desglose de gastos</span>
                                     </span>
                                 </button>
                                 <button mat-menu-item>
@@ -97,7 +97,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:receipt-percent'"></mat-icon>
-                                        <span>Tax breakdown</span>
+                                        <span>Desglose de Impuesto</span>
                                     </span>
                                 </button>
                                 <mat-divider class="my-2"></mat-divider>
@@ -106,7 +106,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:printer'"></mat-icon>
-                                        <span>Print statement</span>
+                                        <span>Imprimir Declaración</span>
                                     </span>
                                 </button>
                                 <button mat-menu-item>
@@ -114,7 +114,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:envelope'"></mat-icon>
-                                        <span>Email statement</span>
+                                        <span>Enviar Declaración por correo</span>
                                     </span>
                                 </button>
                             </mat-menu>
@@ -122,15 +122,15 @@
                     </div>
                     <div class="flex flex-row flex-wrap mt-4 -mx-6">
                         <div class="flex flex-col mx-6 my-3">
-                            <div class="text-sm font-medium leading-none text-secondary">Card Limit</div>
+                            <div class="text-sm font-medium leading-none text-secondary">Limite  de Tarjeta</div>
                             <div class="mt-2 font-medium text-3xl leading-none">{{data.previousStatement.limit | currency:'USD'}}</div>
                         </div>
                         <div class="flex flex-col mx-6 my-3">
-                            <div class="text-sm font-medium leading-none text-secondary">Spent</div>
+                            <div class="text-sm font-medium leading-none text-secondary">Gastado</div>
                             <div class="mt-2 font-medium text-3xl leading-none">{{data.previousStatement.spent | currency:'USD'}}</div>
                         </div>
                         <div class="flex flex-col mx-6 my-3">
-                            <div class="text-sm font-medium leading-none text-secondary">Minimum</div>
+                            <div class="text-sm font-medium leading-none text-secondary">Minimo</div>
                             <div class="mt-2 font-medium text-3xl leading-none">{{data.previousStatement.minimum | currency:'USD'}}</div>
                         </div>
                     </div>
@@ -144,9 +144,9 @@
                     </div>
                     <div class="flex items-center">
                         <div class="flex flex-col">
-                            <div class="text-lg font-medium tracking-tight leading-6 truncate">Current Statement</div>
+                            <div class="text-lg font-medium tracking-tight leading-6 truncate">Declaración actual</div>
                             <div class="text-red-600 font-medium text-sm">
-                                Must be paid before {{data.currentStatement.date}}
+                                Debe pagarse antes de {{data.currentStatement.date}}
                             </div>
                         </div>
                         <div class="ml-auto -mt-2">
@@ -163,7 +163,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:credit-card'"></mat-icon>
-                                        <span>View statement</span>
+                                        <span>Ver declaración</span>
                                     </span>
                                 </button>
                                 <button mat-menu-item>
@@ -179,7 +179,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:receipt-percent'"></mat-icon>
-                                        <span>Tax breakdown</span>
+                                        <span>Desglose de impuestos</span>
                                     </span>
                                 </button>
                                 <mat-divider class="my-2"></mat-divider>
@@ -188,7 +188,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:printer'"></mat-icon>
-                                        <span>Print statement</span>
+                                        <span>Imprimir Declaración</span>
                                     </span>
                                 </button>
                                 <button mat-menu-item>
@@ -196,7 +196,7 @@
                                         <mat-icon
                                             class="icon-size-5 mr-3"
                                             [svgIcon]="'heroicons_solid:envelope'"></mat-icon>
-                                        <span>Email statement</span>
+                                        <span>Enviar Declaración por correo</span>
                                     </span>
                                 </button>
                             </mat-menu>
@@ -204,15 +204,15 @@
                     </div>
                     <div class="flex flex-row flex-wrap mt-4 -mx-6">
                         <div class="flex flex-col mx-6 my-3">
-                            <div class="text-sm font-medium leading-none text-secondary">Card Limit</div>
+                            <div class="text-sm font-medium leading-none text-secondary">Limite de tarjeta</div>
                             <div class="mt-2 font-medium text-3xl leading-none">{{data.currentStatement.limit | currency:'USD'}}</div>
                         </div>
                         <div class="flex flex-col mx-6 my-3">
-                            <div class="text-sm font-medium leading-none text-secondary">Spent</div>
+                            <div class="text-sm font-medium leading-none text-secondary">Gastado</div>
                             <div class="mt-2 font-medium text-3xl leading-none">{{data.currentStatement.spent | currency:'USD'}}</div>
                         </div>
                         <div class="flex flex-col mx-6 my-3">
-                            <div class="text-sm font-medium leading-none text-secondary">Minimum</div>
+                            <div class="text-sm font-medium leading-none text-secondary">Minimo</div>
                             <div class="mt-2 font-medium text-3xl leading-none">{{data.currentStatement.minimum | currency:'USD'}}</div>
                         </div>
                     </div>
@@ -223,32 +223,32 @@
                 <div class="flex flex-col p-6 pb-4">
                     <div class="flex items-center justify-between">
                         <div class="flex flex-col">
-                            <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Account Balance</div>
-                            <div class="text-secondary font-medium">Monthly balance growth and avg. monthly income</div>
+                            <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Balance de la Cuenta</div>
+                            <div class="text-secondary font-medium">Crecimiento mensual del balance y promedio de ingresos mensuales</div>
                         </div>
                         <div class="ml-2">
                             <button
                                 class="h-6 min-h-6 px-2 rounded-full bg-hover"
                                 mat-button
                                 [matMenuTriggerFor]="accountBalanceMenu">
-                                <span class="font-medium text-sm text-secondary">12 months</span>
+                                <span class="font-medium text-sm text-secondary">12 meses</span>
                             </button>
                             <mat-menu #accountBalanceMenu="matMenu">
-                                <button mat-menu-item>3 months</button>
-                                <button mat-menu-item>6 months</button>
-                                <button mat-menu-item>9 months</button>
-                                <button mat-menu-item>12 months</button>
+                                <button mat-menu-item>3 meses</button>
+                                <button mat-menu-item>6 meses</button>
+                                <button mat-menu-item>9 meses</button>
+                                <button mat-menu-item>12 meses</button>
                             </mat-menu>
                         </div>
                     </div>
                     <div class="flex items-start mt-6 mr-2">
                         <div class="flex flex-col">
                             <div class="font-semibold text-3xl md:text-5xl tracking-tighter">{{data.accountBalance.growRate}}%</div>
-                            <div class="font-medium text-sm text-secondary leading-none">Average Monthly Growth</div>
+                            <div class="font-medium text-sm text-secondary leading-none">Crecimiento mensual promedio</div>
                         </div>
                         <div class="flex flex-col ml-8 md:ml-16">
                             <div class="font-semibold text-3xl md:text-5xl tracking-tighter">{{data.accountBalance.ami | currency:'USD'}}</div>
-                            <div class="font-medium text-sm text-secondary leading-none">Average Monthly Income</div>
+                            <div class="font-medium text-sm text-secondary leading-none">Ingresos mensuales promedio</div>
                         </div>
                     </div>
                 </div>
@@ -270,8 +270,8 @@
             <!-- Recent transactions table -->
             <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
                 <div class="p-6">
-                    <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Recent transactions</div>
-                    <div class="text-secondary font-medium">1 pending, 4 completed</div>
+                    <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Transacciones recientes</div>
+                    <div class="text-secondary font-medium">1 pendiente, 4 completadas</div>
                 </div>
                 <div class="overflow-x-auto mx-6">
                     <table
@@ -288,7 +288,7 @@
                                 mat-header-cell
                                 mat-sort-header
                                 *matHeaderCellDef>
-                                Transaction ID
+                                ID de transacción
                             </th>
                             <td
                                 mat-cell
@@ -305,7 +305,7 @@
                                 mat-header-cell
                                 mat-sort-header
                                 *matHeaderCellDef>
-                                Date
+                                Fecha
                             </th>
                             <td
                                 mat-cell
@@ -322,7 +322,7 @@
                                 mat-header-cell
                                 mat-sort-header
                                 *matHeaderCellDef>
-                                Name
+                                Nombre
                             </th>
                             <td
                                 mat-cell
@@ -339,7 +339,7 @@
                                 mat-header-cell
                                 mat-sort-header
                                 *matHeaderCellDef>
-                                Amount
+                                Cantidad 
                             </th>
                             <td
                                 mat-cell
@@ -356,7 +356,7 @@
                                 mat-header-cell
                                 mat-sort-header
                                 *matHeaderCellDef>
-                                Status
+                                Estado
                             </th>
                             <td
                                 mat-cell
@@ -377,7 +377,7 @@
                                 mat-footer-cell
                                 *matFooterCellDef
                                 colspan="6">
-                                <button mat-stroked-button>See all transactions</button>
+                                <button mat-stroked-button>Ver todas las transacciones</button>
                             </td>
                         </ng-container>
 
@@ -400,8 +400,8 @@
             <div class="flex flex-col flex-auto p-6 bg-card rounded-2xl shadow">
                 <div class="flex items-center">
                     <div class="flex flex-col">
-                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Budget</div>
-                        <div class="text-secondary font-medium">Monthly budget summary</div>
+                        <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">Presupuesto</div>
+                        <div class="text-secondary font-medium">Resumen mensual del presupuesto</div>
                     </div>
                     <div class="ml-auto -mt-2 -mr-2">
                         <button
@@ -412,16 +412,16 @@
                                 [svgIcon]="'heroicons_mini:ellipsis-vertical'"></mat-icon>
                         </button>
                         <mat-menu #budgetMenu="matMenu">
-                            <button mat-menu-item>Expenses breakdown</button>
-                            <button mat-menu-item>Savings breakdown</button>
-                            <button mat-menu-item>Bills breakdown</button>
+                            <button mat-menu-item>Excediste tu límite personal! Ten cuidado el próximo mes</button>
+                            <button mat-menu-item>Desglose de Ahorro</button>
+                            <button mat-menu-item>Desglose se Factura</button>
                             <mat-divider class="my-2"></mat-divider>
                             <button mat-menu-item>
                                 <span class="flex items-center">
                                     <mat-icon
                                         class="icon-size-5 mr-3"
                                         [svgIcon]="'heroicons_solid:printer'"></mat-icon>
-                                    <span>Print budget summary</span>
+                                    <span>Imprimir Resumen del Presupuesto</span>
                                 </span>
                             </button>
                             <button mat-menu-item>
@@ -429,14 +429,14 @@
                                     <mat-icon
                                         class="icon-size-5 mr-3"
                                         [svgIcon]="'heroicons_solid:envelope'"></mat-icon>
-                                    <span>Email budget summary</span>
+                                    <span>Enviar por email el resumen del presupuesto</span>
                                 </span>
                             </button>
                         </mat-menu>
                     </div>
                 </div>
                 <div class="mt-6">
-                    Last month; you had <strong>223</strong> expense transactions, <strong>12</strong> savings entries and <strong>4</strong> bills.
+                    El mes pasado; tuviste  <strong>223</strong> transacciones de gastos <strong>12</strong>entradas de ahorros y<strong>4</strong> facturas. 
                 </div>
                 <div class="my-8 space-y-8">
                     <div class="flex flex-col">
@@ -447,7 +447,7 @@
                                     [svgIcon]="'heroicons_outline:credit-card'"></mat-icon>
                             </div>
                             <div class="flex-auto ml-4 leading-none">
-                                <div class="text-sm font-medium text-secondary">Expenses</div>
+                                <div class="text-sm font-medium text-secondary">Gastos</div>
                                 <div class="mt-2 font-medium text-2xl">{{data.budget.expenses | currency:'USD'}}</div>
                                 <mat-progress-bar
                                     class="mt-3 rounded-full"
@@ -471,7 +471,7 @@
                                     [svgIcon]="'heroicons_outline:banknotes'"></mat-icon>
                             </div>
                             <div class="flex-auto ml-4 leading-none">
-                                <div class="text-sm font-medium text-secondary">Savings</div>
+                                <div class="text-sm font-medium text-secondary">Ahorros</div>
                                 <div class="mt-2 font-medium text-2xl">{{data.budget.savings | currency:'USD'}}</div>
                                 <mat-progress-bar
                                     class="mt-3 rounded-full"
@@ -494,7 +494,7 @@
                                     [svgIcon]="'heroicons_outline:light-bulb'"></mat-icon>
                             </div>
                             <div class="flex-auto ml-4 leading-none">
-                                <div class="text-sm font-medium text-secondary">Bills</div>
+                                <div class="text-sm font-medium text-secondary">Facturas</div>
                                 <div class="mt-2 font-medium text-2xl">{{data.budget.bills | currency:'USD'}}</div>
                                 <mat-progress-bar
                                     class="mt-3 rounded-full"
@@ -508,14 +508,14 @@
                                     [svgIcon]="'heroicons_mini:arrow-long-up'"></mat-icon>
                             </div>
                         </div>
-                        <div class="mt-3 text-md text-secondary">Exceeded your personal limit! Be careful next month.</div>
+                        <div class="mt-3 text-md text-secondary">Excediste tu límite personal! Ten cuidado el próximo mes. </div>
                     </div>
                 </div>
                 <div class="flex items-center mt-auto">
                     <button
                         class="mt-2"
                         mat-stroked-button>
-                        Download Summary
+                        Descargar resumen
                     </button>
                 </div>
             </div>
