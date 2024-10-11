@@ -6,6 +6,9 @@ import { assign, cloneDeep } from 'lodash-es';
 @Injectable({providedIn: 'root'})
 export class ECommerceInventoryMockApi
 {
+    /**
+     * INVENTARIO DE EQUIPOS DE LA ALCALDIA
+     */
     private _categories: any[] = categoriesData;
     private _brands: any[] = brandsData;
     private _products: any[] = productsData;
