@@ -24,13 +24,13 @@ export const defaultNavigation: FuseNavigationItem[] = [
             },
             {
                 id   : 'apps.help-center.guides',
-                title: 'Guides',
+                title: 'Guias',
                 type : 'basic',
                 link : '/apps/help-center/guides',
             },
             {
                 id   : 'apps.help-center.support',
-                title: 'Support',
+                title: 'Soporte',
                 type : 'basic',
                 link : '/apps/help-center/support',
             },
@@ -75,7 +75,7 @@ export const defaultNavigation: FuseNavigationItem[] = [
             
              {
                 id   : 'pages.settings',
-                title: 'Settings',
+                title: 'Configuración',
                 type : 'basic',
                 icon : 'heroicons_outline:cog-8-tooth',
                 link : '/pages/settings',
@@ -107,13 +107,13 @@ export const compactNavigation: FuseNavigationItem[] = [
             },
             {
                 id   : 'apps.help-center.guides',
-                title: 'Guides',
+                title: 'Guias',
                 type : 'basic',
                 link : '/apps/help-center/guides',
             },
             {
                 id   : 'apps.help-center.support',
-                title: 'Support',
+                title: 'Soporte',
                 type : 'basic',
                 link : '/apps/help-center/support',
             },
@@ -157,7 +157,7 @@ export const compactNavigation: FuseNavigationItem[] = [
             
              {
                 id   : 'pages.settings',
-                title: 'Settings',
+                title: 'Configuración',
                 type : 'basic',
                 icon : 'heroicons_outline:cog-8-tooth',
                 link : '/pages/settings',
@@ -252,7 +252,7 @@ export const futuristicNavigation: FuseNavigationItem[] = [
             
              {
                 id   : 'pages.settings',
-                title: 'Settings',
+                title: 'Configuración',
                 type : 'basic',
                 icon : 'heroicons_outline:cog-8-tooth',
                 link : '/pages/settings',
@@ -284,13 +284,13 @@ export const horizontalNavigation: FuseNavigationItem[] = [
             },
             {
                 id   : 'apps.help-center.guides',
-                title: 'Guides',
+                title: 'Guias',
                 type : 'basic',
                 link : '/apps/help-center/guides',
             },
             {
                 id   : 'apps.help-center.support',
-                title: 'Support',
+                title: 'Soporte',
                 type : 'basic',
                 link : '/apps/help-center/support',
             },

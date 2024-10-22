@@ -2,6 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
+import { environment } from 'environments/environment'; 
+
+
+
+import { InventoryEquipment } from './inventory.types'; 
 
 @Injectable({providedIn: 'root'})
 export class InventoryService
@@ -15,12 +20,21 @@ export class InventoryService
     private _tags: BehaviorSubject<InventoryTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
 
+
+    private baseUrl = environment.baseUlr;//llamamos a los enviment de la url
+
     /**
      * Constructor
      */
     constructor(private _httpClient: HttpClient)
     {
     }
+
+    // Método para obtener el listado de equipos
+    getEquipment(id: number): Observable<InventoryEquipment> {
+        return this._httpClient.get<InventoryEquipment>(`${this.baseUrl}/equipment/${id}`);
+      }
+  
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors

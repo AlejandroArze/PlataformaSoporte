@@ -1,3 +1,4 @@
+// Importaciones necesarias desde Angular y otras dependencias
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
@@ -18,9 +19,18 @@ import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inv
 import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { NativeDateAdapter, DateAdapter } from '@angular/material/core';
+
+import {MatCardModule} from '@angular/material/card';
+
+
+
+
+// Decorador @Component para definir un componente de Angular
 @Component({
-    selector       : 'inventory-list',
-    templateUrl    : './inventory.component.html',
+    selector       : 'inventory-list', // Selector HTML para identificar el componente
+    templateUrl    : './inventory.component.html', // Ruta al archivo de plantilla HTML
     styles         : [
         /* language=SCSS */
         `
@@ -41,566 +51,433 @@ import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } f
             }
         `,
     ],
-    encapsulation  : ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    animations     : fuseAnimations,
-    standalone     : true,
-    imports        : [NgIf, MatProgressBarModule, MatFormFieldModule, MatIconModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatSortModule, NgFor, NgTemplateOutlet, MatPaginatorModule, NgClass, MatSlideToggleModule, MatSelectModule, MatOptionModule, MatCheckboxModule, MatRippleModule, AsyncPipe, CurrencyPipe],
+    encapsulation  : ViewEncapsulation.None, // Define la encapsulación CSS
+    changeDetection: ChangeDetectionStrategy.OnPush, // Define la estrategia de detección de cambios
+    animations     : fuseAnimations, // Incluye las animaciones definidas en fuse
+    standalone     : true, // Especifica que este componente puede ser usado de forma independiente
+    imports        : [NgIf,MatCardModule, MatProgressBarModule, MatFormFieldModule, MatIconModule, MatDatepickerModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatSortModule, NgFor, NgTemplateOutlet, MatPaginatorModule, NgClass, MatSlideToggleModule, MatSelectModule, MatOptionModule, MatCheckboxModule, MatRippleModule, AsyncPipe, CurrencyPipe], // Módulos que se importan para el uso en el componente  
+    providers: [
+        { provide: DateAdapter, useClass: NativeDateAdapter },
+    ]
+   
+  
+  
+
+
 })
-export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy
-{
-    @ViewChild(MatPaginator) private _paginator: MatPaginator;
-    @ViewChild(MatSort) private _sort: MatSort;
 
-    products$: Observable<InventoryProduct[]>;
+// Clase del componente InventoryListComponent que implementa tres interfaces de ciclo de vida de Angular
+export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy {
+    // Decorador @ViewChild para acceder a los componentes hijos dentro del template
+    @ViewChild(MatPaginator) private _paginator: MatPaginator; // Referencia al paginador
+    @ViewChild(MatSort) private _sort: MatSort; // Referencia a la ordenación
 
-    brands: InventoryBrand[];
-    categories: InventoryCategory[];
-    filteredTags: InventoryTag[];
-    flashMessage: 'success' | 'error' | null = null;
-    isLoading: boolean = false;
-    pagination: InventoryPagination;
-    searchInputControl: UntypedFormControl = new UntypedFormControl();
-    selectedProduct: InventoryProduct | null = null;
-    selectedProductForm: UntypedFormGroup;
-    tags: InventoryTag[];
-    tagsEditMode: boolean = false;
-    vendors: InventoryVendor[];
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    products$: Observable<InventoryProduct[]>; // Observable para obtener los productos
+
+    brands: InventoryBrand[]; // Arreglo de marcas
+    categories: InventoryCategory[]; // Arreglo de categorías
+    filteredTags: InventoryTag[]; // Arreglo de etiquetas filtradas
+    flashMessage: 'success' | 'error' | null = null; // Mensaje flash para mostrar el estado (éxito o error)
+    isLoading: boolean = false; // Indicador de carga
+    pagination: InventoryPagination; // Datos de paginación
+    searchInputControl: UntypedFormControl = new UntypedFormControl(); // Control de formulario no tipado para la búsqueda
+    selectedProduct: InventoryProduct | null = null; // Producto seleccionado, inicializado como null
+    selectedProductForm: UntypedFormGroup; // Formulario no tipado para el producto seleccionado
+    tags: InventoryTag[]; // Arreglo de etiquetas
+    tagsEditMode: boolean = false; // Modo de edición de etiquetas
+    vendors: InventoryVendor[]; // Arreglo de vendedores
+    private _unsubscribeAll: Subject<any> = new Subject<any>(); // Observable para manejar la destrucción de suscripciones
 
     /**
-     * Constructor
+     * Constructor del componente
      */
     constructor(
-        private _changeDetectorRef: ChangeDetectorRef,
-        private _fuseConfirmationService: FuseConfirmationService,
-        private _formBuilder: UntypedFormBuilder,
-        private _inventoryService: InventoryService,
-    )
-    {
-    }
+        private _changeDetectorRef: ChangeDetectorRef, // Referencia para forzar la detección de cambios
+        private _fuseConfirmationService: FuseConfirmationService, // Servicio para mostrar diálogos de confirmación
+        private _formBuilder: UntypedFormBuilder, // Constructor de formularios
+        private _inventoryService: InventoryService, // Servicio para manejar inventario
+    ) {}
 
     // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
+    // @ Ciclos de vida
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * On init
+     * Método que se ejecuta al inicializar el componente
      */
-    ngOnInit(): void
-    {
-        // Create the selected product form
+    ngOnInit(): void {
+        // Crear el formulario del producto seleccionado
         this.selectedProductForm = this._formBuilder.group({
-            id               : [''],
-            category         : [''],
-            name             : ['', [Validators.required]],
-            description      : [''],
-            tags             : [[]],
-            sku              : [''],
-            barcode          : [''],
-            brand            : [''],
-            vendor           : [''],
-            stock            : [''],
-            reserved         : [''],
-            cost             : [''],
-            basePrice        : [''],
-            taxPercent       : [''],
-            price            : [''],
-            weight           : [''],
-            thumbnail        : [''],
-            images           : [[]],
-            currentImageIndex: [0], // Image index that is currently being viewed
-            active           : [false],
+            id               : [''], // ID del producto
+            category         : [''], // Categoría
+            name             : ['', [Validators.required]], // Nombre con validación requerida
+            description      : [''], // Descripción
+            tags             : [[]], // Etiquetas
+            sku              : [''], // SKU
+            barcode          : [''], // Código de barras
+            brand            : [''], // Marca
+            vendor           : [''], // Vendedor
+            stock            : [''], // Stock
+            reserved         : [''], // Reservado
+            cost             : [''], // Costo
+            basePrice        : [''], // Precio base
+            taxPercent       : [''], // Porcentaje de impuestos
+            price            : [''], // Precio
+            weight           : [''], // Peso
+            thumbnail        : [''], // Miniatura
+            images           : [[]], // Imágenes
+            currentImageIndex: [0], // Índice de la imagen actualmente visualizada
+            active           : [false], // Estado de activación del producto
         });
 
-        // Get the brands
+        // Obtener las marcas del servicio de inventario
         this._inventoryService.brands$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((brands: InventoryBrand[]) =>
-            {
-                // Update the brands
-                this.brands = brands;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+            .pipe(takeUntil(this._unsubscribeAll)) // Desuscribirse cuando se destruye el componente
+            .subscribe((brands: InventoryBrand[]) => {
+                this.brands = brands; // Actualizar las marcas
+                this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
 
-        // Get the categories
+        // Obtener las categorías
         this._inventoryService.categories$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((categories: InventoryCategory[]) =>
-            {
-                // Update the categories
-                this.categories = categories;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+            .subscribe((categories: InventoryCategory[]) => {
+                this.categories = categories; // Actualizar las categorías
+                this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
 
-        // Get the pagination
+        // Obtener los datos de paginación
         this._inventoryService.pagination$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((pagination: InventoryPagination) =>
-            {
-                // Update the pagination
-                this.pagination = pagination;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+            .subscribe((pagination: InventoryPagination) => {
+                this.pagination = pagination; // Actualizar la paginación
+                this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
 
-        // Get the products
+        // Obtener los productos
         this.products$ = this._inventoryService.products$;
 
-        // Get the tags
+        // Obtener las etiquetas
         this._inventoryService.tags$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((tags: InventoryTag[]) =>
-            {
-                // Update the tags
-                this.tags = tags;
-                this.filteredTags = tags;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+            .subscribe((tags: InventoryTag[]) => {
+                this.tags = tags; // Actualizar etiquetas
+                this.filteredTags = tags; // Actualizar etiquetas filtradas
+                this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
 
-        // Get the vendors
+        // Obtener los vendedores
         this._inventoryService.vendors$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((vendors: InventoryVendor[]) =>
-            {
-                // Update the vendors
-                this.vendors = vendors;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+            .subscribe((vendors: InventoryVendor[]) => {
+                this.vendors = vendors; // Actualizar vendedores
+                this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
 
-        // Subscribe to search input field value changes
+        // Suscribirse a los cambios en el campo de búsqueda
         this.searchInputControl.valueChanges
             .pipe(
                 takeUntil(this._unsubscribeAll),
-                debounceTime(300),
-                switchMap((query) =>
-                {
-                    this.closeDetails();
-                    this.isLoading = true;
-                    return this._inventoryService.getProducts(0, 10, 'name', 'asc', query);
+                debounceTime(300), // Agregar un retraso de 300ms para optimizar la búsqueda
+                switchMap((query) => {
+                    this.closeDetails(); // Cerrar los detalles del producto
+                    this.isLoading = true; // Indicar que la carga está en progreso
+                    return this._inventoryService.getProducts(0, 10, 'name', 'asc', query); // Obtener productos
                 }),
-                map(() =>
-                {
-                    this.isLoading = false;
+                map(() => {
+                    this.isLoading = false; // Indicar que la carga ha finalizado
                 }),
             )
             .subscribe();
     }
 
     /**
-     * After view init
+     * Método que se ejecuta después de que la vista se ha inicializado
      */
-    ngAfterViewInit(): void
-    {
-        if ( this._sort && this._paginator )
-        {
-            // Set the initial sort
+    ngAfterViewInit(): void {
+        if (this._sort && this._paginator) {
+            // Establecer el orden inicial
             this._sort.sort({
                 id          : 'name',
                 start       : 'asc',
                 disableClear: true,
             });
 
-            // Mark for check
+            // Marcar para detección de cambios
             this._changeDetectorRef.markForCheck();
 
-            // If the user changes the sort order...
+            // Cuando el usuario cambia el orden de la tabla
             this._sort.sortChange
                 .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe(() =>
-                {
-                    // Reset back to the first page
-                    this._paginator.pageIndex = 0;
-
-                    // Close the details
-                    this.closeDetails();
+                .subscribe(() => {
+                    this._paginator.pageIndex = 0; // Reiniciar a la primera página
+                    this.closeDetails(); // Cerrar los detalles del producto
                 });
 
-            // Get products if sort or page changes
+            // Obtener productos si el orden o la página cambian
             merge(this._sort.sortChange, this._paginator.page).pipe(
-                switchMap(() =>
-                {
-                    this.closeDetails();
-                    this.isLoading = true;
-                    return this._inventoryService.getProducts(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction);
+                switchMap(() => {
+                    this.closeDetails(); // Cerrar los detalles del producto
+                    this.isLoading = true; // Indicar que está cargando
+                    return this._inventoryService.getProducts(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction); // Obtener productos
                 }),
-                map(() =>
-                {
-                    this.isLoading = false;
+                map(() => {
+                    this.isLoading = false; // Indicar que la carga ha finalizado
                 }),
             ).subscribe();
         }
     }
 
     /**
-     * On destroy
+     * Método que se ejecuta al destruir el componente
      */
-    ngOnDestroy(): void
-    {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null); // Desuscribirse de todas las suscripciones
+        this._unsubscribeAll.complete(); // Completar la desuscripción
     }
 
     // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
+    // @ Métodos públicos
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Toggle product details
-     *
+     * Alternar los detalles de un producto
      * @param productId
      */
-    toggleDetails(productId: string): void
-    {
-        // If the product is already selected...
-        if ( this.selectedProduct && this.selectedProduct.id === productId )
-        {
-            // Close the details
+    toggleDetails(productId: string): void {
+        // Si el producto ya está seleccionado, cerrar los detalles
+        if (this.selectedProduct && this.selectedProduct.id === productId) {
             this.closeDetails();
             return;
         }
 
-        // Get the product by id
+        // Obtener el producto por ID
         this._inventoryService.getProductById(productId)
-            .subscribe((product) =>
-            {
-                // Set the selected product
-                this.selectedProduct = product;
-
-                // Fill the form
-                this.selectedProductForm.patchValue(product);
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+            .subscribe((product) => {
+                this.selectedProduct = product; // Establecer el producto seleccionado
+                this.selectedProductForm.patchValue(product); // Rellenar el formulario con los datos del producto
+                this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
     }
 
     /**
-     * Close the details
+     * Cerrar los detalles del producto
      */
-    closeDetails(): void
-    {
-        this.selectedProduct = null;
+    closeDetails(): void {
+        this.selectedProduct = null; // Restablecer el producto seleccionado
     }
 
     /**
-     * Cycle through images of selected product
+     * Ciclar a través de las imágenes del producto seleccionado
      */
-    cycleImages(forward: boolean = true): void
-    {
-        // Get the image count and current image index
-        const count = this.selectedProductForm.get('images').value.length;
-        const currentIndex = this.selectedProductForm.get('currentImageIndex').value;
+    cycleImages(forward: boolean = true): void {
+        const count = this.selectedProductForm.get('images').value.length; // Número de imágenes
+        const currentIndex = this.selectedProductForm.get('currentImageIndex').value; // Índice de la imagen actual
 
-        // Calculate the next and previous index
-        const nextIndex = currentIndex + 1 === count ? 0 : currentIndex + 1;
-        const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1;
+        const nextIndex = currentIndex + 1 === count ? 0 : currentIndex + 1; // Índice siguiente
+        const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1; // Índice anterior
 
-        // If cycling forward...
-        if ( forward )
-        {
-            this.selectedProductForm.get('currentImageIndex').setValue(nextIndex);
-        }
-        // If cycling backwards...
-        else
-        {
-            this.selectedProductForm.get('currentImageIndex').setValue(prevIndex);
+        // Si se cicla hacia adelante
+        if (forward) {
+            this.selectedProductForm.get('currentImageIndex').setValue(nextIndex); // Actualizar al índice siguiente
+        } else {
+            this.selectedProductForm.get('currentImageIndex').setValue(prevIndex); // Actualizar al índice anterior
         }
     }
 
     /**
-     * Toggle the tags edit mode
+     * Alternar el modo de edición de etiquetas
      */
-    toggleTagsEditMode(): void
-    {
-        this.tagsEditMode = !this.tagsEditMode;
+    toggleTagsEditMode(): void {
+        this.tagsEditMode = !this.tagsEditMode; // Alternar el modo de edición de etiquetas
     }
 
     /**
-     * Filter tags
-     *
+     * Filtrar etiquetas
      * @param event
      */
-    filterTags(event): void
-    {
-        // Get the value
-        const value = event.target.value.toLowerCase();
-
-        // Filter the tags
-        this.filteredTags = this.tags.filter(tag => tag.title.toLowerCase().includes(value));
+    filterTags(event): void {
+        const value = event.target.value.toLowerCase(); // Convertir el valor ingresado a minúsculas
+        this.filteredTags = this.tags.filter(tag => tag.title.toLowerCase().includes(value)); // Filtrar las etiquetas
     }
 
     /**
-     * Filter tags input key down event
-     *
+     * Manejar el evento de teclado en el filtro de etiquetas
      * @param event
      */
-    filterTagsInputKeyDown(event): void
-    {
-        // Return if the pressed key is not 'Enter'
-        if ( event.key !== 'Enter' )
-        {
+    filterTagsInputKeyDown(event): void {
+        // Retornar si la tecla presionada no es 'Enter'
+        if (event.key !== 'Enter') {
             return;
         }
 
-        // If there is no tag available...
-        if ( this.filteredTags.length === 0 )
-        {
-            // Create the tag
-            this.createTag(event.target.value);
-
-            // Clear the input
-            event.target.value = '';
-
-            // Return
+        // Si no hay etiquetas disponibles, crear una nueva
+        if (this.filteredTags.length === 0) {
+            this.createTag(event.target.value); // Crear una nueva etiqueta
+            event.target.value = ''; // Limpiar el campo de entrada
             return;
         }
 
-        // If there is a tag...
-        const tag = this.filteredTags[0];
-        const isTagApplied = this.selectedProduct.tags.find(id => id === tag.id);
+        const tag = this.filteredTags[0]; // Obtener la primera etiqueta filtrada
+        const isTagApplied = this.selectedProduct.tags.find(id => id === tag.id); // Verificar si la etiqueta ya está aplicada
 
-        // If the found tag is already applied to the product...
-        if ( isTagApplied )
-        {
-            // Remove the tag from the product
+        // Si la etiqueta ya está aplicada al producto, eliminarla
+        if (isTagApplied) {
             this.removeTagFromProduct(tag);
-        }
-        else
-        {
-            // Otherwise add the tag to the product
+        } else {
+            // De lo contrario, agregar la etiqueta al producto
             this.addTagToProduct(tag);
         }
     }
 
     /**
-     * Create a new tag
-     *
+     * Crear una nueva etiqueta
      * @param title
      */
-    createTag(title: string): void
-    {
+    createTag(title: string): void {
         const tag = {
             title,
         };
 
-        // Create tag on the server
-        this._inventoryService.createTag(tag)
-            .subscribe((response) =>
-            {
-                // Add the tag to the product
-                this.addTagToProduct(response);
+        this._inventoryService.createTag(tag) // Crear etiqueta en el servidor
+            .subscribe((response) => {
+                this.addTagToProduct(response); // Agregar la etiqueta al producto
             });
     }
 
     /**
-     * Update the tag title
-     *
+     * Actualizar el título de una etiqueta
      * @param tag
      * @param event
      */
-    updateTagTitle(tag: InventoryTag, event): void
-    {
-        // Update the title on the tag
-        tag.title = event.target.value;
+    updateTagTitle(tag: InventoryTag, event): void {
+        tag.title = event.target.value; // Actualizar el título de la etiqueta
 
-        // Update the tag on the server
-        this._inventoryService.updateTag(tag.id, tag)
+        this._inventoryService.updateTag(tag.id, tag) // Actualizar la etiqueta en el servidor
             .pipe(debounceTime(300))
             .subscribe();
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+        this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
     }
 
     /**
-     * Delete the tag
-     *
+     * Eliminar una etiqueta
      * @param tag
      */
-    deleteTag(tag: InventoryTag): void
-    {
-        // Delete the tag from the server
-        this._inventoryService.deleteTag(tag.id).subscribe();
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+    deleteTag(tag: InventoryTag): void {
+        this._inventoryService.deleteTag(tag.id).subscribe(); // Eliminar la etiqueta en el servidor
+        this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
     }
 
     /**
-     * Add tag to the product
-     *
+     * Agregar una etiqueta al producto
      * @param tag
      */
-    addTagToProduct(tag: InventoryTag): void
-    {
-        // Add the tag
-        this.selectedProduct.tags.unshift(tag.id);
-
-        // Update the selected product form
-        this.selectedProductForm.get('tags').patchValue(this.selectedProduct.tags);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+    addTagToProduct(tag: InventoryTag): void {
+        this.selectedProduct.tags.unshift(tag.id); // Agregar la etiqueta al inicio del arreglo
+        this.selectedProductForm.get('tags').patchValue(this.selectedProduct.tags); // Actualizar el formulario
+        this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
     }
 
     /**
-     * Remove tag from the product
-     *
+     * Eliminar una etiqueta del producto
      * @param tag
      */
-    removeTagFromProduct(tag: InventoryTag): void
-    {
-        // Remove the tag
-        this.selectedProduct.tags.splice(this.selectedProduct.tags.findIndex(item => item === tag.id), 1);
-
-        // Update the selected product form
-        this.selectedProductForm.get('tags').patchValue(this.selectedProduct.tags);
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+    removeTagFromProduct(tag: InventoryTag): void {
+        this.selectedProduct.tags.splice(this.selectedProduct.tags.findIndex(item => item === tag.id), 1); // Eliminar la etiqueta
+        this.selectedProductForm.get('tags').patchValue(this.selectedProduct.tags); // Actualizar el formulario
+        this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
     }
 
     /**
-     * Toggle product tag
-     *
+     * Alternar el estado de una etiqueta del producto
      * @param tag
      * @param change
      */
-    toggleProductTag(tag: InventoryTag, change: MatCheckboxChange): void
-    {
-        if ( change.checked )
-        {
-            this.addTagToProduct(tag);
-        }
-        else
-        {
-            this.removeTagFromProduct(tag);
+    toggleProductTag(tag: InventoryTag, change: MatCheckboxChange): void {
+        if (change.checked) {
+            this.addTagToProduct(tag); // Agregar etiqueta
+        } else {
+            this.removeTagFromProduct(tag); // Eliminar etiqueta
         }
     }
 
     /**
-     * Should the create tag button be visible
-     *
+     * Verificar si el botón para crear una nueva etiqueta debe mostrarse
      * @param inputValue
      */
-    shouldShowCreateTagButton(inputValue: string): boolean
-    {
-        return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
+    shouldShowCreateTagButton(inputValue: string): boolean {
+        return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1); // Verificar si no hay etiquetas con ese nombre
     }
 
     /**
-     * Create product
+     * Crear un nuevo producto
      */
-    createProduct(): void
-    {
-        // Create the product
-        this._inventoryService.createProduct().subscribe((newProduct) =>
-        {
-            // Go to new product
-            this.selectedProduct = newProduct;
-
-            // Fill the form
-            this.selectedProductForm.patchValue(newProduct);
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
+    createProduct(): void {
+        this._inventoryService.createProduct().subscribe((newProduct) => {
+            this.selectedProduct = newProduct; // Establecer el producto como seleccionado
+            this.selectedProductForm.patchValue(newProduct); // Rellenar el formulario con los datos del nuevo producto
+            this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
         });
     }
 
     /**
-     * Update the selected product using the form data
+     * Actualizar el producto seleccionado usando los datos del formulario
      */
-    updateSelectedProduct(): void
-    {
-        // Get the product object
-        const product = this.selectedProductForm.getRawValue();
+    updateSelectedProduct(): void {
+        const product = this.selectedProductForm.getRawValue(); // Obtener los valores del formulario
+        delete product.currentImageIndex; // Eliminar el índice de imagen actual, ya que no es necesario para el servidor
 
-        // Remove the currentImageIndex field
-        delete product.currentImageIndex;
-
-        // Update the product on the server
-        this._inventoryService.updateProduct(product.id, product).subscribe(() =>
-        {
-            // Show a success message
-            this.showFlashMessage('success');
+        this._inventoryService.updateProduct(product.id, product).subscribe(() => {
+            this.showFlashMessage('success'); // Mostrar mensaje de éxito
         });
     }
 
     /**
-     * Delete the selected product using the form data
+     * Eliminar el producto seleccionado usando los datos del formulario
      */
-    deleteSelectedProduct(): void
-    {
-        // Open the confirmation dialog
-        const confirmation = this._fuseConfirmationService.open({
-            title  : 'Delete product',
-            message: 'Are you sure you want to remove this product? This action cannot be undone!',
+    deleteSelectedProduct(): void {
+        const confirmation = this._fuseConfirmationService.open({ // Abrir diálogo de confirmación
+            title  : 'Delete product', // Título del diálogo
+            message: 'Are you sure you want to remove this product? This action cannot be undone!', // Mensaje del diálogo
             actions: {
                 confirm: {
-                    label: 'Delete',
+                    label: 'Delete', // Etiqueta del botón de confirmación
                 },
             },
         });
 
-        // Subscribe to the confirmation dialog closed action
-        confirmation.afterClosed().subscribe((result) =>
-        {
-            // If the confirm button pressed...
-            if ( result === 'confirmed' )
-            {
-                // Get the product object
-                const product = this.selectedProductForm.getRawValue();
-
-                // Delete the product on the server
-                this._inventoryService.deleteProduct(product.id).subscribe(() =>
-                {
-                    // Close the details
-                    this.closeDetails();
+        confirmation.afterClosed().subscribe((result) => {
+            if (result === 'confirmed') {
+                const product = this.selectedProductForm.getRawValue(); // Obtener los valores del formulario
+                this._inventoryService.deleteProduct(product.id).subscribe(() => { // Eliminar el producto en el servidor
+                    this.closeDetails(); // Cerrar los detalles del producto
                 });
             }
         });
     }
 
     /**
-     * Show flash message
+     * Mostrar un mensaje flash
      */
-    showFlashMessage(type: 'success' | 'error'): void
-    {
-        // Show the message
-        this.flashMessage = type;
+    showFlashMessage(type: 'success' | 'error'): void {
+        this.flashMessage = type; // Establecer el tipo de mensaje (éxito o error)
+        this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-
-        // Hide it after 3 seconds
-        setTimeout(() =>
-        {
-            this.flashMessage = null;
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
+        setTimeout(() => { // Ocultar el mensaje después de 3 segundos
+            this.flashMessage = null; // Restablecer el mensaje flash
+            this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
         }, 3000);
     }
 
     /**
-     * Track by function for ngFor loops
-     *
+     * Función trackBy para optimizar el rendimiento de las listas en *ngFor
      * @param index
      * @param item
      */
-    trackByFn(index: number, item: any): any
-    {
-        return item.id || index;
+    trackByFn(index: number, item: any): any {
+        return item.id || index; // Devolver el ID del item o el índice si no tiene ID
     }
+    
+    
 }
