@@ -47,6 +47,8 @@ router.post("/equipment", equipment.store);
 // Define una ruta GET para obtener los detalles de un usuario específico por ID. Utiliza el método 'show' del controlador de usuario.
 router.get("/equipment/:equipos_id", equipment.show);
 
+
+router.get('/equipment', equipment.paginate);
 // Define una ruta PUT para actualizar un usuario existente por ID. Utiliza el método 'update' del controlador de usuario.
 router.put("/equipment/:equipos_id", equipment.update);
 
