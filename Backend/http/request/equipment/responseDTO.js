@@ -48,6 +48,10 @@ class EquipmentResponseDTO {
         this.responsable = responsable; // Asigna el responsable
         this.mac = mac; // Asigna la dirección MAC
     }
+
+    static createFromEntity(entity) {
+        return new EquipmentResponseDTO(entity);
+    }
 }
 
 // Exporta la clase EquipmentResponseDTO para que pueda ser utilizada en otros archivos

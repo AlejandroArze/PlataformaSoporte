@@ -2,7 +2,7 @@ const { Equipment, sequelize } = require("../models"); // Requiere el modelo 'Eq
 const storeDTO = require("../http/request/equipment/storeDTO"); // DTO para validar los datos en la operación de almacenamiento
 const updateDTO = require("../http/request/equipment/updateDTO"); // DTO para validar los datos en la operación de actualización
 const idDTO = require("../http/request/equipment/idDTO"); // DTO para validar los identificadores de equipos
-
+const responseDTO = require("../http/request/equipment/responseDTO");
 class EquipmentService {
 
     // Método para almacenar un nuevo equipo
@@ -64,6 +64,31 @@ class EquipmentService {
             throw error; // Lanza el error para manejarlo
         }
     }
+   
+    /**
+     * Método para paginar equipos en el servicio.
+     * @param {object} queryParams - Contiene los parámetros necesarios para la paginación.
+     * @returns {object} - Devuelve un objeto con el conteo total y los equipos correspondientes a la página solicitada.
+     */
+    static async paginate(queryParams) {
+        // Extrae los parámetros page y limit de queryParams.
+        const { page, limit } = queryParams;
+        console.log(page, limit)
+        // Calcula el offset basado en el número de página y el límite de elementos por página.
+        const offset = (page - 1) * limit;
+        
+
+        // Realiza una consulta a la base de datos para obtener la cantidad total de elementos y los elementos de la página actual.
+        const { count, rows } = await Equipment.findAndCountAll({
+            limit: limit, // Número máximo de elementos a retornar.
+            offset: offset, // Número de elementos a omitir antes de comenzar a retornar los resultados.
+            order: [['equipos_id', 'DESC']] // Criterio de ordenación, aquí se ordena por ID de manera descendente.
+        });
+
+        // Devuelve el resultado de la consulta que incluye tanto la cantidad total de equipos como los equipos de la página actual.
+        return { count, rows };
+    }
+
 
     // Método para actualizar un equipo por su ID
     static async update(data, id) {

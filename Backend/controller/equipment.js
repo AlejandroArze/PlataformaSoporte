@@ -93,6 +93,59 @@ class EquipmentController {
             );
         }
     }
+    
+
+    
+
+/**
+ * Método estático asíncrono en el controlador para obtener equipos paginados.
+ * @param {object} req - Objeto de solicitud HTTP, contiene información como parámetros de consulta.
+ * @param {object} res - Objeto de respuesta HTTP, se usa para enviar respuestas al cliente.
+ * @returns {Promise} - Promesa que resuelve al enviar una respuesta al cliente.
+ */
+static async paginate(req, res) {
+    // Obtiene los parámetros page y limit de la consulta, proporcionando valores predeterminados si no están presentes.
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
+    try {
+        // Llama al método paginate del servicio, pasando los parámetros de paginación.
+        const { count, rows } = await equipmentService.paginate({ page, limit });
+
+        // Transforma cada elemento obtenido en un DTO utilizando un método estático definido en la clase DTO.
+        const equipmentDTOs = rows.map(equipment => EquipmentDTO.createFromEntity(equipment));
+
+        // Envía una respuesta JSON con éxito incluyendo los detalles de la paginación y los datos transformados.
+        return jsonResponse.successResponse(
+            res,
+            200,
+            "Equipments retrieved successfully",
+            {
+                total: count, // Número total de equipos.
+                perPage: limit, // Número de equipos por página.
+                currentPage: page, // Número de la página actual.
+                totalPages: Math.ceil(count / limit), // Número total de páginas.
+                data: equipmentDTOs // Datos de los equipos transformados a DTO.
+            }
+        );
+    } catch (error) {
+        // Maneja errores genéricos y específicos, enviando una respuesta adecuada al cliente.
+        
+        
+        // Si hay un error de validación de Joi, retorna una respuesta de validación
+        return Joi.isError(error) ? jsonResponse.validationResponse(
+            res,
+            409,
+            "Validation error",
+            error.details.map(err => err.message)
+        ) : jsonResponse.errorResponse(
+            res,
+            500,
+            error.message
+        );
+    }
+}
+
 
     // Método estático asíncrono para actualizar la información de un equipo
     static async update(req, res) {
