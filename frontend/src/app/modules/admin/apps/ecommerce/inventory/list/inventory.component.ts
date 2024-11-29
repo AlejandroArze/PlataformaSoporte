@@ -16,7 +16,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { InventoryBrand, InventoryCategory, InventoryEquipment, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } from 'rxjs';
 
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -25,6 +25,26 @@ import { NativeDateAdapter, DateAdapter } from '@angular/material/core';
 import {MatCardModule} from '@angular/material/card';
 
 
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+
+import { MatNativeDateModule } from '@angular/material/core'; // Usamos el adaptador nativo de fecha de Angular
+import { MAT_DATE_FORMATS } from '@angular/material/core';
+
+
+
+
+export const MY_DATE_FORMATS = {
+    parse: {
+      dateInput: 'DD/MM/YYYY',  // Formato de entrada (día/mes/año)
+    },
+    display: {
+      dateInput: 'DD',  // Formato de salida (día mes año)
+      monthYearLabel: 'MMMM YYYY', // Para mostrar el mes y el año en el selector
+      dateA11yLabel: 'LL',
+      monthDayA11yLabel: 'DD MMMM',
+    },
+  };
 
 
 // Decorador @Component para definir un componente de Angular
@@ -57,7 +77,8 @@ import {MatCardModule} from '@angular/material/card';
     standalone     : true, // Especifica que este componente puede ser usado de forma independiente
     imports        : [NgIf,MatCardModule, MatProgressBarModule, MatFormFieldModule, MatIconModule, MatDatepickerModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatSortModule, NgFor, NgTemplateOutlet, MatPaginatorModule, NgClass, MatSlideToggleModule, MatSelectModule, MatOptionModule, MatCheckboxModule, MatRippleModule, AsyncPipe, CurrencyPipe], // Módulos que se importan para el uso en el componente  
     providers: [
-        { provide: DateAdapter, useClass: NativeDateAdapter },
+        
+        { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
     ]
    
   
@@ -72,8 +93,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     @ViewChild(MatPaginator) private _paginator: MatPaginator; // Referencia al paginador
     @ViewChild(MatSort) private _sort: MatSort; // Referencia a la ordenación
 
-    products$: Observable<InventoryProduct[]>; // Observable para obtener los productos
-
+    //products$: Observable<InventoryProduct[]>; // Observable para obtener los productos
+    equipments$: Observable<InventoryEquipment[]>;
+    
     brands: InventoryBrand[]; // Arreglo de marcas
     categories: InventoryCategory[]; // Arreglo de categorías
     filteredTags: InventoryTag[]; // Arreglo de etiquetas filtradas
@@ -81,8 +103,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     isLoading: boolean = false; // Indicador de carga
     pagination: InventoryPagination; // Datos de paginación
     searchInputControl: UntypedFormControl = new UntypedFormControl(); // Control de formulario no tipado para la búsqueda
-    selectedProduct: InventoryProduct | null = null; // Producto seleccionado, inicializado como null
-    selectedProductForm: UntypedFormGroup; // Formulario no tipado para el producto seleccionado
+    //selectedProduct: InventoryProduct | null = null; // Producto seleccionado, inicializado como null
+    selectedEquipment: InventoryEquipment | null = null;//equipment seleccionado, inicializado como null
+    selectedEquipmentForm: UntypedFormGroup; // Formulario no tipado para el producto seleccionado
     tags: InventoryTag[]; // Arreglo de etiquetas
     tagsEditMode: boolean = false; // Modo de edición de etiquetas
     vendors: InventoryVendor[]; // Arreglo de vendedores
@@ -107,27 +130,30 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
      */
     ngOnInit(): void {
         // Crear el formulario del producto seleccionado
-        this.selectedProductForm = this._formBuilder.group({
-            id               : [''], // ID del producto
-            category         : [''], // Categoría
-            name             : ['', [Validators.required]], // Nombre con validación requerida
-            description      : [''], // Descripción
-            tags             : [[]], // Etiquetas
-            sku              : [''], // SKU
-            barcode          : [''], // Código de barras
-            brand            : [''], // Marca
-            vendor           : [''], // Vendedor
-            stock            : [''], // Stock
-            reserved         : [''], // Reservado
-            cost             : [''], // Costo
-            basePrice        : [''], // Precio base
-            taxPercent       : [''], // Porcentaje de impuestos
-            price            : [''], // Precio
-            weight           : [''], // Peso
-            thumbnail        : [''], // Miniatura
-            images           : [[]], // Imágenes
-            currentImageIndex: [0], // Índice de la imagen actualmente visualizada
-            active           : [false], // Estado de activación del producto
+        this.selectedEquipmentForm = this._formBuilder.group({
+        equipos_id          : [0], // Equipos_id es la clave primaria
+        ip                  : [null], // Dirección IP del equipo
+        procesador          : [null], // Tipo de procesador
+        funcionariousuario  : [null], // Usuario asignado al equipo
+        lector              : [null], // Lector de tarjetas, CDs, etc.
+        tarjetavideo        : [null], // Información sobre la tarjeta de video
+        funcionarioasignado : [null], // Funcionario al que se asigna el equipo
+        oficina             : [null], // Oficina donde se encuentra el equipo
+        fecharegistro       : [null], // Fecha de registro del equipo
+        codigo              : [null], // Código del equipo
+        memoria             : [null], // Información de la memoria RAM
+        tarjetamadre        : [null], // Información de la tarjeta madre
+        antivirus           : [null], // Software antivirus instalado
+        garantia            : [null], // Garantía del equipo
+        discoduro           : [null], // Información sobre el disco duro
+        marca               : [null], // Marca del equipo
+        tipo                : [null], // Tipo de equipo (PC, Laptop, etc.)
+        modelo              : [null], // Modelo del equipo
+        serie               : [null], // Número de serie
+        so                  : [null], // Sistema operativo
+        responsable         : [null], // ID del responsable
+        mac                 : [null], // Dirección MAC de la tarjeta de red
+        active: [true], // Asegúrate de incluir este control
         });
 
         // Obtener las marcas del servicio de inventario
@@ -146,6 +172,27 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
 
+        
+         // Obtener los productos
+         this.equipments$ = this._inventoryService.equipments$;
+         console.log('Equipments loaded:', this.equipments$)
+
+        this._inventoryService.equipments$.pipe(takeUntil(this._unsubscribeAll)).subscribe({
+            next: (equipments) => console.log('Equipments loaded:', equipments),
+            error: (err) => console.error('Error loading equipments:', err),
+        });
+        this._inventoryService.equipments$.pipe(
+            takeUntil(this._unsubscribeAll)
+        ).subscribe((equipments) => {
+            console.log('Equipments from service:', equipments);
+            if (Array.isArray(equipments)) {
+                console.log('Equipments length:', equipments.length);
+            } else {
+                console.error('Equipments is not an array');
+            }
+        });
+            
+
         // Obtener los datos de paginación
         this._inventoryService.pagination$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -155,8 +202,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             });
 
         // Obtener los productos
-        this.products$ = this._inventoryService.products$;
-
+        //this.products$ = this._inventoryService.products$;
+        
+        
         // Obtener las etiquetas
         this._inventoryService.tags$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -182,7 +230,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 switchMap((query) => {
                     this.closeDetails(); // Cerrar los detalles del producto
                     this.isLoading = true; // Indicar que la carga está en progreso
-                    return this._inventoryService.getProducts(0, 10, 'name', 'asc', query); // Obtener productos
+                    return this._inventoryService.getEquipments(0, 10, 'name', 'asc', query); // Obtener productos
                 }),
                 map(() => {
                     this.isLoading = false; // Indicar que la carga ha finalizado
@@ -219,7 +267,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 switchMap(() => {
                     this.closeDetails(); // Cerrar los detalles del producto
                     this.isLoading = true; // Indicar que está cargando
-                    return this._inventoryService.getProducts(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction); // Obtener productos
+                    return this._inventoryService.getEquipments(this._paginator.pageIndex, this._paginator.pageSize, this._sort.active, this._sort.direction); // Obtener productos
                 }),
                 map(() => {
                     this.isLoading = false; // Indicar que la carga ha finalizado
@@ -242,46 +290,65 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     /**
      * Alternar los detalles de un producto
-     * @param productId
+     * @param equipos_id
      */
-    toggleDetails(productId: string): void {
+    toggleDetails2(equipos_id: number): void {
         // Si el producto ya está seleccionado, cerrar los detalles
-        if (this.selectedProduct && this.selectedProduct.id === productId) {
+        if (this.selectedEquipment && this.selectedEquipment.equipos_id === equipos_id) {
             this.closeDetails();
             return;
         }
 
         // Obtener el producto por ID
-        this._inventoryService.getProductById(productId)
-            .subscribe((product) => {
-                this.selectedProduct = product; // Establecer el producto seleccionado
-                this.selectedProductForm.patchValue(product); // Rellenar el formulario con los datos del producto
+        this._inventoryService.getEquipmentById(equipos_id)
+            .subscribe((equipment) => {
+               // this.selectedEquipment = equipment; // Establecer el producto seleccionado
+               // this.selectedEquipmentForm.patchValue(equipment); // Rellenar el formulario con los datos del producto
                 this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
+    }
+    toggleDetails(equipos_id: number): void {
+        // Si el producto ya está seleccionado, cerrar los detalles
+        if (this.selectedEquipment && this.selectedEquipment.equipos_id === equipos_id) {
+            this.closeDetails();
+            return;
+        }
+        
+        this._inventoryService.getEquipmentById(equipos_id).subscribe({
+            next: (response) => {
+                console.log('Equipo recibido: toggleDetails', response); // Depuración
+                this.selectedEquipment = response.data; // Extrae `data` de la respuesta
+                this.selectedEquipmentForm.patchValue(response.data);
+                this._changeDetectorRef.markForCheck(); // Forzar la detección de cambios
+            },
+            error: (err) => {
+                console.error('Error al obtener el equipo:', err);
+            },
+        });
     }
 
     /**
      * Cerrar los detalles del producto
      */
     closeDetails(): void {
-        this.selectedProduct = null; // Restablecer el producto seleccionado
+        this.selectedEquipment = null; // Restablecer el producto seleccionado
     }
 
     /**
      * Ciclar a través de las imágenes del producto seleccionado
      */
     cycleImages(forward: boolean = true): void {
-        const count = this.selectedProductForm.get('images').value.length; // Número de imágenes
-        const currentIndex = this.selectedProductForm.get('currentImageIndex').value; // Índice de la imagen actual
+        const count = this.selectedEquipmentForm.get('images').value.length; // Número de imágenes
+        const currentIndex = this.selectedEquipmentForm.get('currentImageIndex').value; // Índice de la imagen actual
 
         const nextIndex = currentIndex + 1 === count ? 0 : currentIndex + 1; // Índice siguiente
         const prevIndex = currentIndex - 1 < 0 ? count - 1 : currentIndex - 1; // Índice anterior
 
         // Si se cicla hacia adelante
         if (forward) {
-            this.selectedProductForm.get('currentImageIndex').setValue(nextIndex); // Actualizar al índice siguiente
+            this.selectedEquipmentForm.get('currentImageIndex').setValue(nextIndex); // Actualizar al índice siguiente
         } else {
-            this.selectedProductForm.get('currentImageIndex').setValue(prevIndex); // Actualizar al índice anterior
+            this.selectedEquipmentForm.get('currentImageIndex').setValue(prevIndex); // Actualizar al índice anterior
         }
     }
 
@@ -301,10 +368,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.filteredTags = this.tags.filter(tag => tag.title.toLowerCase().includes(value)); // Filtrar las etiquetas
     }
 
-    /**
+    /*
      * Manejar el evento de teclado en el filtro de etiquetas
      * @param event
-     */
+     
     filterTagsInputKeyDown(event): void {
         // Retornar si la tecla presionada no es 'Enter'
         if (event.key !== 'Enter') {
@@ -319,7 +386,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         const tag = this.filteredTags[0]; // Obtener la primera etiqueta filtrada
-        const isTagApplied = this.selectedProduct.tags.find(id => id === tag.id); // Verificar si la etiqueta ya está aplicada
+        const isTagApplied = this.selectedEquipment.tags.find(id => id === tag.id); // Verificar si la etiqueta ya está aplicada
 
         // Si la etiqueta ya está aplicada al producto, eliminarla
         if (isTagApplied) {
@@ -329,11 +396,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.addTagToProduct(tag);
         }
     }
+        */
 
-    /**
+    /*
      * Crear una nueva etiqueta
      * @param title
-     */
+    
     createTag(title: string): void {
         const tag = {
             title,
@@ -344,6 +412,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.addTagToProduct(response); // Agregar la etiqueta al producto
             });
     }
+             */
 
     /**
      * Actualizar el título de una etiqueta
@@ -365,35 +434,37 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
      * @param tag
      */
     deleteTag(tag: InventoryTag): void {
-        this._inventoryService.deleteTag(tag.id).subscribe(); // Eliminar la etiqueta en el servidor
+        //this._inventoryService.deleteTag(tag.id).subscribe(); // Eliminar la etiqueta en el servidor
         this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
     }
 
-    /**
+    /*
      * Agregar una etiqueta al producto
      * @param tag
-     */
+    
     addTagToProduct(tag: InventoryTag): void {
         this.selectedProduct.tags.unshift(tag.id); // Agregar la etiqueta al inicio del arreglo
-        this.selectedProductForm.get('tags').patchValue(this.selectedProduct.tags); // Actualizar el formulario
+        this.selectedEquipmentForm.get('tags').patchValue(this.selectedProduct.tags); // Actualizar el formulario
         this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
     }
+         */
 
-    /**
+    /*
      * Eliminar una etiqueta del producto
      * @param tag
-     */
+     
     removeTagFromProduct(tag: InventoryTag): void {
         this.selectedProduct.tags.splice(this.selectedProduct.tags.findIndex(item => item === tag.id), 1); // Eliminar la etiqueta
-        this.selectedProductForm.get('tags').patchValue(this.selectedProduct.tags); // Actualizar el formulario
+        this.selectedEquipmentForm.get('tags').patchValue(this.selectedProduct.tags); // Actualizar el formulario
         this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
     }
+        */
 
-    /**
+    /*
      * Alternar el estado de una etiqueta del producto
      * @param tag
      * @param change
-     */
+     
     toggleProductTag(tag: InventoryTag, change: MatCheckboxChange): void {
         if (change.checked) {
             this.addTagToProduct(tag); // Agregar etiqueta
@@ -401,6 +472,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.removeTagFromProduct(tag); // Eliminar etiqueta
         }
     }
+        */
 
     /**
      * Verificar si el botón para crear una nueva etiqueta debe mostrarse
@@ -413,22 +485,24 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     /**
      * Crear un nuevo producto
      */
-    createProduct(): void {
-        this._inventoryService.createProduct().subscribe((newProduct) => {
-            this.selectedProduct = newProduct; // Establecer el producto como seleccionado
-            this.selectedProductForm.patchValue(newProduct); // Rellenar el formulario con los datos del nuevo producto
+    createEquipment(): void 
+    {
+        this._inventoryService.createEquipment().subscribe((newEquipment) => {
+            this.selectedEquipment = newEquipment; // Establecer el producto como seleccionado
+            this.selectedEquipmentForm.patchValue(newEquipment); // Rellenar el formulario con los datos del nuevo producto
             this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
+            console.log("Nuevo equipo creado y formulario abierto.");
         });
     }
 
     /**
      * Actualizar el producto seleccionado usando los datos del formulario
      */
-    updateSelectedProduct(): void {
-        const product = this.selectedProductForm.getRawValue(); // Obtener los valores del formulario
-        delete product.currentImageIndex; // Eliminar el índice de imagen actual, ya que no es necesario para el servidor
+    updateSelectedEquipment(): void {
+        const  equipment = this.selectedEquipmentForm.getRawValue(); // Obtener los valores del formulario
+        delete equipment.currentImageIndex; // Eliminar el índice de imagen actual, ya que no es necesario para el servidor
 
-        this._inventoryService.updateProduct(product.id, product).subscribe(() => {
+        this._inventoryService.updateEquipment(this.selectedEquipment.equipos_id, equipment).subscribe(() => {
             this.showFlashMessage('success'); // Mostrar mensaje de éxito
         });
     }
@@ -436,7 +510,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     /**
      * Eliminar el producto seleccionado usando los datos del formulario
      */
-    deleteSelectedProduct(): void {
+    deleteSelectedEquipment(): void {
         const confirmation = this._fuseConfirmationService.open({ // Abrir diálogo de confirmación
             title  : 'Delete product', // Título del diálogo
             message: 'Are you sure you want to remove this product? This action cannot be undone!', // Mensaje del diálogo
@@ -449,8 +523,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
         confirmation.afterClosed().subscribe((result) => {
             if (result === 'confirmed') {
-                const product = this.selectedProductForm.getRawValue(); // Obtener los valores del formulario
-                this._inventoryService.deleteProduct(product.id).subscribe(() => { // Eliminar el producto en el servidor
+                const equipment = this.selectedEquipmentForm.getRawValue(); // Obtener los valores del formulario
+                this._inventoryService.deleteEquipment(equipment.equipos_id).subscribe(() => { // Eliminar el producto en el servidor
                     this.closeDetails(); // Cerrar los detalles del producto
                 });
             }
