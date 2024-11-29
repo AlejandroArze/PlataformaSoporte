@@ -9,16 +9,20 @@ export interface InventoryProduct
     barcode?: string | null;
     brand?: string | null;
     vendor: string | null;
-    stock: number;
-    reserved: number;
-    cost: number;
-    basePrice: number;
-    taxPercent: number;
-    price: number;
-    weight: number;
+    stock: string;
+    reserved: string;
+    cost: string;
+    basePrice: string;
+    taxPercent: string;
+    price: string;
+    weight: string;
     thumbnail: string;
     images: string[];
     active: boolean;
+    
+
+
+    
 }
 
 export interface InventoryPagination
@@ -62,12 +66,14 @@ export interface InventoryVendor
 
 
 export interface InventoryEquipment {
-    equiposId: number; // Equipos_id es la clave primaria
+    
+
+    equipos_id: number; // Equipos_id es la clave primaria
     ip?: string | null; // Dirección IP del equipo
     procesador?: string | null; // Tipo de procesador
     funcionariousuario?: string | null; // Usuario asignado al equipo
-    lector?: string | null; // Lector de tarjetas, CDs, etc.
-    tarjetavideo?: string | null; // Información sobre la tarjeta de video
+    lector?: boolean | null; // Lector de tarjetas, CDs, etc.
+    tarjetavideo?: string | null; // Información sobre la tarjeta de videofrontend/src/app/modules/admin/apps/ecommerce/inventory/inventory.types.ts
     funcionarioasignado?: string | null; // Funcionario al que se asigna el equipo
     oficina?: string | null; // Oficina donde se encuentra el equipo
     fecharegistro?: string | null; // Fecha de registro del equipo
@@ -78,10 +84,11 @@ export interface InventoryEquipment {
     garantia?: string | null; // Garantía del equipo
     discoduro?: string | null; // Información sobre el disco duro
     marca?: string | null; // Marca del equipo
-    tipo?: number | null; // Tipo de equipo (PC, Laptop, etc.)
+    tipo?: number | null; // Tipo de equipo (PC, Laptop, etc.)cd
     modelo?: string | null; // Modelo del equipo
     serie?: string | null; // Número de serie
     so?: string | null; // Sistema operativo
     responsable?: number | null; // ID del responsable
     mac?: string | null; // Dirección MAC de la tarjeta de red
+
 }

@@ -103,7 +103,7 @@ class EquipmentController {
  * @param {object} res - Objeto de respuesta HTTP, se usa para enviar respuestas al cliente.
  * @returns {Promise} - Promesa que resuelve al enviar una respuesta al cliente.
  */
-static async paginate(req, res) {
+static async paginate2(req, res) {
     // Obtiene los parámetros page y limit de la consulta, proporcionando valores predeterminados si no están presentes.
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
@@ -145,7 +145,30 @@ static async paginate(req, res) {
         );
     }
 }
+static async paginate(req, res) {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const search = req.query.search || ''; // Obtiene el término de búsqueda de la consulta
 
+    try {
+        // Llama al servicio de paginación con el término de búsqueda
+        const { count, rows } = await equipmentService.paginate({ page, limit, search });
+
+        // Transforma los resultados en DTOs
+        const equipmentDTOs = rows.map(equipment => EquipmentDTO.createFromEntity(equipment));
+
+        // Retorna la respuesta con paginación y resultados
+        return jsonResponse.successResponse(res, 200, "Equipments retrieved successfully", {
+            total: count,
+            perPage: limit,
+            currentPage: page,
+            totalPages: Math.ceil(count / limit),
+            data: equipmentDTOs,
+        });
+    } catch (error) {
+        return jsonResponse.errorResponse(res, 500, error.message);
+    }
+}
 
     // Método estático asíncrono para actualizar la información de un equipo
     static async update(req, res) {

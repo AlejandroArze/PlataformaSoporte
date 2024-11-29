@@ -3,6 +3,8 @@ const storeDTO = require("../http/request/equipment/storeDTO"); // DTO para vali
 const updateDTO = require("../http/request/equipment/updateDTO"); // DTO para validar los datos en la operación de actualización
 const idDTO = require("../http/request/equipment/idDTO"); // DTO para validar los identificadores de equipos
 const responseDTO = require("../http/request/equipment/responseDTO");
+const { Op, Sequelize } = require("sequelize");
+
 class EquipmentService {
 
     // Método para almacenar un nuevo equipo
@@ -70,7 +72,7 @@ class EquipmentService {
      * @param {object} queryParams - Contiene los parámetros necesarios para la paginación.
      * @returns {object} - Devuelve un objeto con el conteo total y los equipos correspondientes a la página solicitada.
      */
-    static async paginate(queryParams) {
+    static async paginate2(queryParams) {
         // Extrae los parámetros page y limit de queryParams.
         const { page, limit } = queryParams;
         console.log(page, limit)
@@ -88,7 +90,97 @@ class EquipmentService {
         // Devuelve el resultado de la consulta que incluye tanto la cantidad total de equipos como los equipos de la página actual.
         return { count, rows };
     }
+    static async paginate4(queryParams) {
+        const { page, limit, search } = queryParams; // Agrega el término de búsqueda
+        const offset = (page - 1) * limit;
+    
+        // Define la condición de búsqueda si `search` está presente
+        const whereCondition = search
+            ? {
+                [Op.or]: [
+                    
+                    { funcionariousuario: { [Op.like]: `%${search}%` } },
+                    // Agrega más campos si quieres buscar en ellos
+                ],
+            }
+            : {};
+    
+        // Realiza la consulta con la condición de búsqueda
+        const { count, rows } = await Equipment.findAndCountAll({
+            where: whereCondition, // Agrega la condición de búsqueda
+            limit: limit,
+            offset: offset,
+            order: [['equipos_id', 'DESC']],
+        });
+    
+        return { count, rows };
+    }
+    static async paginate6(queryParams) {
+        const { page, limit, search } = queryParams;
+        const offset = (page - 1) * limit;
+    
+        // Construir dinámicamente las condiciones de búsqueda
+        const whereCondition = search
+            ? {
+                [Op.or]: Object.keys(Equipment.rawAttributes).map((field) => ({
+                    [field]: { [Op.like]: `%${search}%` },
+                })),
+            }
+            : {};
+    
+        // Realizar la consulta con paginación y condiciones de búsqueda
+        const { count, rows } = await Equipment.findAndCountAll({
+            where: whereCondition,
+            limit: limit,
+            offset: offset,
+            order: [['equipos_id', 'DESC']],
+        });
+    
+        return { count, rows };
+    }
+    
 
+static async paginate(queryParams) {
+    const { page, limit, search } = queryParams;
+    const offset = (page - 1) * limit;
+
+    // Obtener todas las columnas del modelo
+    const columns = Object.keys(Equipment.rawAttributes);
+
+    // Construir las condiciones de búsqueda
+    const whereCondition = search
+        ? {
+            [Op.or]: columns.map((field) => {
+                const columnType = Equipment.rawAttributes[field].type.key;
+
+                if (columnType === "STRING" || columnType === "TEXT") {
+                    // Si la columna es texto, usa unaccent y ILIKE
+                    return Sequelize.literal(`unaccent("${field}") ILIKE unaccent('%${search}%')`);
+                } else {
+                    // Si no es texto, conviértelo a texto con CAST
+                    return Sequelize.literal(`CAST("${field}" AS TEXT) ILIKE '%${search}%'`);
+                }
+            }),
+        }
+        : {};
+
+    try {
+        // Realiza la consulta con las condiciones dinámicas
+        const { count, rows } = await Equipment.findAndCountAll({
+            where: whereCondition,
+            limit: limit,
+            offset: offset,
+            order: [["equipos_id", "DESC"]],
+        });
+
+        return { count, rows };
+    } catch (error) {
+        console.error("Error en paginación:", error.message);
+        throw error;
+    }
+}
+
+    
 
     // Método para actualizar un equipo por su ID
     static async update(data, id) {

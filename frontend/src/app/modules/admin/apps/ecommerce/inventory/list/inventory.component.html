@@ -31,7 +31,7 @@
                 class="ml-4"
                 mat-flat-button
                 [color]="'primary'"
-                (click)="createProduct()">
+                (click)="createEquipment()">
                 <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                 <span class="ml-2 mr-1">Añadir</span>
             </button>
@@ -43,15 +43,15 @@
 
         <!-- Products list -->
         <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
-            <ng-container *ngIf="(products$ | async) as products">
-                <ng-container *ngIf="products.length > 0; else noProducts">
+            <ng-container *ngIf="(equipments$ | async) as equipments">
+                <ng-container *ngIf="equipments.length > 0; else noequipments">
                     <div class="grid">
                         <!-- Header -->
                         <div
                             class="inventory-grid z-10 sticky top-0 grid gap-4 py-4 px-6 md:px-8 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
                             matSort
                             matSortDisableClear>
-                            <div>Equipo</div>
+                            <div>Marca</div>
                             <div
                                 class="hidden md:block"
                                 [mat-sort-header]="'sku'">
@@ -69,7 +69,7 @@
                             <div
                                 class="hidden lg:block"
                                 [mat-sort-header]="'stock'">
-                                Marca
+                                Equipo
                             </div>
                             <div
                                 class="hidden lg:block"
@@ -79,8 +79,8 @@
                             <div class="hidden sm:block">Detalles</div>
                         </div>
                         <!-- Rows -->
-                        <ng-container *ngIf="(products$ | async) as products">
-                            <ng-container *ngFor="let product of products; trackBy: trackByFn">
+                        <ng-container *ngIf="(equipments$ | async) as equipments">
+                            <ng-container *ngFor="let equipment of equipments; trackBy: trackByFn">
                                 <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
 
                                     <!-- Adaptación para mostrar texto en lugar de una imagen -->
@@ -88,17 +88,17 @@
                                 <!-- Adaptación para mostrar {{ category.name }} en lugar de una imagen -->
                                     <div class="flex items-center">
                                         <div class="relative flex flex-0 items-center justify-center w-12 h-12 mr-6 rounded overflow-hidden border">
-                                            <!-- Mostrar category.name si está disponible -->
+                                            <!-- Mostrar category.name si está disponible    .category -->
                                             <div
-                                                *ngIf="product.thumbnail"
+                                                *ngIf="equipment.thumbnail"
                                                 class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase">
-                                                {{product.category}}
+                                                {{equipment.tipo}}
                                             </div>
-                                            <!-- Mostrar "NO HAY IMAGEN" si no hay thumbnail -->
+                                            <!-- Mostrar "NO HAY IMAGEN" si no hay thumbnail  .stock -->
                                             <div
-                                                *ngIf="!product.thumbnail"
+                                                *ngIf="!equipment.thumbnail"
                                                 class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase">
-                                                NO HAY IMAGEN
+                                                {{equipment.marca}}
                                             </div>
                                         </div>
                                     </div>
@@ -106,73 +106,73 @@
 
 
 
-                                    <!-- SKU -->
+                                    <!-- SKU .sku-->
                                     <div class="hidden md:block truncate">
-                                        {{product.sku}}
+                                        {{equipment.codigo}}
                                     </div>
 
                                     <!-- Name -->
                                     <div class="truncate">
-                                        {{product.name}}
+                                        {{equipment.funcionariousuario}}
                                     </div>
 
-                                    <!-- Price -->
+                                    <!-- Price .pric-->
                                     <div class="hidden sm:block">
-                                        {{product.price }}
+                                        {{equipment.modelo }}
                                     </div>
 
-                                    <!-- Stock -->
+                                    <!-- Stock .category -->
                                     <div class="hidden lg:flex items-center">
-                                        <div class="min-w-4">{{product.stock}}</div>
+                                        <div class="min-w-4">{{equipment.tipo}}</div>
                                         <!-- Low stock -->
                                         <div
                                             class="flex items-end ml-2 w-1 h-4 bg-red-200 rounded overflow-hidden"
-                                            *ngIf="product.stock < 20">
+                                            *ngIf="equipment.tipo < 20">
                                             <div class="flex w-full h-1/3 bg-red-600"></div>
                                         </div>
                                         <!-- Medium stock -->
                                         <div
                                             class="flex items-end ml-2 w-1 h-4 bg-orange-200 rounded overflow-hidden"
-                                            *ngIf="product.stock >= 20 && product.stock < 30">
+                                            *ngIf="equipment.tipo >= 20 && equipment.tipo < 30">
                                             <div class="flex w-full h-2/4 bg-orange-400"></div>
                                         </div>
                                         <!-- High stock -->
                                         <div
                                             class="flex items-end ml-2 w-1 h-4 bg-green-100 rounded overflow-hidden"
-                                            *ngIf="product.stock >= 30">
+                                            *ngIf="equipment.tipo >= 30">
                                             <div class="flex w-full h-full bg-green-400"></div>
                                         </div>
                                     </div>
 
-                                    <!-- Active -->
+                                    <!-- Active .active -->
                                     <div class="hidden lg:block">
-                                        <ng-container *ngIf="product.active">
+                                        <ng-container *ngIf="equipment.active">
                                             <mat-icon
                                                 class="text-green-400 icon-size-5"
                                                 [svgIcon]="'heroicons_solid:check'"></mat-icon>
                                         </ng-container>
-                                        <ng-container *ngIf="!product.active">
+                                        <ng-container *ngIf="!equipment.active">
                                             <mat-icon
                                                 class="text-gray-400 icon-size-5"
                                                 [svgIcon]="'heroicons_solid:x-mark'"></mat-icon>
                                         </ng-container>
                                     </div>
 
-                                    <!-- Details button -->
+                                    <!-- Details button .id -->
                                     <div>
                                         <button
                                             class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                             mat-stroked-button
-                                            (click)="toggleDetails(product.id)">
+                                            (click)="toggleDetails(equipment.equipos_id)">
                                             <mat-icon
                                                 class="icon-size-5"
-                                                [svgIcon]="selectedProduct?.id === product.id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
+                                                [svgIcon]="selectedEquipment?.equipos_id === equipment.equipos_id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
                                         </button>
                                     </div>
                                 </div>
                                 <div class="grid">
-                                    <ng-container *ngIf="selectedProduct?.id === product.id">
-                                        <ng-container *ngTemplateOutlet="rowDetailsTemplate; context: {$implicit: product}"></ng-container>
+                                    <ng-container *ngIf="selectedEquipment?.equipos_id === equipment.equipos_id">
+                                        <ng-container *ngTemplateOutlet="rowDetailsTemplate; context: {$implicit: equipment}"></ng-container>
                                     </ng-container>
                                 </div>
                             </ng-container>
@@ -199,7 +199,7 @@
                         <!-- Selected product form -->
                         <form
                             class="flex flex-col w-full"
-                            [formGroup]="selectedProductForm">
+                            [formGroup]="selectedEquipmentForm">
 
                             <div class="flex flex-col sm:flex-row p-8">
 
@@ -211,7 +211,7 @@
                                         <mat-slide-toggle
                                             [formControlName]="'active'"
                                             [color]="'primary'">
-                                            {{selectedProductForm.get('active').value === true ? 'Activo' : 'Desabilitado'}}
+                                            {{selectedEquipmentForm.get('active').value === true ? 'Activo' : 'Desabilitado'}}
                                         </mat-slide-toggle>
                                     </div>
                                 </div>
@@ -225,7 +225,7 @@
                                             <mat-label>Funcionario Usuario del Equipo</mat-label>
                                             <input
                                                 matInput
-                                                [formControlName]="'name'">
+                                                [formControlName]="'funcionariousuario'">
                                         </mat-form-field>
 
                                         <!-- SKU and Barcode -->
@@ -234,13 +234,13 @@
                                                 <mat-label>Código de Bienes</mat-label>
                                                 <input
                                                     matInput
-                                                    [formControlName]="'sku'">
+                                                    [formControlName]="'codigo'">
                                             </mat-form-field>
                                             <mat-form-field class="w-2/3 pl-2">
                                                 <mat-label>Serie</mat-label>
                                                 <input
                                                     matInput
-                                                    [formControlName]="'barcode'">
+                                                    [formControlName]="'serie'">
                                             </mat-form-field>
                                         </div>
 
@@ -248,7 +248,7 @@
                                         <div class="flex">
                                             <mat-form-field class="w-1/3 pr-2">
                                                 <mat-label>Tipo de Hardware</mat-label>
-                                                <mat-select [formControlName]="'category'">
+                                                <mat-select [formControlName]="'tipo'">
                                                     <ng-container *ngFor="let category of categories">
                                                         <mat-option [value]="category.id">
                                                             {{category.name}}
@@ -258,7 +258,7 @@
                                             </mat-form-field>
                                             <mat-form-field class="w-1/3 px-2">
                                                 <mat-label>Oficina</mat-label>
-                                                <mat-select [formControlName]="'brand'">
+                                                <mat-select [formControlName]="'oficina'">
                                                     <ng-container *ngFor="let brand of brands">
                                                         <mat-option [value]="brand.id">
                                                             {{brand.name}}
@@ -268,7 +268,7 @@
                                             </mat-form-field>
                                             <mat-form-field class="w-1/3 pl-2">
                                                 <mat-label>Usuario Asignado Bienes</mat-label>
-                                                <mat-select [formControlName]="'vendor'">
+                                                <mat-select [formControlName]="'funcionariousuario'">
                                                     <ng-container *ngFor="let vendor of vendors">
                                                         <mat-option [value]="vendor.id">
                                                             {{vendor.name}}
@@ -285,21 +285,21 @@
                                                 <input
                                                     
                                                     matInput
-                                                    [formControlName]="'stock'">
+                                                    [formControlName]="'marca'">
                                             </mat-form-field>
                                             <mat-form-field class="w-1/3 pl-2">
                                                 <mat-label>Memoria Ram</mat-label>
                                                 <input
                                                     
                                                     matInput
-                                                    [formControlName]="'reserved'">
+                                                    [formControlName]="'memoria'">
                                             </mat-form-field>
                                             <mat-form-field class="w-1/3 pl-2">
                                                 <mat-label>Sistema Operativo</mat-label>
                                                 <input
                                                     
                                                     matInput
-                                                    [formControlName]="'reserved'">
+                                                    [formControlName]="'so'">
                                             </mat-form-field>
                                             
                                             
@@ -310,21 +310,21 @@
                                                 <input
                                                     
                                                     matInput
-                                                    [formControlName]="'stock'">
+                                                    [formControlName]="'antivirus'">
                                             </mat-form-field>
                                             <mat-form-field class="w-1/3 pl-2">
                                                 <mat-label>MAC del Equipo</mat-label>
                                                 <input
                                                     
                                                     matInput
-                                                    [formControlName]="'reserved'">
+                                                    [formControlName]="'mac'">
                                             </mat-form-field>
                                             <mat-form-field class="w-1/3 pl-2">
                                                 <mat-label>Ip Asignado</mat-label>
                                                 <input
                                                     
                                                     matInput
-                                                    [formControlName]="'reserved'">
+                                                    [formControlName]="'ip'">
                                             </mat-form-field>
                                             
                                             
@@ -335,37 +335,32 @@
                                     <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
                                         <mat-form-field class="w-full">
                                             <mat-label>Placa Madre</mat-label>
-                                           
-                                            <input
-                                                matInput
-                                                [formControlName]="'cost'">
+                                            <input matInput [formControlName]="'tarjetamadre'">
                                         </mat-form-field>
+
                                         <mat-form-field class="w-full">
                                             <mat-label>Procesador</mat-label>
-                                            
-                                            <input
-                                                matInput
-                                                [formControlName]="'basePrice'">
+                                            <input matInput [formControlName]="'procesador'">
                                         </mat-form-field>
+
                                         <mat-form-field class="w-full">
                                             <mat-label>Tarjeta de Video</mat-label>
-                                            
-                                            <input
-                                                
-                                                matInput
-                                                [formControlName]="'taxPercent'">
+                                            <input matInput [formControlName]="'tarjetavideo'">
                                         </mat-form-field>
+
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Disco Duro</mat-label>
+                                            <input matInput [formControlName]="'discoduro'">
+                                        </mat-form-field>
+
                                         <mat-form-field class="w-full">
                                             <mat-label>Modelo</mat-label>
-                                            
-                                            <input
-                                                matInput
-                                                [formControlName]="'price'">
+                                            <input matInput [formControlName]="'modelo'">
                                         </mat-form-field>
-                                        <mat-checkbox class="w-full">
-                                            Lector DVD
-                                        </mat-checkbox>
+
+                                        <mat-checkbox [formControlName]="'lector'">Lector DVD</mat-checkbox>
                                     </div>
+
 
                                     <!-- Weight & Tags -->
                                     <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
@@ -374,18 +369,24 @@
                                             
                                             <input
                                                 matInput
-                                                [formControlName]="'weight'">
+                                                [formControlName]="'oficina'">
                                         </mat-form-field>
                                      
                                         <mat-form-field class="example-full-width">
                                             <mat-label>Garantía</mat-label>
-                                            <input matInput [matDatepicker]="picker">
+                                            <input matInput [formControlName]="'garantia'" [matDatepicker]="picker" readonly>
+                                            
                                             <mat-hint>Mes/Día/Año</mat-hint>
+                                            
                                             <mat-datepicker-toggle matIconSuffix [for]="picker">
                                               <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
                                             </mat-datepicker-toggle>
+                                            
                                             <mat-datepicker #picker></mat-datepicker>
-                                        </mat-form-field>
+                                          </mat-form-field>
+                                          
+                                          
+                                          
                                         
                                         <mat-label><b>Información de Bienes</b></mat-label>
                                         <mat-card appearance="outlined">
@@ -403,7 +404,7 @@
                                     class="-ml-4"
                                     mat-button
                                     [color]="'warn'"
-                                    (click)="deleteSelectedProduct()">
+                                    (click)="deleteSelectedEquipment()">
                                     Eliminar
                                 </button>
                                 <div class="flex items-center">
@@ -426,7 +427,7 @@
                                     <button
                                         mat-flat-button
                                         [color]="'primary'"
-                                        (click)="updateSelectedProduct()">
+                                        (click)="updateSelectedEquipment()">
                                         Actualizar
                                     </button>
                                 </div>

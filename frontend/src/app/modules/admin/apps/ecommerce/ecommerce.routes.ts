@@ -20,7 +20,8 @@ export default [
                 resolve  : {
                     brands    : () => inject(InventoryService).getBrands(),
                     categories: () => inject(InventoryService).getCategories(),
-                    products  : () => inject(InventoryService).getProducts(),
+                    //products  : () => inject(InventoryService).getProducts(),
+                    equipments  : () => inject(InventoryService).getEquipments(),
                     tags      : () => inject(InventoryService).getTags(),
                     vendors   : () => inject(InventoryService).getVendors(),
                 },
