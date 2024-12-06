@@ -1,0 +1,6 @@
+<button 
+  class="flex items-center justify-center w-12 h-12 rounded-full cursor-pointer ring-inset ring-primary bg-hover"
+  (click)="toggleScheme()">
+  <mat-icon class="icon-size-5" [svgIcon]="config.scheme === 'dark' ? 'heroicons_solid:moon' : 'heroicons_solid:sun'">
+  </mat-icon>
+</button>

@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { InventoryBrand, InventoryCategory, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
-import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap, throwError,catchError,} from 'rxjs';
+import { InventoryBrand, InventoryCategory, BienesResponse, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor,Empleado } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { BehaviorSubject,  filter, map, Observable, of, switchMap, take, tap, throwError,catchError,} from 'rxjs';
 import { environment } from 'environments/environment'; 
 import { shareReplay } from 'rxjs/operators';
+ 
 
 
 
@@ -28,6 +29,9 @@ export class InventoryService
     
     private _tags: BehaviorSubject<InventoryTag[] | null> = new BehaviorSubject(null);
     private _vendors: BehaviorSubject<InventoryVendor[] | null> = new BehaviorSubject(null);
+    private _bienes = new BehaviorSubject<any>(null);
+    private apiUrl = 'https://appgamc.cochabamba.bo/transparencia/servicio/ws-consulta-bienes.php';
+    private apiUrlEmpleado = 'https://appgamc.cochabamba.bo/transparencia/servicio/buscar-empleados.php';
 
 
     private baseUrl = environment.baseUrl;//llamamos a los enviment de la url
@@ -605,6 +609,13 @@ getEquipmentById(equipos_id: number): Observable<{ message: string; data: Invent
             console.log('Datos recibidos de la API:', response);
 
             const equipment = response.data; // Extrae `data` de la respuesta
+            // Verificar y limpiar `funcionario_asignado`
+            if (equipment.funcionarioasignado && typeof equipment.funcionarioasignado === 'string') {
+                console.log("Antes de la limpieza funcionario_asignado:", equipment.funcionarioasignado);
+                equipment.funcionarioasignado = equipment.funcionarioasignado.replace(/\s+/g, ' ').trim(); // Limpia espacios múltiples
+                equipment.funcionariousuario = equipment.funcionariousuario.replace(/\s+/g, ' ').trim(); // Limpia espacios múltiples
+                console.log("Después de la limpieza funcionario_asignado:", equipment.funcionarioasignado);
+            }
 
             // Verificar y convertir 'lector' a booleano si es necesario
             if (typeof equipment.lector === 'string') {
@@ -1609,4 +1620,146 @@ updateEquipment434(equipos_id: number, equipment: InventoryEquipment): Observabl
             }),
         );
     }
+
+    /**
+   * Observable for bienes data
+   */
+    get bienes$(): Observable<any> {
+        return this._bienes.asObservable();
+    }
+    
+
+    
+    
+    /**
+   * Get bienes
+   */
+  getBienes9(codBienes: string): Observable<any> {
+    const body = { cod_bienes: codBienes };
+
+    return this._httpClient.post<any>(this.apiUrl, body).pipe(
+      tap((response) => {
+        if (response.status) {
+          this._bienes.next(response.data);
+        }
+      })
+    );
+  }
+
+  getBienes99(codBienes: string): Observable<any> {
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/x-www-form-urlencoded');
+
+    const body = `cod_bienes=${encodeURIComponent(codBienes)}`;
+
+    return this._httpClient.post('https://appgamc.cochabamba.bo/transparencia/servicio/ws-consulta-bienes.php', body, { headers });
+  }
+  getBienes344(codBienes: string): Observable<any> {
+    const headers = new HttpHeaders()
+      .set('Content-Type', 'application/x-www-form-urlencoded');
+
+    const body = `cod_bienes=${encodeURIComponent(codBienes)}`;
+
+    return this._httpClient.post('http://localhost:3001/api/proxy', body, { headers }).pipe(
+        tap((response) => {
+          if (response.status) {
+            this._bienes.next(response.data);
+          }
+        })
+      );
+  }
+  getBienes(codBienes: string): Observable<BienesResponse | null> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+
+    const body = `cod_bienes=${encodeURIComponent(codBienes)}`;
+
+    return this._httpClient.post<BienesResponse>('http://localhost:3001/api/proxy', body, { headers }).pipe(
+      tap((response) => {
+        if (response && response.data) {
+          console.log('Bienes encontrados:', response.data);
+        }
+      })
+    );
+    }
+    // Método para buscar empleados en el backend utilizando el nombre completo como filtro
+    getEmpleados(nombreCompleto: string): Observable<Empleado[]> {
+
+    // Creamos un objeto URLSearchParams para enviar los datos de manera codificada (application/x-www-form-urlencoded)
+    const body = new URLSearchParams();
+    
+    // Añadimos el nombre completo como parámetro a la solicitud
+    body.set('nombre_completo', nombreCompleto);
+  
+    // Configuramos las cabeceras para indicar que estamos enviando los datos en formato 'application/x-www-form-urlencoded'
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+  
+    // Realizamos una solicitud POST al servidor en el endpoint 'http://localhost:3001/api/empleados'
+    // Enviamos los datos (body) y las cabeceras configuradas
+    return this._httpClient.post<{ status: boolean; data: Empleado[] }>('http://localhost:3001/api/empleados', body.toString(), { headers })
+      
+      // Usamos el operador 'map' de RxJS para extraer solo el campo 'data' de la respuesta
+      .pipe(
+        
+        map(response => response.data)
+    
+    ); // Devolvemos solo los empleados, que están dentro del campo 'data'
+      
+
+  }
+  // Método para obtener bienes desde el backend utilizando un código de bienes como parámetro
+
+
+
+    buscarEmpleados(nombreCompleto: string): Observable<Empleado[] | null> {
+
+        // Configuramos las cabeceras de la solicitud para indicar que el contenido será de tipo 'application/x-www-form-urlencoded'
+        const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    
+        // Creamos el cuerpo de la solicitud, codificando el parámetro nombre_completo para asegurar que sea adecuado para la URL
+        const body = `nombre_completo=${encodeURIComponent(nombreCompleto)}`;
+    
+        // Realizamos la solicitud POST al servidor en el endpoint 'http://localhost:3001/api/empleados'
+        // Enviamos el cuerpo de la solicitud y las cabeceras configuradas
+        return this._httpClient.post<{ status: boolean; data: Empleado[] }>('http://localhost:3001/api/empleados', body, { headers })
+        .pipe(
+            // Usamos el operador 'map' para extraer solo el array de empleados desde el campo 'data'
+            map(response => {
+            // Si la respuesta tiene éxito y contiene datos, devolvemos el array de empleados
+            if (response && response.status) {
+                //console.log('Empleados encontrados:', response.data);
+                return response.data; // Extraemos el array de empleados
+
+            } else {
+                return null; // En caso de error, devolvemos null
+            }
+            }),
+            // Usamos el operador 'tap' para realizar una acción secundaria sin modificar la respuesta
+            tap((empleados) => {
+            // Si encontramos empleados, los mostramos en la consola
+            if (empleados) {
+                console.log('Empleados encontrados:', empleados);
+            }
+            })
+        );
+    }
+  
+  
+  
+    
+      
+
+    searchVendors(query: string): Observable<any[]> {
+        const body = new URLSearchParams();
+        body.set('nombre_completo', query);
+
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/x-www-form-urlencoded'
+        });
+
+        return this._httpClient.post<any[]>(this.apiUrl, body.toString(), { headers });
+    }
+
+    
 }

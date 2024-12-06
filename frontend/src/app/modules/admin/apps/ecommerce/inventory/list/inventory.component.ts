@@ -1,7 +1,7 @@
 // Importaciones necesarias desde Angular y otras dependencias
 import { AsyncPipe, CurrencyPipe, NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation,HostListener } from '@angular/core';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators,FormGroup,FormBuilder } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule, MatRippleModule } from '@angular/material/core';
@@ -16,13 +16,20 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfirmationService } from '@fuse/services/confirmation';
 import { InventoryService } from 'app/modules/admin/apps/ecommerce/inventory/inventory.service';
-import { InventoryBrand, InventoryCategory, InventoryEquipment, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor } from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
+import { InventoryBrand, InventoryCategory, InventoryEquipment, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor , Empleado} from 'app/modules/admin/apps/ecommerce/inventory/inventory.types';
 import { debounceTime, map, merge, Observable, Subject, switchMap, takeUntil } from 'rxjs';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { NativeDateAdapter, DateAdapter } from '@angular/material/core';
 
+
+
+import {  FormControl } from '@angular/forms';
+
+
 import {MatCardModule} from '@angular/material/card';
+import { tap } from 'rxjs/operators';  // Para el operador tap
+import { of } from 'rxjs';  // Para crear un Observable vacío (en caso de que sea necesario)
 
 
 import { NgModule } from '@angular/core';
@@ -30,6 +37,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { MatNativeDateModule } from '@angular/material/core'; // Usamos el adaptador nativo de fecha de Angular
 import { MAT_DATE_FORMATS } from '@angular/material/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 
 
@@ -51,6 +59,8 @@ export const MY_DATE_FORMATS = {
 @Component({
     selector       : 'inventory-list', // Selector HTML para identificar el componente
     templateUrl    : './inventory.component.html', // Ruta al archivo de plantilla HTML
+    
+    
     styles         : [
         /* language=SCSS */
         `
@@ -69,13 +79,100 @@ export const MY_DATE_FORMATS = {
                     grid-template-columns: 48px 112px auto 112px 96px 96px 72px;
                 }
             }
+
+
+            .example-form {
+            min-width: 150px;
+            max-width: 500px;
+            width: 40%;
+            }
+
+            .example-full-width {
+            width: 100%;
+            }
+            
+          
+            .custom-autocomplete {
+            position: relative; /* Permite posicionar el dropdown relativo al contenedor */
+            width: 40%;
+            
+            .dropdown,
+            .dropdown-no-results {
+                position: absolute; /* Dropdown flota sobre el contenedor */
+                top: 100%; /* Justo debajo del input */
+                left: 0;
+                width: 100%; /* Alineado al ancho del input */
+                background: #ffffff; /* Fondo claro */
+                border: 1px solid #ccc; /* Borde claro */
+                border-radius: 4px; /* Bordes redondeados */
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destacar */
+                z-index: 1050; /* Más alto que otros elementos */
+                max-height: 200px; /* Limita la altura máxima */
+                overflow-y: auto; /* Habilita el scroll */
+                padding: 0; /* Elimina el espacio interno */
+                transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+
+                /* Modo oscuro */
+                @media (prefers-color-scheme: dark) {
+                background: #1e293b; /* Fondo oscuro */
+                border-color: #444; /* Borde oscuro */
+                color: #fff; /* Texto blanco */
+                box-shadow: 0px 4px 8px rgba(255, 255, 255, 0.1); /* Sombra tenue */
+                }
+            }
+
+            .dropdown-item {
+                padding: 8px 12px;
+                cursor: pointer;
+                white-space: nowrap; /* No permite múltiples líneas */
+                overflow: hidden; /* Oculta texto desbordante */
+                text-overflow: ellipsis; /* Muestra "..." si el texto es muy largo */
+                transition: background-color 0.3s;
+
+                /* Hover para modo claro */
+                @media (-color-scheme: light) {
+                &:hover {
+                background-color: #f1f1f1; /* Fondo claro al pasar el mouse */
+                }
+                }
+
+                /* Hover para modo oscuro */
+                @media (prefers-color-scheme: dark) {
+                &:hover {
+                    background-color: #303a4a; /* Fondo oscuro al pasar el mouse */
+                }
+                }
+            }
+
+            .dropdown-no-results {
+                padding: 8px 12px;
+                text-align: center;
+                font-size: 0.9rem;
+                color: #999; /* Modo claro */
+
+                /* Modo oscuro */
+                @media (prefers-color-scheme: dark) {
+                color: #bbb; /* Texto más claro en modo oscuro */
+                }
+            }
+            }
+
+
+
+            
+
+            
+
         `,
     ],
     encapsulation  : ViewEncapsulation.None, // Define la encapsulación CSS
     changeDetection: ChangeDetectionStrategy.OnPush, // Define la estrategia de detección de cambios
     animations     : fuseAnimations, // Incluye las animaciones definidas en fuse
     standalone     : true, // Especifica que este componente puede ser usado de forma independiente
-    imports        : [NgIf,MatCardModule, MatProgressBarModule, MatFormFieldModule, MatIconModule, MatDatepickerModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatSortModule, NgFor, NgTemplateOutlet, MatPaginatorModule, NgClass, MatSlideToggleModule, MatSelectModule, MatOptionModule, MatCheckboxModule, MatRippleModule, AsyncPipe, CurrencyPipe], // Módulos que se importan para el uso en el componente  
+    imports        : [NgIf,MatCardModule, MatProgressBarModule, MatFormFieldModule, MatIconModule, MatDatepickerModule, MatInputModule, FormsModule, ReactiveFormsModule, MatButtonModule, MatSortModule, NgFor, NgTemplateOutlet, MatPaginatorModule, NgClass, MatSlideToggleModule, MatSelectModule, MatOptionModule, MatCheckboxModule, MatRippleModule, AsyncPipe, CurrencyPipe,  MatFormFieldModule,MatInputModule, MatAutocompleteModule,ReactiveFormsModule,AsyncPipe,FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatAutocompleteModule], // Módulos que se importan para el uso en el componente  
     providers: [
         
         { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
@@ -95,7 +192,11 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     //products$: Observable<InventoryProduct[]>; // Observable para obtener los productos
     equipments$: Observable<InventoryEquipment[]>;
-    
+    bienesData$: Observable<any>; // Observable para los datos reactivos
+    codigoBien: string = ''; // Variable para almacenar el código de bienes ingresado
+
+    bienes: any; // Cambia 'any' por el tipo adecuado si tienes una interfaz definida.
+
     brands: InventoryBrand[]; // Arreglo de marcas
     categories: InventoryCategory[]; // Arreglo de categorías
     filteredTags: InventoryTag[]; // Arreglo de etiquetas filtradas
@@ -106,6 +207,14 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     //selectedProduct: InventoryProduct | null = null; // Producto seleccionado, inicializado como null
     selectedEquipment: InventoryEquipment | null = null;//equipment seleccionado, inicializado como null
     selectedEquipmentForm: UntypedFormGroup; // Formulario no tipado para el producto seleccionado
+    form: FormGroup;
+    empleados: Empleado[] = [];
+    filteredEmpleados: string[] = [];
+    
+    //filteredEmpleados: string[] = ['Juan Perez', 'Maria Gonzalez', 'Carlos Lopez'];
+    showDropdown = false; // Controla la visibilidad del desplegable
+
+  selectedEmpleado: Empleado | null = null;
     tags: InventoryTag[]; // Arreglo de etiquetas
     tagsEditMode: boolean = false; // Modo de edición de etiquetas
     vendors: InventoryVendor[]; // Arreglo de vendedores
@@ -119,7 +228,19 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         private _fuseConfirmationService: FuseConfirmationService, // Servicio para mostrar diálogos de confirmación
         private _formBuilder: UntypedFormBuilder, // Constructor de formularios
         private _inventoryService: InventoryService, // Servicio para manejar inventario
-    ) {}
+        private bienesService: InventoryService,
+        private http: HttpClient,
+        private fb: FormBuilder,
+         private empleadoService: InventoryService,
+         private cd: ChangeDetectorRef
+    ) {
+        this.bienesData$ = this.bienesService.bienes$; 
+        // Inicialización del formulario con el control 'empleadoSeleccionado'
+        this.form = this.fb.group({
+        empleadoSeleccionado: [''],  // Asegúrate de que esto esté aquí
+        });
+
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Ciclos de vida
@@ -171,7 +292,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.categories = categories; // Actualizar las categorías
                 this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
+        //this.getBienes('C0130212300017'); // Código de bienes dinámico
+        this.bienesData$ = this.bienesService.bienes$; // Asignación del observable reactivo
 
+        
         
          // Obtener los productos
          this.equipments$ = this._inventoryService.equipments$;
@@ -191,6 +315,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 console.error('Equipments is not an array');
             }
         });
+        
             
 
         // Obtener los datos de paginación
@@ -222,6 +347,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
 
+       
+    
+
         // Suscribirse a los cambios en el campo de búsqueda
         this.searchInputControl.valueChanges
             .pipe(
@@ -237,6 +365,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 }),
             )
             .subscribe();
+
+
+
+            this.form = new FormGroup({
+                funcionarioasignado: new FormControl(''), // Agrega 'funcionarioasignado' aquí
+              });
     }
 
     /**
@@ -307,16 +441,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this._changeDetectorRef.markForCheck(); // Marcar para detección de cambios
             });
     }
-    toggleDetails(equipos_id: number): void {
+    toggleDetails45(equipos_id: number): void {
         // Si el producto ya está seleccionado, cerrar los detalles
         if (this.selectedEquipment && this.selectedEquipment.equipos_id === equipos_id) {
             this.closeDetails();
             return;
         }
-        
+       
         this._inventoryService.getEquipmentById(equipos_id).subscribe({
             next: (response) => {
                 console.log('Equipo recibido: toggleDetails', response); // Depuración
+                
                 this.selectedEquipment = response.data; // Extrae `data` de la respuesta
                 this.selectedEquipmentForm.patchValue(response.data);
                 this._changeDetectorRef.markForCheck(); // Forzar la detección de cambios
@@ -325,7 +460,138 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 console.error('Error al obtener el equipo:', err);
             },
         });
+        
+
+        
+
+        
+      
+        
+        
+        
+        
+
     }
+    toggleDetails(equipos_id: number,codigo: string): void {
+        // Si el producto ya está seleccionado, cerrar los detalles
+        if (this.selectedEquipment && this.selectedEquipment.equipos_id === equipos_id) {
+            this.closeDetails();
+            return;
+        }
+    
+        // Verifica que `getEquipmentById` devuelva un Observable
+        this._inventoryService.getEquipmentById(equipos_id).subscribe({
+            next: (response) => {
+                console.log('Equipo recibido: toggleDetails', response);
+                this.selectedEquipment = response.data;
+                this.selectedEquipmentForm.patchValue(response.data);
+                this._changeDetectorRef.markForCheck(); // Forzar la detección de cambios
+                // Verifica que `getBienes` también devuelva un Observable
+                this.getBienes(response.data.codigo);
+                this.onSearch(response.data.funcionarioasignado);
+                this.selectedEquipmentForm.controls['funcionarioasignado'].setValue(response.data.funcionarioasignado); // Copia el valor al input
+            },
+            error: (err) => {
+                console.error('Error al obtener el equipo:', err);
+            },
+        });
+    
+        
+    }
+    
+
+    getBienes4(): void {
+        // Capturamos el valor del código de bienes desde el formulario
+        const codigoBien = this.selectedEquipmentForm.get('codigo')?.value;
+         console.log('Valor de código de bienes antes de validar:', codigoBien); // Depurar valor
+
+        if (codigoBien.trim()) {
+          this.bienesService.getBienes(codigoBien).subscribe(
+            response => {
+              console.log('Bienes encontrados:', response);
+            },
+            error => {
+              console.error('Error al buscar bienes:', error);
+            }
+          );
+        } else {
+          console.warn('El código de bienes está vacío o no válido.');
+        }
+        console.log('Código de bienes:', codigoBien);
+      }
+
+      getBiene34s(): void {
+        // Capturamos el valor del código de bienes desde el formulario
+        const codigoBien = this.selectedEquipmentForm.get('codigo')?.value;
+        console.log('Valor de código de bienes antes de validar:', codigoBien); // Depuración
+      
+        if (codigoBien.trim()) {
+          this.bienesService.getBienes(codigoBien).subscribe(
+            response => {
+              this.bienes = response; // Asigna la respuesta a la variable 'bienes'
+              console.log('Bienes encontrados:', this.bienes);
+              this.bienes = response; // Extrae `data` de la respuesta
+              //this.bienes.patchValue(response);
+              this.bienes.markForCheck(); // Forzar la detección de cambios
+            },
+            error => {
+                this.bienes = "";
+              console.error('Error al buscar bienes:', error);
+              
+            }
+          );
+        } else {
+          console.warn('El código de bienes está vacío o no válido.');
+        }
+      }
+      getBienes99(): Observable<any> {
+        const codigoBien = this.selectedEquipmentForm.get('codigo')?.value;
+        console.log('Valor de código de bienes antes de validar:', codigoBien); // Depuración
+    
+        if (codigoBien.trim()) {
+            // Llamada al servicio que devuelve un Observable
+            return this.bienesService.getBienes(codigoBien).pipe(
+                tap(response => {
+                    this.bienes = response;  // Asigna la respuesta a la variable 'bienes'
+                    console.log('Bienes encontrados:', this.bienes);
+                    // Llamada a markForCheck (si es necesario)
+                    this._changeDetectorRef.markForCheck();  // Forzar la detección de cambios
+                })
+            );
+        } else {
+            console.warn('El código de bienes está vacío o no válido.');
+            return of(null); // En caso de código inválido, retornamos un Observable vacío
+        }
+    }
+    getBienes(codigo:string): void {
+        if(codigo==null){
+             codigo = this.selectedEquipmentForm.get('codigo')?.value;
+        }
+        //const codigoBien = this.selectedEquipmentForm.get('codigo')?.value;
+        console.log('Valor de código de bienes antes de validar:', codigo);
+
+    
+        if (codigo.trim()) {
+          this.bienesService.getBienes(codigo).subscribe({
+            next: (response) => {
+              this.bienes = response;
+              console.log('Bienes encontrados:', this.bienes);
+              this._changeDetectorRef.markForCheck();  // Forzar la detección de cambios
+              
+            },
+            error: (err) => {
+              console.error('Error al obtener bienes:', err);
+              this.bienes = null;  // Reset de bienes si hay error
+            },
+          });
+        } else {
+          console.warn('El código de bienes está vacío o no válido.');
+          this.bienes = null;  // Reset de bienes si el código no es válido
+        }
+      }
+    
+      
+    
 
     /**
      * Cerrar los detalles del producto
@@ -552,6 +818,88 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     trackByFn(index: number, item: any): any {
         return item.id || index; // Devolver el ID del item o el índice si no tiene ID
     }
+
+    cargarEmpleados(): void {
+        this._inventoryService.buscarEmpleados('').subscribe(
+          (data) => {
+            this.empleados = data;
+          },
+          (error) => {
+            console.error('Error al cargar empleados:', error);
+          }
+        );
+      }
+      
+      
+      onSearch(query: string): void {
+        if (query.length > 2) {
+          this._inventoryService.buscarEmpleados(query).pipe(
+            debounceTime(300), // Evita búsquedas excesivas
+            switchMap((data: any[]) => {
+              console.log('Empleados onSearch (antes de transformar):', data);
+      
+              // Validar y limpiar los nombres completos
+              const empleadosLimpios = data.map((empleado: any) => {
+                return {
+                  ...empleado,
+                  nombre_completo: empleado.nombre_completo
+                    ? empleado.nombre_completo.replace(/\s+/g, ' ').trim() // Reemplaza múltiples espacios con uno
+                    : '' // Si no hay nombre completo, asigna cadena vacía
+                };
+              });
+      
+              console.log('Empleados limpiados:', empleadosLimpios);
+      
+              // Extraer solo los nombres completos
+              const nombresCompletos = empleadosLimpios.map(dic => dic.nombre_completo);
+              console.log('Nombres completos procesados:', nombresCompletos);
+      
+              return [nombresCompletos];
+            })
+          ).subscribe((nombres: string[]) => {
+            if (nombres && nombres.length > 0) {
+              this.filteredEmpleados = nombres; // Asigna los nombres completos
+              console.log('Filtered Empleados:', this.filteredEmpleados);
+            } else {
+              this.filteredEmpleados = [];
+              console.log('Filtered Empleados vacío:', this.filteredEmpleados);
+            }
+          });
+        } else {
+          this.filteredEmpleados = [];
+          console.log('Filtered Empleados vacío:', this.filteredEmpleados);
+        }
+      }
+      
+      
+      
+      
+      
+      
+      @HostListener('document:click', ['$event'])
+        onOutsideClick(event: Event): void {
+            const target = event.target as HTMLElement;
+            // Verifica si el clic fue fuera del componente
+            if (!target.closest('.custom-autocomplete')) {
+            this.showDropdown = false;
+            }
+        }
+
+        hideDropdown(): void {
+            setTimeout(() => {
+            this.showDropdown = false;
+            }, 200);
+        }
+        // Asigna el valor seleccionado al input y cierra el dropdown
+        selectEmpleado(empleado: string): void {
+        this.selectedEquipmentForm.controls['funcionarioasignado'].setValue(empleado); // Copia el valor al input
+        this.showDropdown = false; // Oculta el dropdown
+        this.cd.detectChanges(); // Fuerza la detección de cambios
+        }
+        
+        
+
+      
     
     
 }

@@ -163,7 +163,7 @@
                                         <button
                                             class="min-w-10 min-h-7 h-7 px-2 leading-6"
                                             mat-stroked-button
-                                            (click)="toggleDetails(equipment.equipos_id)">
+                                            (click)="toggleDetails(equipment.equipos_id,equipment.codigo)">
                                             <mat-icon
                                                 class="icon-size-5"
                                                 [svgIcon]="selectedEquipment?.equipos_id === equipment.equipos_id ? 'heroicons_solid:chevron-up' : 'heroicons_solid:chevron-down'"></mat-icon>
@@ -227,20 +227,37 @@
                                                 matInput
                                                 [formControlName]="'funcionariousuario'">
                                         </mat-form-field>
+                                        
 
-                                        <!-- SKU and Barcode -->
+
+
+                                        
+                                       <!-- SKU and Barcode -->
                                         <div class="flex">
+                                            <!-- Campo Código de Bienes -->
                                             <mat-form-field class="w-1/3 pr-2">
                                                 <mat-label>Código de Bienes</mat-label>
-                                                <input
-                                                    matInput
-                                                    [formControlName]="'codigo'">
+                                                <input matInput formControlName="codigo" placeholder="Ingrese el código">
+                                                <mat-error *ngIf="bienesForm?.get('codigo')?.hasError('required')">
+                                                El código es obligatorio.
+                                                </mat-error>
+                                                <mat-error *ngIf="bienesForm?.get('codigo')?.hasError('minlength')">
+                                                El código debe tener al menos 5 caracteres.
+                                                </mat-error>
                                             </mat-form-field>
+                                        
+                                            <!-- Botón Buscar -->
+                                            <button
+                                                mat-raised-button
+                                                color="primary"
+                                                [disabled]="bienesForm?.invalid"
+                                                (click)="getBienes(getBienes(bienesForm?.get('codigo')?.value))"
+                                            >
+                                                Buscar
+                                            </button>
                                             <mat-form-field class="w-2/3 pl-2">
-                                                <mat-label>Serie</mat-label>
-                                                <input
-                                                    matInput
-                                                    [formControlName]="'serie'">
+                                            <mat-label>Serie</mat-label>
+                                            <input matInput formControlName="serie">
                                             </mat-form-field>
                                         </div>
 
@@ -266,16 +283,55 @@
                                                     </ng-container>
                                                 </mat-select>
                                             </mat-form-field>
-                                            <mat-form-field class="w-1/3 pl-2">
-                                                <mat-label>Usuario Asignado Bienes</mat-label>
-                                                <mat-select [formControlName]="'funcionariousuario'">
-                                                    <ng-container *ngFor="let vendor of vendors">
-                                                        <mat-option [value]="vendor.id">
-                                                            {{vendor.name}}
-                                                        </mat-option>
-                                                    </ng-container>
-                                                </mat-select>
-                                            </mat-form-field>
+                                            
+                                            <form class="example-form" [formGroup]="selectedEquipmentForm">
+                                                <mat-form-field class="example-full-width">
+                                                  <mat-label>Funcionario Asignado Bienes</mat-label>
+                                                  <input
+                                                    type="text"
+                                                    placeholder="Escribe un nombre"
+                                                    aria-label="Funcionario Asignado"
+                                                    matInput
+                                                    formControlName="funcionarioasignado"
+                                                    [matAutocomplete]="auto"
+                                                    (input)="onSearch($event.target.value)"
+                                                  />
+                                                  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+                                                    <mat-option
+                                                      *ngFor="let empleado of filteredEmpleados"
+                                                      [value]="empleado"
+                                                      (mousedown)="selectEmpleado(empleado)"
+                                                    >
+                                                      {{ empleado }}
+                                                    </mat-option>
+                                                    <mat-option *ngIf="filteredEmpleados.length === 0" >
+                                                      No hay resultados
+                                                    </mat-option>
+                                                  </mat-autocomplete>
+                                                </mat-form-field>
+                                              </form>
+                                              
+                                              
+                                              
+
+
+                                           
+
+
+
+
+
+                                                                                            
+
+
+
+
+
+                                              
+                                              
+                                              
+                                              
+                                            
                                         </div>
 
                                         <!-- Stock and Reserved -->
@@ -388,11 +444,35 @@
                                           
                                           
                                         
-                                        <mat-label><b>Información de Bienes</b></mat-label>
-                                        <mat-card appearance="outlined">
-                                            
-                                            <mat-card-content>Tipo hardaware MINI-PC PROCESADOR INTEL CORE DE 12ava GENERACKION I3-1220P-10 NUCLEOS,MEORIA RAM:8GBDDR4-3200,DISCO SOLIDO 256GB GEN 4SSD+ACCESORIOS, TECLADO MARCA: KLIPXTREME MODELO:MAGNIFIK ,MOUSE MARCA:KLIPXTREME,MODELO: MAGNIFIK, ESTABILIZADOR.REGLETA.</mat-card-content>
+                                          <mat-label><b>Información de Bienes</b></mat-label>
+                                          <mat-card appearance="outlined">
+                                            <mat-card-content *ngIf="bienes">
+                                                <!-- Tipo de hardware -->
+                                                <p *ngIf="bienes.data.tipo; else noData"><b>Tipo hardware:</b> {{ bienes.data.tipo }}</p>
+                                                <ng-template #noData><p><b>Tipo hardware:</b> No hay datos</p></ng-template>
+                                              
+                                                <!-- Descripción -->
+                                                <p *ngIf="bienes.data.observacion; else noDescription"><b>Descripción:</b> {{ bienes.data.observacion }}</p>
+                                                <ng-template #noDescription><p><b>Descripción:</b> No hay datos</p></ng-template>
+                                              
+                                                <!-- Unidad -->
+                                                <p *ngIf="bienes.data.unidad; else noUnit"><b>Unidad:</b> {{ bienes.data.unidad }}</p>
+                                                <ng-template #noUnit><p><b>Unidad:</b> No hay datos</p></ng-template>
+                                              
+                                                <!-- Características -->
+                                                <p><b>Características:</b></p>
+                                                <ul *ngIf="bienes.data.caracteristicas; else noCharacteristics">
+                                                  <li><b>Marca:</b> {{ bienes.data.caracteristicas.MARCA }}</li>
+                                                  <li><b>Modelo:</b> {{ bienes.data.caracteristicas.MODELO }}</li>
+                                                  <li><b>Serie:</b> {{ bienes.data.caracteristicas.SERIE }}</li>
+                                                </ul>
+                                                <ng-template #noCharacteristics>
+                                                  <p>No hay datos de características</p>
+                                                </ng-template>
+                                              </mat-card-content>
+                                              
                                           </mat-card>
+                                          
                                     </div>
 
                                 </div>
