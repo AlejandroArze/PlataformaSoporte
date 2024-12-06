@@ -43,6 +43,21 @@ export interface InventoryCategory
     slug: string;
 }
 
+export interface Bien {
+    tipo: string;
+    observacion: string;
+    unidad: string;
+    caracteristicas: Caracteristicas;
+  }
+  export interface Caracteristicas {
+    MARCA: string;
+    MODELO: string;
+    SERIE: string;
+  }
+  export interface BienesResponse {
+    data: Bien;
+  }
+
 export interface InventoryBrand
 {
     id: string;
@@ -92,3 +107,26 @@ export interface InventoryEquipment {
     mac?: string | null; // Dirección MAC de la tarjeta de red
 
 }
+
+export interface Empleado {
+    nombre_completo: string;
+    otroNombre: string;
+    nombre: string;
+    paterno: string;
+    materno: string;
+    fechanac: string;
+    sexo: string;
+    nroItem: string;
+    tipoContrato: string;
+    cargo: string;
+    unidad: string;
+    numDocumento: string;
+    expedidoci: string;
+    email: string;
+    telefono: string;
+    direccion: string;
+    fechaIncorporacion: string;
+    fechaBaja: string | null;
+    resideCapital: string;
+  }
+  

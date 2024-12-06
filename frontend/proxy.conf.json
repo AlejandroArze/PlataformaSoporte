@@ -1,0 +1,8 @@
+{
+    "/transparencia/**": {
+      "target": "https://appgamc.cochabamba.bo",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }
