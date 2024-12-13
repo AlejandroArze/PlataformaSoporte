@@ -51,32 +51,40 @@
                             class="inventory-grid z-10 sticky top-0 grid gap-4 py-4 px-6 md:px-8 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
                             matSort
                             matSortDisableClear>
-                            <div>Marca</div>
+                            
+                            <div 
+                            
+                            [mat-sort-header]="'marca'">Marca</div>
                             <div
-                                class="hidden md:block"
+                            class="hidden md:block"
                                 [mat-sort-header]="'sku'">
                                 Código de Bienes
                             </div>
                             <div 
-                            
                             [mat-sort-header]="'name'">Funcionario Usuario del Equipo</div>
                             <div
-                                class="hidden sm:block"
+                                class="hidden lg:block"
                                 [mat-sort-header]="'price'">
                                 Modelo
                             </div>
                             
                             <div
-                                class="hidden lg:block"
-                                [mat-sort-header]="'stock'">
-                                Equipo
+                                
+                                [mat-sort-header]="'tipo'">
+                                Tipo
                             </div>
                             <div
                                 class="hidden lg:block"
                                 [mat-sort-header]="'active'">
-                                Activo
+                                Serie
                             </div>
-                            <div class="hidden sm:block">Detalles</div>
+                            
+                            <div
+                                class="hidden lg:block"
+                                [mat-sort-header]="'Oficina'">
+                                Oficina
+                            </div>
+                            <div [mat-sort-header]="'Detalles'">Detalles</div>
                         </div>
                         <!-- Rows -->
                         <ng-container *ngIf="(equipments$ | async) as equipments">
@@ -86,24 +94,11 @@
                                     <!-- Adaptación para mostrar texto en lugar de una imagen -->
                                
                                 <!-- Adaptación para mostrar {{ category.name }} en lugar de una imagen -->
-                                    <div class="flex items-center">
-                                        <div class="relative flex flex-0 items-center justify-center w-12 h-12 mr-6 rounded overflow-hidden border">
-                                            <!-- Mostrar category.name si está disponible    .category -->
-                                            <div
-                                                *ngIf="equipment.thumbnail"
-                                                class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase">
-                                                {{equipment.tipo}}
-                                            </div>
-                                            <!-- Mostrar "NO HAY IMAGEN" si no hay thumbnail  .stock -->
-                                            <div
-                                                *ngIf="!equipment.thumbnail"
-                                                class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase">
-                                                {{equipment.marca}}
-                                            </div>
-                                        </div>
+                                    
+
+                                    <div class="truncate">
+                                        {{equipment.marca}}
                                     </div>
-
-
 
 
                                     <!-- SKU .sku-->
@@ -117,45 +112,25 @@
                                     </div>
 
                                     <!-- Price .pric-->
-                                    <div class="hidden sm:block">
+                                    <div class="hidden lg:block">
                                         {{equipment.modelo }}
                                     </div>
 
                                     <!-- Stock .category -->
-                                    <div class="hidden lg:flex items-center">
-                                        <div class="min-w-4">{{equipment.tipo}}</div>
-                                        <!-- Low stock -->
-                                        <div
-                                            class="flex items-end ml-2 w-1 h-4 bg-red-200 rounded overflow-hidden"
-                                            *ngIf="equipment.tipo < 20">
-                                            <div class="flex w-full h-1/3 bg-red-600"></div>
-                                        </div>
-                                        <!-- Medium stock -->
-                                        <div
-                                            class="flex items-end ml-2 w-1 h-4 bg-orange-200 rounded overflow-hidden"
-                                            *ngIf="equipment.tipo >= 20 && equipment.tipo < 30">
-                                            <div class="flex w-full h-2/4 bg-orange-400"></div>
-                                        </div>
-                                        <!-- High stock -->
-                                        <div
-                                            class="flex items-end ml-2 w-1 h-4 bg-green-100 rounded overflow-hidden"
-                                            *ngIf="equipment.tipo >= 30">
-                                            <div class="flex w-full h-full bg-green-400"></div>
-                                        </div>
+                                    <div class=" items-center">
+                                        <div class="min-w-4">{{equipment.tipoDescripcion}}</div>
+                                        
                                     </div>
 
-                                    <!-- Active .active -->
-                                    <div class="hidden lg:block">
-                                        <ng-container *ngIf="equipment.active">
-                                            <mat-icon
-                                                class="text-green-400 icon-size-5"
-                                                [svgIcon]="'heroicons_solid:check'"></mat-icon>
-                                        </ng-container>
-                                        <ng-container *ngIf="!equipment.active">
-                                            <mat-icon
-                                                class="text-gray-400 icon-size-5"
-                                                [svgIcon]="'heroicons_solid:x-mark'"></mat-icon>
-                                        </ng-container>
+                                     <!-- Stock .category -->
+                                     <div class="hidden lg:flex items-center">
+                                        <div class="min-w-4">{{equipment.serie}}</div>
+                                        
+                                    </div>
+                                    <!-- Stock .category -->
+                                    <div class="hidden lg:flex items-center">
+                                        <div class="min-w-4">{{equipment.oficina}}</div>
+                                        
                                     </div>
 
                                     <!-- Details button .id -->
@@ -204,30 +179,38 @@
                             <div class="flex flex-col sm:flex-row p-8">
 
                                 <!-- Product images and status -->
-                                <div class="flex flex-col items-center sm:items-start mb-8 sm:mb-0">
                                 
-                                    <div class="flex flex-col mt-8">
-                                        <span class="font-semibold mb-2">Estado del Equipo</span>
-                                        <mat-slide-toggle
-                                            [formControlName]="'active'"
-                                            [color]="'primary'">
-                                            {{selectedEquipmentForm.get('active').value === true ? 'Activo' : 'Desabilitado'}}
-                                        </mat-slide-toggle>
-                                    </div>
-                                </div>
 
                                 <div class="flex flex-auto flex-wrap">
                                     <!-- Name, SKU & etc. -->
                                     <div class="flex flex-col w-full lg:w-2/4 sm:pl-8">
 
-                                        <!-- Name -->
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Funcionario Usuario del Equipo</mat-label>
-                                            <input
-                                                matInput
-                                                [formControlName]="'funcionariousuario'">
-                                        </mat-form-field>
-                                        
+                                       
+                                        <!-- Campo Funcionario Usuario -->
+                                            <mat-form-field class="example-full-width">
+                                                <mat-label>Funcionario Usuario</mat-label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Escribe un nombre"
+                                                    aria-label="Funcionario Usuario"
+                                                    matInput
+                                                    formControlName="funcionariousuario"
+                                                    [matAutocomplete]="autoUsuario"
+                                                    (input)="onSearchUsuario($event.target.value)"
+                                                />
+                                                <mat-autocomplete #autoUsuario="matAutocomplete" autoActiveFirstOption>
+                                                    <mat-option
+                                                        *ngFor="let empleado of filteredEmpleadosUsuarios"
+                                                        [value]="empleado"
+                                                        (mousedown)="selectEmpleadoUsuario(empleado)"
+                                                    >
+                                                        {{ empleado }}
+                                                    </mat-option>
+                                                    <mat-option *ngIf="filteredEmpleadosUsuarios.length === 0">
+                                                        No hay resultados
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
 
 
 
@@ -246,46 +229,70 @@
                                                 </mat-error>
                                             </mat-form-field>
                                         
-                                            <!-- Botón Buscar -->
-                                            <button
-                                                mat-raised-button
-                                                color="primary"
-                                                [disabled]="bienesForm?.invalid"
-                                                (click)="getBienes(getBienes(bienesForm?.get('codigo')?.value))"
-                                            >
-                                                Buscar
-                                            </button>
+                                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                                <!-- Botón Buscar -->
+                                                <button
+                                                    mat-raised-button
+                                                    color="primary"
+                                                    [disabled]="bienesForm?.invalid"
+                                                    (click)="getBienes(getBienes(bienesForm?.get('codigo')?.value))"
+                                                >
+                                                    Buscar
+                                                </button>
+                                                <!-- Botón Generar -->
+                                                <button
+                                                    mat-raised-button
+                                                    color="primary"
+                                                    [disabled]="bienesForm?.invalid"
+                                                    (click)="generateRandomCode()"
+                                                >
+                                                    Generar
+                                                </button>
+                                            </div>
+                                            
+                                            
+
                                             <mat-form-field class="w-2/3 pl-2">
                                             <mat-label>Serie</mat-label>
                                             <input matInput formControlName="serie">
                                             </mat-form-field>
+                                            
                                         </div>
 
                                         <!-- Category, Brand & Vendor -->
-                                        <div class="flex">
-                                            <mat-form-field class="w-1/3 pr-2">
-                                                <mat-label>Tipo de Hardware</mat-label>
-                                                <mat-select [formControlName]="'tipo'">
-                                                    <ng-container *ngFor="let category of categories">
-                                                        <mat-option [value]="category.id">
-                                                            {{category.name}}
-                                                        </mat-option>
-                                                    </ng-container>
-                                                </mat-select>
-                                            </mat-form-field>
-                                            <mat-form-field class="w-1/3 px-2">
-                                                <mat-label>Oficina</mat-label>
-                                                <mat-select [formControlName]="'oficina'">
-                                                    <ng-container *ngFor="let brand of brands">
-                                                        <mat-option [value]="brand.id">
-                                                            {{brand.name}}
-                                                        </mat-option>
-                                                    </ng-container>
-                                                </mat-select>
-                                            </mat-form-field>
+                                        <div style="display: flex; flex-direction: row; gap: 20px;">
+                                            <form class="example-form2" [formGroup]="selectedEquipmentForm" >
+                                            <!-- Campo Funcionario Usuario -->
                                             
-                                            <form class="example-form" [formGroup]="selectedEquipmentForm">
-                                                <mat-form-field class="example-full-width">
+                                            <mat-form-field class="w-1/3 pr-2"class="example-full-width2" style="flex: 1; margin-right: 10px;"  >
+                                                <mat-label>Tipo de Hardware</mat-label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Escribe el Tipo de Hardware"
+                                                    aria-label="Tipo de Hardware"
+                                                    matInput
+                                                    formControlName="tipo"
+                                                    [matAutocomplete]="autoTipo"
+                                                    (input)="onSearchTipo($event.target.value)"
+                                                />
+                                                <mat-autocomplete #autoTipo="matAutocomplete" autoActiveFirstOption>
+                                                    <mat-option
+                                                        *ngFor="let tipo of filteredTipos"
+                                                        [value]="tipo.descripcion"
+                                                        (mousedown)="selectTipo(tipo)"
+                                                    >
+                                                        {{ tipo.descripcion }}
+                                                    </mat-option>
+                                                    <mat-option *ngIf="filteredEmpleadosUsuarios.length === 0">
+                                                        No hay resultados
+                                                    </mat-option>
+                                                </mat-autocomplete>
+                                            </mat-form-field>
+                                        
+                                            
+                                            
+                                          
+                                                <mat-form-field class="example-full-width2">
                                                   <mat-label>Funcionario Asignado Bienes</mat-label>
                                                   <input
                                                     type="text"
@@ -306,6 +313,7 @@
                                                     </mat-option>
                                                     <mat-option *ngIf="filteredEmpleados.length === 0" >
                                                       No hay resultados
+                                                      
                                                     </mat-option>
                                                   </mat-autocomplete>
                                                 </mat-form-field>
@@ -413,8 +421,10 @@
                                             <mat-label>Modelo</mat-label>
                                             <input matInput [formControlName]="'modelo'">
                                         </mat-form-field>
-
                                         <mat-checkbox [formControlName]="'lector'">Lector DVD</mat-checkbox>
+                                        
+
+                                        
                                     </div>
 
 
@@ -432,7 +442,7 @@
                                             <mat-label>Garantía</mat-label>
                                             <input matInput [formControlName]="'garantia'" [matDatepicker]="picker" readonly>
                                             
-                                            <mat-hint>Mes/Día/Año</mat-hint>
+                                            
                                             
                                             <mat-datepicker-toggle matIconSuffix [for]="picker">
                                               <mat-icon matDatepickerToggleIcon>keyboard_arrow_down</mat-icon>
@@ -440,6 +450,20 @@
                                             
                                             <mat-datepicker #picker></mat-datepicker>
                                           </mat-form-field>
+                                          
+                                          <mat-form-field class="w-full">
+                                            <mat-label>Fecha Registro</mat-label>
+                                            <input matInput [formControlName]="'fecharegistro'" [disabled]="true" readonly>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="w-full">
+                                            <mat-label>Responsable del Registro</mat-label>
+                                            <input matInput [formControlName]="'responsabledelregistroString'" [disabled]="true" readonly>
+                                        </mat-form-field>
+
+
+                                          
+                                          
                                           
                                           
                                           

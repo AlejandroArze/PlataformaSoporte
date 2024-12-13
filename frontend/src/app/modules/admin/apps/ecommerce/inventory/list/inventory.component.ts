@@ -65,18 +65,18 @@ export const MY_DATE_FORMATS = {
         /* language=SCSS */
         `
             .inventory-grid {
-                grid-template-columns: 48px auto 40px;
+                grid-template-columns: 48px auto 112px 72px;
 
                 @screen sm {
                     grid-template-columns: 48px auto 112px 72px;
                 }
 
                 @screen md {
-                    grid-template-columns: 48px 112px auto 112px 72px;
+                    grid-template-columns: 65px 115px auto 112px 72px;
                 }
 
                 @screen lg {
-                    grid-template-columns: 48px 112px auto 112px 96px 96px 72px;
+                    grid-template-columns: 70px 115px auto 100px 96px 96px 190px 72px;
                 }
             }
 
@@ -84,17 +84,24 @@ export const MY_DATE_FORMATS = {
             .example-form {
             min-width: 150px;
             max-width: 500px;
-            width: 40%;
+            width: 100%;
             }
-
+            .example-form2 {
+            min-width: 150px;
+            max-width: 1100px;
+            width: 100%;
+            }
             .example-full-width {
             width: 100%;
+            }
+            .example-full-width2 {
+            width: 48%;
             }
             
           
             .custom-autocomplete {
             position: relative; /* Permite posicionar el dropdown relativo al contenedor */
-            width: 40%;
+            width: 50%;
             
             .dropdown,
             .dropdown-no-results {
@@ -210,6 +217,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     form: FormGroup;
     empleados: Empleado[] = [];
     filteredEmpleados: string[] = [];
+    //filteredTipos: string[] = [];
+    filteredTipos: { descripcion: string; tipos_id: number }[] = [];
+
+    filteredEmpleadosUsuarios: string[] = [];
     
     //filteredEmpleados: string[] = ['Juan Perez', 'Maria Gonzalez', 'Carlos Lopez'];
     showDropdown = false; // Controla la visibilidad del desplegable
@@ -275,7 +286,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         responsable         : [null], // ID del responsable
         mac                 : [null], // Dirección MAC de la tarjeta de red
         active: [true], // Asegúrate de incluir este control
+        responsabledelregistroString: [null], 
+        tiposId: [null], // ID asociado
         });
+
+
+        
 
         // Obtener las marcas del servicio de inventario
         this._inventoryService.brands$
@@ -489,7 +505,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 // Verifica que `getBienes` también devuelva un Observable
                 this.getBienes(response.data.codigo);
                 this.onSearch(response.data.funcionarioasignado);
+                this.onSearchUsuario(response.data.funcionariousuario);
+                this.onSearchTipo(response.data.tipoDescripcion);
+                console.log("tipos ",response.data.tipoDescripcion );
                 this.selectedEquipmentForm.controls['funcionarioasignado'].setValue(response.data.funcionarioasignado); // Copia el valor al input
+                this.selectedEquipmentForm.controls['funcionariousuario'].setValue(response.data.funcionariousuario); // Copia el valor al input
+                this.selectedEquipmentForm.controls['tipo'].setValue(response.data.tipoDescripcion); // Copia el valor al input
             },
             error: (err) => {
                 console.error('Error al obtener el equipo:', err);
@@ -498,6 +519,22 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     
         
     }
+    
+    generateRandomCode(): void {
+        const randomNumber = Math.floor(Math.random() * 1000000); // Genera un número aleatorio entre 0 y 999999
+        const formattedNumber = randomNumber.toString().padStart(6, '0'); // Asegúrate de que tenga 6 dígitos
+        const randomCode = `CODGEN-${formattedNumber}`; // Forma el código con el prefijo
+    
+        // Asigna el código generado al campo del formulario
+        if (this.selectedEquipmentForm) {
+            this.selectedEquipmentForm.get('codigo')?.setValue(randomCode);
+        }
+    
+        console.log('Código generado:', randomCode); // Opcional: para depuración
+    }
+    
+    
+    
     
 
     getBienes4(): void {
@@ -764,7 +801,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     /**
      * Actualizar el producto seleccionado usando los datos del formulario
      */
-    updateSelectedEquipment(): void {
+    updateSelectedEquipment2(): void {
         const  equipment = this.selectedEquipmentForm.getRawValue(); // Obtener los valores del formulario
         delete equipment.currentImageIndex; // Eliminar el índice de imagen actual, ya que no es necesario para el servidor
 
@@ -772,7 +809,26 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.showFlashMessage('success'); // Mostrar mensaje de éxito
         });
     }
-
+    updateSelectedEquipment(): void {
+        const equipment = this.selectedEquipmentForm.getRawValue(); // Obtener los valores del formulario
+    
+        // Reemplaza el campo `tipo` con `tiposId` al enviar al servidor
+        if (this.selectedEquipmentForm.controls['tiposId']?.value) {
+            equipment.tipo = this.selectedEquipmentForm.controls['tiposId'].value; // Usa el ID en lugar del texto
+        }
+    
+        delete equipment.currentImageIndex; // Eliminar el índice de imagen actual, ya que no es necesario para el servidor
+    
+        console.log('Datos a actualizar:', equipment); // Debug para verificar los datos
+    
+        this._inventoryService.updateEquipment(this.selectedEquipment.equipos_id, equipment).subscribe(() => {
+            this.showFlashMessage('success'); // Mostrar mensaje de éxito
+        }, (error) => {
+            console.error('Error al actualizar el equipo:', error);
+            this.showFlashMessage('error'); // Mostrar mensaje de error
+        });
+    }
+    
     /**
      * Eliminar el producto seleccionado usando los datos del formulario
      */
@@ -870,6 +926,37 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
           console.log('Filtered Empleados vacío:', this.filteredEmpleados);
         }
       }
+
+      onSearchUsuario(query: string): void {
+        if (query.length > 2) {
+            this._inventoryService.buscarEmpleados(query).pipe(
+                debounceTime(300),
+                switchMap((data: any[]) => {
+                    const empleadosLimpios = data.map((empleado: any) => ({
+                        ...empleado,
+                        nombre_completo: empleado.nombre_completo
+                            ? empleado.nombre_completo.replace(/\s+/g, ' ').trim()
+                            : ''
+                    }));
+    
+                    const nombresCompletos = empleadosLimpios.map(dic => dic.nombre_completo);
+                    return [nombresCompletos];
+                })
+            ).subscribe((nombres: string[]) => {
+                this.filteredEmpleadosUsuarios = nombres.length > 0 ? nombres : [];
+            });
+        } else {
+            this.filteredEmpleadosUsuarios = [];
+        }
+    }
+
+    selectEmpleadoUsuario(empleado: string): void {
+        this.selectedEquipmentForm.controls['funcionariousuario'].setValue(empleado);
+        this.showDropdown = false;
+        this.cd.detectChanges();
+    }
+    
+    
       
       
       
@@ -897,9 +984,102 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         this.cd.detectChanges(); // Fuerza la detección de cambios
         }
         
-        
 
-      
+        onSearchTipo2(query: string): void {
+            if (query.length > 2) {
+                this._inventoryService.buscarTipos(1,100,query).pipe(
+                    debounceTime(300),
+                    switchMap((data: any[]) => {
+                        const tiposLimpios = data.map((empleado: any) => ({
+                            ...empleado,
+                            nombre_completo: empleado.nombre_completo
+                                ? empleado.nombre_completo.replace(/\s+/g, ' ').trim()
+                                : ''
+                        }));
+        
+                        const descripcionCompletos = tiposLimpios.map(dic => dic.descripcion);
+                        return [descripcionCompletos];
+                    })
+                ).subscribe((tipos: string[]) => {
+                    //this.filteredTipos = tipos.length > 0 ? tipos : [];
+                });
+            } else {
+                this.filteredTipos = [];
+            }
+        }
+        selectTipo3(empleado: string): void {
+            this.selectedEquipmentForm.controls['tipo'].setValue(empleado);
+            this.showDropdown = false;
+            this.cd.detectChanges();
+        }
+/*
+        onSearchTipo3(query: string): void {
+            if (query.length > 0) {
+                this._inventoryService.buscarTipos(1, 100, query) // Llama al servicio `getTipos`
+                    .pipe(
+                        debounceTime(300), // Añade un retraso de 300ms para evitar múltiples llamadas innecesarias
+                        //map((data: string[]) => {
+                            // Mapear directamente las descripciones
+                          //  return data.map((descripcion) => descripcion.trim());
+                       // })
+                    )
+                    .subscribe({
+                       // next: (tipos: string[]) => {
+                            //this.filteredTipos = tipos.length > 0 ? tipos : [];
+                            console.log('Tipos encontrados:', this.filteredTipos); // Debug para ver los resultados
+                        },
+                        error: (err) => {
+                            console.error('Error al buscar tipos:', err);
+                            this.filteredTipos = [];
+                        },
+                    });
+            } else {
+                this.filteredTipos = []; // Restablecer la lista si la consulta tiene menos de 3 caracteres
+            }
+        }
+            */
+        selectTipo(tipo: { descripcion: string; tipos_id: number }): void {
+            // Establece la descripción visible en el formulario
+            this.selectedEquipmentForm.controls['tipo'].setValue(tipo.descripcion);
+        
+            // Guarda el `tipos_id` asociado al tipo seleccionado
+            this.selectedEquipmentForm.controls['tiposId'].setValue(tipo.tipos_id);
+        
+            this.showDropdown = false;
+            this.cd.detectChanges();
+        }
+        
+        onSearchTipo(query: string): void {
+            if (query.length >= 0) {
+                this._inventoryService.buscarTipos(1, 100, query) // Llama al servicio `getTipos`
+                    .pipe(
+                        debounceTime(100), // Añade un retraso de 300ms para evitar múltiples llamadas innecesarias
+                        map((response) => {
+                            // Mapea la respuesta para obtener una lista con `descripcion` y `tipos_id`
+                            return response.map((tipo: any) => ({
+                                descripcion: tipo.descripcion.trim(),
+                                tipos_id: tipo.tipos_id,
+                            }));
+                        })
+                    )
+                    .subscribe({
+                        next: (tipos: { descripcion: string; tipos_id: number }[]) => {
+                            this.filteredTipos = tipos;
+                            console.log('Tipos encontrados:', this.filteredTipos); // Debug para ver los resultados
+                        },
+                        error: (err) => {
+                            console.error('Error al buscar tipos:', err);
+                            this.filteredTipos = [];
+                        },
+                    });
+            } else {
+                this.filteredTipos = []; // Restablecer la lista si la consulta tiene menos de 1 carácter
+            }
+        }
+        displayTipo(tipo: any): string {
+            return tipo && tipo.descripcion ? tipo.descripcion : '';
+        }
+        
     
     
 }

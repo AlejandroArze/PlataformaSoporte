@@ -2,7 +2,8 @@ const { Type, sequelize } = require("../models"); // Requiere el modelo 'Type' y
 const storeDTO = require("../http/request/type/storeDTO"); // DTO para validar los datos del tipo en la operación de almacenamiento
 const updateDTO = require("../http/request/type/updateDTO"); // DTO para validar los datos del tipo en la operación de actualización
 const idDTO = require("../http/request/type/idDTO"); // DTO para validar los identificadores de tipos
-
+const responseDTO = require("../http/request/type/responseDTO");
+const { Op, Sequelize } = require("sequelize");
 class TypeService {
 
     // Método para almacenar un nuevo tipo
@@ -30,7 +31,46 @@ class TypeService {
             throw error; // Lanza el error para manejarlo
         }
     }
-
+    static async paginate(queryParams) {
+        const { page, limit, search } = queryParams;
+        const offset = (page - 1) * limit;
+    
+        // Obtener todas las columnas del modelo
+        const columns = Object.keys(Type.rawAttributes);
+    
+        // Construir las condiciones de búsqueda
+        const whereCondition = search
+            ? {
+                [Op.or]: columns.map((field) => {
+                    const columnType = Type.rawAttributes[field].type.key;
+    
+                    if (columnType === "STRING" || columnType === "TEXT") {
+                        // Si la columna es texto, usa unaccent y ILIKE
+                        return Sequelize.literal(`unaccent("${field}") ILIKE unaccent('%${search}%')`);
+                    } else {
+                        // Si no es texto, conviértelo a texto con CAST
+                        return Sequelize.literal(`CAST("${field}" AS TEXT) ILIKE '%${search}%'`);
+                    }
+                }),
+            }
+            : {};
+    
+        try {
+            
+            // Realiza la consulta con las condiciones dinámicas
+            const { count, rows } = await Type.findAndCountAll({
+                where: whereCondition,
+                limit: limit,
+                offset: offset,
+                order: [["tipos_id", "DESC"]],
+            });
+            console.log("Count rows: ",{ count, rows })
+            return { count, rows };
+        } catch (error) {
+            console.error("Error en paginación:", error.message);
+            throw error;
+        }
+    }
     // Método para mostrar un tipo por su ID
     static async show(id) {
         try {

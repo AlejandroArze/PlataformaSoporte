@@ -4,7 +4,11 @@ import { InventoryBrand, InventoryCategory, BienesResponse, InventoryPagination,
 import { BehaviorSubject,  filter, map, Observable, of, switchMap, take, tap, throwError,catchError,} from 'rxjs';
 import { environment } from 'environments/environment'; 
 import { shareReplay } from 'rxjs/operators';
- 
+
+import { forkJoin } from 'rxjs';
+
+const now = new Date();
+const formattedDate = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
 
 
 
@@ -256,7 +260,7 @@ export class InventoryService
         );
     }
 
-    getEquipments(
+    getEquipments65(
         page: number = 0,
         size: number = 10,
         sort: string = 'name',
@@ -304,303 +308,159 @@ export class InventoryService
         );
     }
     
+    getEquipments(
+        page: number = 0,
+        size: number = 10,
+        sort: string = 'name',
+        order: 'asc' | 'desc' | '' = 'asc',
+        search: string = '',
+        count2: number = 0,
+    ): Observable<{ pagination: InventoryPagination; equipments: InventoryEquipment[] }> {
+        return this._httpClient.get<any>(`${this.baseUrl}/equipment?page=${page}&limit=${size}`, {
+            params: { page: '' + page, size: '' + size, sort, order, search },
+        }).pipe(
+            map((response) => {
+                console.log('API Response:', response);
+                console.log('API search:', search);
     
-
-
-
-    /*
-     * Obtiene la lista de equipos (InventoryEquipment) con paginación, ordenación y búsqueda
-     *
-     * @param page - Número de página (por defecto es 0)
-     * @param size - Tamaño de página, es decir, el número de productos por página (por defecto es 10)
-     * @param sort - Campo de ordenación (por defecto es 'name')
-     * @param order - Orden ascendente o descendente (por defecto es 'asc')
-     * @param search - Término de búsqueda para filtrar productos (por defecto es una cadena vacía)
-     * @returns Observable que emite un objeto con la paginación (`InventoryPagination`) y la lista de equipos (`InventoryEquipment[]`)
-     
-    getProducts2(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
-    Observable<{ pagination: InventoryPagination; products: InventoryEquipment[] }>
-    {//return this._httpClient.get<InventoryEquipment>(`${this.baseUrl}/equipment?page=${page}&limit=${limit}`);
-    return this._httpClient.get<{ pagination: InventoryPagination; products: InventoryEquipment[] }>(`${this.baseUrl}/equipment?page=${page}&limit=${size}`, {
-        params: {
-            page: '' + page,    // Convierte `page` a cadena de texto para incluirlo como parámetro
-            size: '' + size,    // Convierte `size` a cadena de texto
-            sort,               // Campo de ordenación
-            order,              // Orden ascendente o descendente
-            search,             // Término de búsqueda
-        },
-    }).pipe(
-        tap((response) =>
-        {
-            // Actualiza `_pagination` con la información de paginación recibida
-            this._pagination.next(response.pagination);
-
-            // Mapea y actualiza `_products` con la lista de equipos (InventoryEquipment) recibida
-            //this._products.next(response.products.map(equipment => this.mapEquipmentToProduct(equipment)));
-        }),
-    );
-    }
-
-    getProducts3(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
-    Observable<{ pagination: InventoryPagination; products: InventoryEquipment[] }>
-{
-    return this._httpClient.get<{ pagination: InventoryPagination; products: InventoryEquipment[] }>(`${this.baseUrl}/equipment?page=${page}&limit=${size}`, {
-        params: {
-            sort,       // Campo de ordenación
-            order,      // Orden ascendente o descendente
-            search,     // Término de búsqueda
-        },
-    }).pipe(
-        tap((response) =>
-        {
-            console.log('API Response:', response); // Registro de depuración para ver la respuesta
-        
-            // Actualiza `_pagination` con la información de paginación recibida
-            this._pagination.next(response.pagination);
-           // this._products.next(response.products.map(equipment => this.mapEquipmentToProduct(equipment)));
-
-            // Verifica si `products` está definido antes de llamar a `map`
-            if (response.products) {
-                // Mapea y actualiza `_products` con la lista de equipos (InventoryEquipment) recibida
-                //this._products.next(response.products.map(equipment => this.mapEquipmentToProduct(equipment)));
-            } else {
-                // Si `products` es `undefined`, establece `_products` en una lista vacía
-                this._products.next([]);
-            }
-        }),
-    );
-}
-
-/*
-getProducts122(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
-    Observable<{ pagination: InventoryPagination; products: InventoryProduct[] }>
-{
-    return this._httpClient.get<any>(`${this.baseUrl}/equipment?page=${page}&limit=${size}`, {
-        params: {
-            sort,
-            order,
-            search,
-        },
-    }).pipe(
-        tap((response) => {
-            console.log('API Response:', response);
-
-            // Crea el objeto `InventoryPagination` con las propiedades que espera el tipo
-            const pagination: InventoryPagination = {
-                length: response.data.total,                // Número total de elementos
-                size: response.data.perPage,                // Número de elementos por página
-                page: response.data.currentPage - 1,        // Página actual, ajustando si es necesario
-                lastPage: response.data.totalPages - 1,     // Última página disponible
-                startIndex: (response.data.currentPage - 1) * response.data.perPage,  // Índice de inicio en la página
-                endIndex: response.data.currentPage * response.data.perPage - 1,      // Índice final en la página
-            };
-            this._pagination.next(pagination);
-
-            if (response.data && Array.isArray(response.data.data)) {
-                //const products = response.data.data.map(item => this.mapEquipmentToProduct(item.equipos_id));
-                //this._products.next(products);
-            } else {
-                console.warn('No hay productos disponibles en la respuesta');
-                this._products.next([]);
-            }
-        }),
-        
-    );
-
-}
-
-
-
+                // Crear objeto de paginación
+                const pagination: InventoryPagination = {
+                    length: response.data.total,
+                    size: response.data.perPage,
+                    page: response.data.currentPage,
+                    lastPage: response.data.totalPages,
+                    startIndex: ((response.data.currentPage) * response.data.perPage),
+                    endIndex: response.data.currentPage * response.data.perPage,
+                };
     
-    * Mapea un objeto `InventoryEquipment` a `InventoryProduct` para adaptarlo a la vista actual
-    *
-    * @param equipment - Objeto `InventoryEquipment` recibido de la API
-    * @returns Objeto `InventoryProduct` con los campos adaptados
+                // Desanidar los datos y convertir 'lector' a booleano
+                const equipments = response.data.data.map((item: any) => {
+                    // Asegurarse de que 'lector' sea un valor booleano
+                    if (typeof item.lector === 'string') {
+                        if (item.lector === 'true') {
+                            item.lector = true;  // Convertir 'true' a booleano true
+                        } else {
+                            item.lector = false; // Convertir todo lo demás a booleano false
+                        }
+                    }
+                    console.log("lector: get equipmet ",item.equipos_id);
+                   
+
+                    // Procesar el campo 'tipo' para obtener la descripción
+                    if (typeof item.tipos) {
+                        const tipoId = Number(item.equipos_id.tipo);
+                        if (!isNaN(tipoId)) {
+                            // Realizar la solicitud para obtener la descripción del tipo
+                            this._httpClient
+                                .get<{ message: string; data: { tipos_id: number; descripcion: string; formulario: string; estado: number } }>(
+                                    `${this.baseUrl}/type/${tipoId}`
+                                )
+                                .subscribe({
+                                    next: (typeResponse) => {
+                                        item.equipos_id.tipoDescripcion = typeResponse.data.descripcion;
+                                        console.log(`Descripción obtenida para tipo ${tipoId}: ${item.equipos_id.tipoDescripcion}`);
+                                    },
+                                    error: (err) => {
+                                        console.error(`Error al obtener la descripción del tipo ${tipoId}:`, err);
+                                    },
+                                });
+                        }
+                    }
+                    console.log("lector: get equipmet ",item.equipos_id);
+                    console.log("tipo: get equipmet ",item.equipos_id.tipoDescripcion);
+                    return item.equipos_id;
+                });
     
-    private mapEquipmentToProduct12(equipment: InventoryEquipment): InventoryProduct {
-    const product: InventoryProduct = {
-        id: equipment.equipos_id.toString(),             // Mapea `equipos_id` a `id` (corrigiendo el nombre de la propiedad)
-        //category:equipment.tipo.toString(),
-        name: equipment.funcionariousuario || '0',        // Mapea `funcionariousuario` a `name`
-        description: equipment.procesador || '0',         // Mapea `procesador` a `description`
-        tags: [],                                        // Deja los `tags` vacíos o completa según sea necesario
-        sku: equipment.codigo || '0',                   // Mapea `codigo` a `sku`
-        barcode: equipment.serie || '0',                // Mapea `serie` a `barcode`
-        brand: equipment.oficina ||'0',                  // Mapea `marca` a `brand`
-        vendor: equipment.funcionariousuario || '0',   // Mapea `funcionarioasignado` a `vendor` null
-        stock: equipment.marca ? equipment.marca.toString() : '0',
-       
-        reserved: equipment.memoria ? equipment.memoria.toString() : '0',
-        cost: equipment.tarjetamadre ? equipment.tarjetamadre.toString() : '0',
-        basePrice: equipment.procesador ? equipment.procesador.toString() : '0',
-        taxPercent: equipment.tarjetavideo ? equipment.tarjetavideo.toString() : '0',
-        price: equipment.modelo ? equipment.modelo.toString() : '0',
-        weight: equipment.oficina ? equipment.oficina.toString() : '0',
-        thumbnail: '',                                  // Completar `thumbnail` si hay imágenes disponibles
-        images: [],                                     // Completar `images` con una lista de URLs si están disponibles
-        active: true,                                   // Asumir que el equipo está activo si no se especifica de otra manera
-    };
-    console.log('Producto mapeado:', product); // Verifica el objeto después del mapeo
-    return product;
-    }
-
-
-
-     
-     * Obtiene la lista de productos con paginación, ordenación y búsqueda
-     *
-     * @param page - Número de página (por defecto es 0)
-     * @param size - Tamaño de página, es decir, el número de productos por página (por defecto es 10)
-     * @param sort - Campo de ordenación (por defecto es 'name')
-     * @param order - Orden ascendente o descendente (por defecto es 'asc')
-     * @param search - Término de búsqueda para filtrar productos (por defecto es una cadena vacía)
-     * @returns Observable que emite un objeto con la paginación (`InventoryPagination`) y la lista de productos (`InventoryProduct[]`)
-     
-     getProducts1(page: number = 0, size: number = 10, sort: string = 'name', order: 'asc' | 'desc' | '' = 'asc', search: string = ''):
-     Observable<{ pagination: InventoryPagination; products: InventoryProduct[] }>
- {
-     return this._httpClient.get<{ pagination: InventoryPagination; products: InventoryProduct[] }>('api/apps/ecommerce/inventory/products', {
-         params: {
-             page: '' + page,    // Convierte `page` a cadena de texto para incluirlo como parámetro
-             size: '' + size,    // Convierte `size` a cadena de texto
-             sort,               // Campo de ordenación
-             order,              // Orden ascendente o descendente
-             search,             // Término de búsqueda
-         },
-     }).pipe(
-         tap((response) =>
-         {
-             // Actualiza `_pagination` con la información de paginación recibida
-             this._pagination.next(response.pagination);
-
-             // Actualiza `_products` con la lista de productos recibida
-             this._products.next(response.products);
-         }),
-     );
- }*/
-
-
-
-     /**
-     * Obtiene un producto (equipo) por su ID
-     *
-     * @param id - ID del equipo a obtener
-     * @returns Observable que emite el producto (`InventoryProduct`) o un error si no se encuentra
-     
-    getProductById12(id: string): Observable<InventoryProduct> {
-        // Realiza una solicitud HTTP GET a la API para obtener el equipo por ID
-        //return this._httpClient.get<{ message: string; data: InventoryEquipment }>(`${this.baseUrl}/equipment/${id}`).pipe(
-            map(response => {
-                // Verifica que `data` esté presente en la respuesta y mapea el equipo a `InventoryProduct`
-                if (response.data) {
-                    //const product = this.mapEquipmentToProduct(response.data);
-                   // this._product.next(product); // Actualiza `_product` con el producto encontrado
-                    //return product;
-                } else {
-                    throw new Error(`No se encontró el producto con ID ${id}`);
-                }
-            }),
-            catchError(error => {
-                console.error('Error al obtener el producto:', error);
-                return throwError(() => new Error('No se pudo encontrar el producto con el ID ' + id + '!'));
+                // Emitir los datos de paginación y equipos
+                this._pagination.next(pagination);
+                this._equipments.next(equipments);
+    
+                return { pagination, equipments };
             })
         );
     }
-    */
+    
+
+    
+    getEquipments43(
+        page: number = 0,
+        size: number = 10,
+        sort: string = 'name',
+        order: 'asc' | 'desc' | '' = 'asc',
+        search: string = '',
+        count2: number = 0,
+    ): Observable<{ pagination: InventoryPagination; equipments: InventoryEquipment[] }> {
+        return this._httpClient.get<any>(`${this.baseUrl}/equipment?page=${page}&limit=${size}`, {
+            params: { page: '' + page, size: '' + size, sort, order, search },
+        }).pipe(
+            switchMap((response) => {
+                console.log('API Response:', response);
+                console.log('API search:', search);
+    
+                // Crear objeto de paginación
+                const pagination: InventoryPagination = {
+                    length: response.data.total,
+                    size: response.data.perPage,
+                    page: response.data.currentPage,
+                    lastPage: response.data.totalPages,
+                    startIndex: ((response.data.currentPage) * response.data.perPage),
+                    endIndex: response.data.currentPage * response.data.perPage,
+                };
+    
+                // Desanidar los datos y procesar equipos
+                const equipments = response.data.data.map((item: any) => {
+                    // Convertir 'lector' a booleano si es necesario
+                    if (typeof item.lector === 'string') {
+                        item.lector = item.lector === 'true';
+                    }
+                    return item;
+                });
+    
+                // Crear solicitudes para obtener las descripciones de tipo
+                const tipoRequests = equipments.map((equipment) => {
+                    if (equipment.tipo) {
+                        return this._httpClient.get<{ message: string; data: { tipos_id: number; descripcion: string } }>(
+                            `${this.baseUrl}/type/${equipment.tipo}`
+                        ).pipe(
+                            map((typeResponse) => {
+                                equipment.tipoDescripcion = typeResponse.data.descripcion;
+                            }),
+                            catchError(() => {
+                                // Manejar errores por si el tipo no existe
+                                console.warn(`Error al obtener tipo para equipo ID ${equipment.equipos_id}`);
+                                equipment.tipoDescripcion = 'Desconocido'; // Valor por defecto
+                                return [];
+                            })
+                        );
+                    }
+                    return of(null);
+                });
+    
+                // Ejecutar todas las solicitudes en paralelo y esperar a que terminen
+                return forkJoin(tipoRequests).pipe(
+                    map(() => {
+                        return { pagination, equipments };
+                    })
+                );
+            }),
+            catchError((error) => {
+                console.error('Error al obtener los equipos:', error);
+                return throwError(() => new Error('No se pudieron cargar los equipos.'));
+            })
+        );
+    }
+    
+
+
  /**
      * Obtiene un producto por su ID
      *
      * @param  equipos_id - ID del producto a obtener
      * @returns Observable que emite el producto (`InventoryProduct`) o un error si no se encuentra
      */
- getEquipmentById2( equipos_id: number): Observable<InventoryEquipment>
- {
-     return this._equipments.pipe(
-         take(1),   // Toma el primer valor emitido por `_products` y completa la suscripción
-         map((equipments) =>
-         {
-             // Busca el producto en la lista usando su ID
-             const equipment = equipments.find(item => item.equipos_id === equipos_id) || null;
 
-             // Actualiza `_product` con el producto encontrado
-             this._equipment.next(equipment);
+ 
 
-             // Retorna el producto encontrado o `null`
-             return equipment;
-         }),
-         switchMap((equipment) =>
-         {
-             // Si no se encuentra el producto, emite un error
-             if ( !equipment)
-             {
-                 return throwError('No se pudo encontrar el producto con el ID ' + equipos_id + '!');
-             }
-
-             // Si se encuentra el producto, lo retorna como observable
-             return of(equipment);
-         }),
-     );
- }
- getEquipmentById3(equipos_id: number): Observable<InventoryEquipment> {
-    console.log('Enviando solicitud a la API con ID:', equipos_id); // Log de la solicitud
-
-    return this._httpClient.get<InventoryEquipment>(`${this.baseUrl}/equipment/${equipos_id}`).pipe(
-        map((equipment) => {
-            console.log('Respuesta de la API recibida:', equipment); // Log de la respuesta
-            this._equipment.next(equipment);
-            return equipment;
-        }),
-        catchError((error) => {
-            console.error('Error al obtener el equipo:', error); // Log de errores
-            return throwError(() => new Error('No se pudo encontrar el equipo con el ID ' + equipos_id + '!'));
-        })
-    );
-}
-
-getEquipmentById456(equipos_id: number): Observable<{ message: string; data: InventoryEquipment }> {
-    console.log('Enviando solicitud a la API con ID:', equipos_id);
-
-    return this._httpClient.get<{ message: string; data: InventoryEquipment }>(`${this.baseUrl}/equipment/${equipos_id}`).pipe(
-        map((response) => {
-            console.log('Datos recibidos de la API:', response);
-            const equipment = response.data; // Extrae `data` de la respuesta
-            this._equipment.next(equipment);
-            return response; // Retorna todo el objeto
-        }),
-        catchError((error) => {
-            console.error('Error al obtener el equipo:', error);
-            return throwError(() => new Error('No se pudo encontrar el equipo con el ID ' + equipos_id + '!'));
-        })
-    );
-}
-
-getEquipmentById555555(equipos_id: number): Observable<{ message: string; data: InventoryEquipment }> {
-    console.log('Enviando solicitud a la API con ID:', equipos_id);
-
-    return this._httpClient.get<{ message: string; data: InventoryEquipment }>(`${this.baseUrl}/equipment/${equipos_id}`).pipe(
-        map((response) => {
-            console.log('Datos recibidos de la API:', response);
-
-            const equipment = response.data; // Extrae `data` de la respuesta
-
-            // Convertir 'lector' a booleano si es necesario, sin cambiar el tipo en InventoryEquipment
-            if (typeof equipment.lector === 'string') {
-                //equipment.lector = equipment.data.lector === 'true' ? 'true' : 'false'; // Mantener como string
-                console.log("lector: Id  ",equipment);
-            }
-            response.data=equipment;
-            this._equipment.next(equipment); // Emite el equipo actualizado
-           
-            
-            console.log("lector: Id  ",response);
-            return response; // Retorna todo el objeto
-        }),
-        catchError((error) => {
-            console.error('Error al obtener el equipo:', error);
-            return throwError(() => new Error('No se pudo encontrar el equipo con el ID ' + equipos_id + '!'));
-        })
-    );
-}
 getEquipmentById(equipos_id: number): Observable<{ message: string; data: InventoryEquipment }> {
     console.log('Enviando solicitud a la API con ID:', equipos_id);
 
@@ -608,25 +468,55 @@ getEquipmentById(equipos_id: number): Observable<{ message: string; data: Invent
         map((response) => {
             console.log('Datos recibidos de la API:', response);
 
-            const equipment = response.data; // Extrae `data` de la respuesta
-            // Verificar y limpiar `funcionario_asignado`
+            const equipment = response.data;
+            // Limpiar `funcionario_asignado` y `funcionariousuario`
             if (equipment.funcionarioasignado && typeof equipment.funcionarioasignado === 'string') {
-                console.log("Antes de la limpieza funcionario_asignado:", equipment.funcionarioasignado);
-                equipment.funcionarioasignado = equipment.funcionarioasignado.replace(/\s+/g, ' ').trim(); // Limpia espacios múltiples
-                equipment.funcionariousuario = equipment.funcionariousuario.replace(/\s+/g, ' ').trim(); // Limpia espacios múltiples
-                console.log("Después de la limpieza funcionario_asignado:", equipment.funcionarioasignado);
+                equipment.funcionarioasignado = equipment.funcionarioasignado.replace(/\s+/g, ' ').trim();
+                equipment.funcionariousuario = equipment.funcionariousuario.replace(/\s+/g, ' ').trim();
             }
 
-            // Verificar y convertir 'lector' a booleano si es necesario
+            // Convertir 'lector' a booleano si es necesario
             if (typeof equipment.lector === 'string') {
-                console.log("Antes de la conversión lector:", equipment.lector);
-                equipment.lector = equipment.lector === 'true'; // Convertir 'true' a true, 'false' a false
-                console.log("Después de la conversión lector:", equipment.lector);
+                equipment.lector = equipment.lector === 'true';
             }
 
-            this._equipment.next(equipment); // Emitir el equipo actualizado
-            console.log("Equipo emitido con lector booleano:", equipment);
-            return response; // Retorna todo el objeto con la propiedad 'lector' convertida
+            return equipment; // Retorna el equipo para procesar en los siguientes pasos
+        }),
+        switchMap((equipment) => {
+            const requests: Observable<any>[] = [];
+
+            // Si existe `responsable`, añadir la solicitud al arreglo
+            if (equipment.responsable) {
+                const userId = Number(equipment.responsable);
+                if (!isNaN(userId)) {
+                    requests.push(
+                        this._httpClient.get<{ message: string; data: { nombres: string, apellidos: string } }>(`${this.baseUrl}/user/${userId}`).pipe(
+                            map((userResponse) => {
+                                equipment.responsabledelregistroString = `${userResponse.data.nombres} ${userResponse.data.apellidos}`;
+                            })
+                        )
+                    );
+                }
+            }
+
+            // Si existe `tipo`, añadir la solicitud al arreglo
+            if (equipment.tipo) {
+                const tipoId = Number(equipment.tipo);
+                if (!isNaN(tipoId)) {
+                    requests.push(
+                        this._httpClient.get<{ message: string; data: { tipos_id: number, descripcion: string, formulario: string, estado: number } }>(`${this.baseUrl}/type/${tipoId}`).pipe(
+                            map((typeResponse) => {
+                                equipment.tipoDescripcion = typeResponse.data.descripcion;
+                            })
+                        )
+                    );
+                }
+            }
+
+            // Ejecutar todas las solicitudes en paralelo y esperar que terminen
+            return forkJoin(requests).pipe(
+                map(() => ({ message: 'Equipment fetched successfully', data: equipment }))
+            );
         }),
         catchError((error) => {
             console.error('Error al obtener el equipo:', error);
@@ -826,7 +716,7 @@ createEquipment(equipmentData: any = {}): Observable<InventoryEquipment> {
         "tarjetavideo": " ",
         "funcionarioasignado": " ",
         "oficina": " ",
-        "fecharegistro": " ",
+        "fecharegistro": formattedDate,
         "codigo": " ",
         "memoria": " ",
         "tarjetamadre": " ",
@@ -1762,4 +1652,142 @@ updateEquipment434(equipos_id: number, equipment: InventoryEquipment): Observabl
     }
 
     
+
+    // Obtener tipo de hardware por ID
+    getHardwareTypeById(tiposId: number): Observable<any> {
+        return this._httpClient.get(`${this.baseUrl}/type/${tiposId}`).pipe(
+            map((response: any) => response.data),
+            catchError((err) => {
+                console.error('Error al obtener el tipo de hardware:', err);
+                return throwError(() => new Error('No se pudo obtener el tipo de hardware.'));
+            })
+        );
+    }
+
+    // Guardar tipo de hardware
+    saveHardwareType(hardwareData: any): Observable<any> {
+        return this._httpClient.post(`${this.baseUrl}/type`, hardwareData).pipe(
+            tap(() => console.log('Tipo de hardware guardado correctamente.')),
+            catchError((err) => {
+                console.error('Error al guardar el tipo de hardware:', err);
+                return throwError(() => new Error('No se pudo guardar el tipo de hardware.'));
+            })
+        );
+    }
+
+    buscarTipos2(nombreCompleto: string): Observable<Empleado[] | null> {
+
+        // Configuramos las cabeceras de la solicitud para indicar que el contenido será de tipo 'application/x-www-form-urlencoded'
+        const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    
+        // Creamos el cuerpo de la solicitud, codificando el parámetro nombre_completo para asegurar que sea adecuado para la URL
+        const body = `nombre_completo=${encodeURIComponent(nombreCompleto)}`;
+    
+        // Realizamos la solicitud POST al servidor en el endpoint 'http://localhost:3001/api/empleados'
+        // Enviamos el cuerpo de la solicitud y las cabeceras configuradas
+
+
+        
+        return this._httpClient.post<{ status: boolean; data: Empleado[] }>('http://localhost:3001/api/empleados', body, { headers })
+        .pipe(
+            // Usamos el operador 'map' para extraer solo el array de empleados desde el campo 'data'
+            map(response => {
+            // Si la respuesta tiene éxito y contiene datos, devolvemos el array de empleados
+            if (response && response.status) {
+                //console.log('Empleados encontrados:', response.data);
+                return response.data; // Extraemos el array de empleados
+
+            } else {
+                return null; // En caso de error, devolvemos null
+            }
+            }),
+            // Usamos el operador 'tap' para realizar una acción secundaria sin modificar la respuesta
+            tap((empleados) => {
+            // Si encontramos empleados, los mostramos en la consola
+            if (empleados) {
+                console.log('Empleados encontrados:', empleados);
+            }
+            })
+        );
+    }
+
+
+    buscarTipos4(
+        page: number = 1,
+        limit: number = 100,
+        search: string = ''
+    ): Observable<string[]> {
+        const url = `${this.baseUrl}/type`;
+    
+        return this._httpClient
+            .get<any>(url, {
+                params: {
+                    page: page.toString(),
+                    limit: limit.toString(),
+                    search: search,
+                },
+            })
+            .pipe(
+                map((response) => {
+                    // Validar que la respuesta tenga datos
+                    if (response && response.data && Array.isArray(response.data.data)) {
+                        // Extraer las descripciones
+                        return response.data.data.map((item: any) => item.tipos_id.descripcion);
+                    } else {
+                        // Retornar una lista vacía si no hay datos
+                        return [];
+                    }
+                }),
+                tap((descriptions) => {
+                    console.log('Descripciones encontradas:', descriptions);
+                }),
+                catchError((error) => {
+                    console.error('Error al obtener tipos:', error);
+                    return throwError(() => new Error('No se pudieron obtener los tipos.'));
+                })
+            );
+    }
+    buscarTipos(page: number, limit: number, search: string): Observable<{ descripcion: string; tipos_id: number }[]> {
+        const url = `${this.baseUrl}/type?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+    
+        return this._httpClient.get<any>(url).pipe(
+            map((response) => {
+                if (response?.data?.data) {
+                    // Mapear los datos para extraer `descripcion` y `tipos_id`
+                    return response.data.data.map((tipo: any) => ({
+                        descripcion: tipo.tipos_id.descripcion?.trim() || '',
+                        tipos_id: tipo.tipos_id.tipos_id || 0,
+                    }));
+                    
+                } else {
+                    console.warn('Respuesta inesperada de la API:', response);
+                    return [];
+                }
+            }),
+            catchError((err) => {
+                console.error('Error al buscar tipos:', err);
+                return of([]); // Devuelve un array vacío en caso de error
+            })
+        );
+    }
+    getTipoById(tiposId: number): Observable<{ descripcion: string }> {
+        return this._httpClient.get<any>(`${this.baseUrl}/type/${tiposId}`).pipe(
+            map((response) => {
+                if (response?.data?.descripcion) {
+                    return { descripcion: response.data.descripcion.trim() };
+                } else {
+                    throw new Error('No se encontró el tipo con el ID especificado.');
+                }
+            }),
+            catchError((err) => {
+                console.error('Error al obtener el tipo por ID:', err);
+                return of({ descripcion: '' }); // Devuelve un valor vacío si hay error
+            })
+        );
+    }
+    
+    
+    
 }
+
+

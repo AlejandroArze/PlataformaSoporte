@@ -144,6 +144,36 @@ class TypeController {
             );
         }
     }
+    /**
+ * Método estático asíncrono en el controlador para obtener equipos paginados.
+ * @param {object} req - Objeto de solicitud HTTP, contiene información como parámetros de consulta.
+ * @param {object} res - Objeto de respuesta HTTP, se usa para enviar respuestas al cliente.
+ * @returns {Promise} - Promesa que resuelve al enviar una respuesta al cliente.
+ */
+    static async paginate(req, res) {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10;
+        const search = req.query.search || ''; // Obtiene el término de búsqueda de la consulta
+    
+        try {
+            // Llama al servicio de paginación con el término de búsqueda
+            const { count, rows } = await typeService.paginate({ page, limit, search });
+            console.log("Count rows: ",{ count, rows });
+            // Transforma los resultados en DTOs
+            const typeDTOs = rows.map(type =>TypeDTO.createFromEntity(type));
+            console.log("typeDTOs: ",typeDTOs)
+            // Retorna la respuesta con paginación y resultados
+            return jsonResponse.successResponse(res, 200, "Type retrieved successfully", {
+                total: count,
+                perPage: limit,
+                currentPage: page,
+                totalPages: Math.ceil(count / limit),
+                data: typeDTOs,
+            });
+        } catch (error) {
+            return jsonResponse.errorResponse(res, 500, error.message);
+        }
+    }
 }
 
 // Exporta la clase TypeController para que pueda ser utilizada en otros archivos

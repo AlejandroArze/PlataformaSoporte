@@ -105,7 +105,8 @@ export interface InventoryEquipment {
     so?: string | null; // Sistema operativo
     responsable?: number | null; // ID del responsable
     mac?: string | null; // Dirección MAC de la tarjeta de red
-
+    responsabledelregistroString?: string | null;// String del responsable
+    tipoDescripcion:string | null;
 }
 
 export interface Empleado {
@@ -128,5 +129,6 @@ export interface Empleado {
     fechaIncorporacion: string;
     fechaBaja: string | null;
     resideCapital: string;
+    
   }
   

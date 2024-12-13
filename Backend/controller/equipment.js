@@ -153,7 +153,7 @@ static async paginate(req, res) {
     try {
         // Llama al servicio de paginación con el término de búsqueda
         const { count, rows } = await equipmentService.paginate({ page, limit, search });
-
+        console.log("Count rows: ",{ count, rows });
         // Transforma los resultados en DTOs
         const equipmentDTOs = rows.map(equipment => EquipmentDTO.createFromEntity(equipment));
 
