@@ -27,7 +27,10 @@ class UserService {
                 nombres: data.nombres, // Se asigna el nombre
                 apellidos: data.apellidos, // Se asigna el apellido
                 role: data.role, // Se asigna el rol
-                estado: 1 // Estado por defecto al crear un usuario (activo)
+                image:data.image,
+                
+                estado: data.estado, // Estado por defecto al crear un usuario (activo)
+                __v:data.__v,
             })
 
             await DB.commit() // Confirma la transacción
@@ -84,7 +87,9 @@ class UserService {
                 email: data.email, // Actualiza el campo 'email'
                 password: hashedPassword, // Actualiza la contraseña encriptada
                 role: data.role, // Actualiza el campo 'role'
-                estado: data.estado // Actualiza el estado del usuario
+                estado: data.estado, // Actualiza el estado del usuario
+                image:data.image,
+                __v:data.__v
             }, { where: { usuarios_id: id } }); // Condición para actualizar el registro por ID
 
             await DB.commit() // Confirma la transacción

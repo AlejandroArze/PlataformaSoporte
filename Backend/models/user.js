@@ -87,7 +87,16 @@ module.exports = (sequelize, DataTypes) => {
         notEmpty: true, // No permite cadenas vacías.
         notNull: true // Valida que el valor no sea nulo.
       }
+    },
+    __v: {
+      type: DataTypes.INTEGER, // El tipo de dato es INTEGER, como especificaste.
+      allowNull: false, // No permite valores nulos.
+      validate: {
+        notEmpty: true, // No permite cadenas vacías.
+        notNull: true // Valida que el valor no sea nulo.
+      }
     }
+
   }, {
     sequelize, // Pasamos la instancia de Sequelize para manejar la conexión con la base de datos.
     modelName: 'User', // Nombre del modelo.

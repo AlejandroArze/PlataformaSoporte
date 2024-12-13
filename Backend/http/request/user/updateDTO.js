@@ -94,7 +94,10 @@ const updateDTO = Joi.object({
 
     // Validación del campo 'image' (imagen de perfil del usuario).
     image: Joi.string() // Refleja el campo 'image', que puede ser una URL o ruta a la imagen.
-        .optional() // El campo 'image' es opcional.
+        .optional(), // El campo 'image' es opcional.
+         // Validación del campo 'estado', que es un número entero.
+    __v: Joi.number().integer() // Refleja el campo 'estado', que es un número (entero).
+    .required(), // El campo 'estado' es obligatorio.
 });
 
 module.exports = updateDTO; // Exporta el esquema de validación para que pueda ser usado en otras partes de la aplicación.

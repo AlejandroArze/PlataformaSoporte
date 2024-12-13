@@ -34,7 +34,7 @@ router.put("/type/:tipos_id", type.update);
 
 // Define una ruta DELETE para eliminar un usuario por ID. Utiliza el método 'destroy' del controlador de usuario.
 router.delete("/type/:tipos_id", type.destroy);
-
+router.get('/type', type.paginate);
 
 
 //-----------------------------------------------------------------------------------------------------------

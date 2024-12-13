@@ -1,4 +1,4 @@
-class TypeDTO {
+class TypeResponseDTO {
     // Properties representing the fields in the database table
     tipos_id; // Primary key with auto-increment
     descripcion; // Description field, text
@@ -12,7 +12,10 @@ class TypeDTO {
         this.formulario = formulario; // Assign the form
         this.estado = estado; // Assign the state
     }
+    static createFromEntity(entity) {
+        return new TypeResponseDTO(entity);
+    }
 }
 
 // Export the TypeDTO class for use in other files
-module.exports = TypeDTO;
+module.exports = TypeResponseDTO;
