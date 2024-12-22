@@ -133,4 +133,36 @@ export interface Empleado {
   }
   
 
+  export interface Servicio {
+    servicios_id: number;
+    nombreResponsableEgreso: string;
+    cargoSolicitante: string;
+    informe: string;
+    cargoResponsableEgreso: string;
+    oficinaSolicitante: string;
+    fechaRegistro: string;
+    equipo: string | null;
+    problema: string;
+    telefonoResponsableEgreso: string;
+    gestion: number;
+    telefonoSolicitante: string;
+    tecnicoAsignado: number;
+    observaciones: string;
+    tipoResponsableEgreso: string;
+    estado: string;
+    tipoSolicitante: string;
+    fechaTerminado: string;
+    oficinaResponsableEgreso: string;
+    numero: number;
+    fechaInicio: string;
+    fechaEgreso: string | null;
+    ciSolicitante: string;
+    nombreSolicitante: string;
+    tipo: string;
+    tecnicoRegistro: number;
+    tecnicoEgreso: string | null;
+    ciResponsableEgreso: string;
+    tecnicoAsignadoString:string | null;
+    tipoDescripcion: string | null;
+}
 
