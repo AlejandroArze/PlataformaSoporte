@@ -52,6 +52,20 @@ export const defaultNavigation: FuseNavigationItem[] = [
                     
             },
             {
+                id   : 'apps.ecommerce',
+                title: 'Control de Equipos RFID',
+                type : 'basic',
+                icon : 'heroicons_outline:check-circle',
+                link : '/apps/control',
+            },
+            {
+                id   : 'apps.ecommerce',
+                title: 'Servicios',
+                type : 'basic',
+                icon : 'heroicons_outline:check-circle',
+                link : '/apps/services',
+            },
+            {
                 id   : 'apps.scrumboard',
                 title: 'Recepción de Tareas',
                 type : 'basic',
@@ -139,6 +153,13 @@ export const compactNavigation: FuseNavigationItem[] = [
                         link : '/apps/ecommerce/inventory',
                     },
                 ],
+            },
+            {
+                id   : 'apps.scrumboard',
+                title: 'Servicios',
+                type : 'basic',
+                icon : 'heroicons_outline:check-circle',
+                link : '/apps/services',
             },
             {
                 id   : 'apps.scrumboard',
@@ -230,6 +251,13 @@ export const futuristicNavigation: FuseNavigationItem[] = [
             },
             {
                 id   : 'apps.scrumboard',
+                title: 'Servicios',
+                type : 'basic',
+                icon : 'heroicons_outline:check-circle',
+                link : '/apps/services',
+            },
+            {
+                id   : 'apps.scrumboard',
                 title: 'Recepción de Tareas',
                 type : 'basic',
                 icon : 'heroicons_outline:check-circle',
@@ -316,6 +344,13 @@ export const horizontalNavigation: FuseNavigationItem[] = [
                         link : '/apps/ecommerce/inventory',
                     },
                 ],
+            },
+            {
+                id   : 'apps.scrumboard',
+                title: 'Servicios',
+                type : 'basic',
+                icon : 'heroicons_outline:check-circle',
+                link : '/apps/services',
             },
             {
                 id   : 'apps.scrumboard',

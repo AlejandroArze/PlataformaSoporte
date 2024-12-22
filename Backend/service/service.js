@@ -144,6 +144,47 @@ class ServiceService {
             throw error; // Lanza el error para manejarlo
         }
     }
+
+    static async paginate(queryParams) {
+        const { page, limit, search } = queryParams;
+        const offset = (page - 1) * limit;
+    
+        // Obtener todas las columnas del modelo
+        const columns = Object.keys(Service.rawAttributes);
+    
+        // Construir las condiciones de búsqueda
+        const whereCondition = search
+            ? {
+                [Op.or]: columns.map((field) => {
+                    const columnType = Service.rawAttributes[field].type.key;
+    
+                    if (columnType === "STRING" || columnType === "TEXT") {
+                        // Si la columna es texto, usa unaccent y ILIKE
+                        return Sequelize.literal(`unaccent("${field}") ILIKE unaccent('%${search}%')`);
+                    } else {
+                        // Si no es texto, conviértelo a texto con CAST
+                        return Sequelize.literal(`CAST("${field}" AS TEXT) ILIKE '%${search}%'`);
+                    }
+                }),
+            }
+            : {};
+    
+        try {
+            // Realiza la consulta con las condiciones dinámicas
+            const { count, rows } = await Service.findAndCountAll({
+                where: whereCondition,
+                limit: limit,
+                offset: offset,
+                order: [["servicios_id", "DESC"]], // Ordenar por ID descendente
+            });
+    
+            return { count, rows };
+        } catch (error) {
+            console.error("Error en paginación de servicios:", error.message);
+            throw error;
+        }
+    }
+    
      
 }
 

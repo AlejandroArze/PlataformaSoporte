@@ -86,6 +86,8 @@ export const appRoutes: Route[] = [
                 {path: 'help-center', loadChildren: () => import('app/modules/admin/apps/help-center/help-center.routes')},
                 {path: 'scrumboard', loadChildren: () => import('app/modules/admin/apps/scrumboard/scrumboard.routes')},
                 {path: 'tasks', loadChildren: () => import('app/modules/admin/apps/tasks/tasks.routes')},
+                {path: 'services', loadChildren: () => import('app/modules/admin/apps/services/ecommerce.routes')},
+                {path: 'control', loadChildren: () => import('app/modules/admin/apps/control/ecommerce.routes')},
                
             ]},
             

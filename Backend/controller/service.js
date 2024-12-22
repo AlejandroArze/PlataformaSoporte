@@ -374,6 +374,30 @@ class ServiceController {
             );
         }
     }
+    static async paginate(req, res) {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10;
+        const search = req.query.search || ''; // Obtiene el término de búsqueda de la consulta
+    
+        try {
+            // Llama al servicio de paginación con los parámetros
+            const { count, rows } = await serviceService.paginate({ page, limit, search });
+    
+            // Transforma los resultados en DTOs
+            const serviceDTOs = rows.map(service => new ServiceDTO(service));
+    
+            // Retorna la respuesta con paginación y resultados
+            return jsonResponse.successResponse(res, 200, "Services retrieved successfully", {
+                total: count,
+                perPage: limit,
+                currentPage: page,
+                totalPages: Math.ceil(count / limit),
+                data: serviceDTOs,
+            });
+        } catch (error) {
+            return jsonResponse.errorResponse(res, 500, error.message);
+        }
+    }
 }
 
 

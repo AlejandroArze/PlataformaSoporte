@@ -9,7 +9,7 @@
             <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
         </div>
         <!-- Title -->
-        <div class="text-4xl font-extrabold tracking-tight">Inventario de Equipos</div>
+        <div class="text-4xl font-extrabold tracking-tight">Control de Equipos RFID</div>
         <!-- Actions -->
         <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
             <!-- Search -->
@@ -27,14 +27,7 @@
                     [placeholder]="'Buscar Equipos'">
             </mat-form-field>
             <!-- Add product button -->
-            <button
-                class="ml-4"
-                mat-flat-button
-                [color]="'primary'"
-                (click)="createEquipment()">
-                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-                <span class="ml-2 mr-1">Añadir</span>
-            </button>
+           
         </div>
     </div>
 
@@ -54,7 +47,7 @@
                             
                             <div 
                             
-                            [mat-sort-header]="'marca'">Marca</div>
+                            [mat-sort-header]="'marca'">Codigo de tajeta</div>
                             <div
                             class="hidden md:block"
                                 [mat-sort-header]="'sku'">
@@ -64,20 +57,16 @@
                             [mat-sort-header]="'name'">Funcionario Usuario del Equipo</div>
                             <div
                                 class="hidden lg:block"
-                                [mat-sort-header]="'price'">
-                                Modelo
+                                [mat-sort-header]="'garantia'">
+                               Registro
                             </div>
                             
                             <div
                                 
                                 [mat-sort-header]="'tipo'">
-                                Tipo
+                               Acción
                             </div>
-                            <div
-                                class="hidden lg:block"
-                                [mat-sort-header]="'active'">
-                                Serie
-                            </div>
+                            
                             
                             <div
                                 class="hidden lg:block"
@@ -97,7 +86,7 @@
                                     
 
                                     <div class="truncate">
-                                        {{equipment.marca}}
+                                        {{equipment.procesador}}
                                     </div>
 
 
@@ -113,7 +102,7 @@
 
                                     <!-- Price .pric-->
                                     <div class="hidden lg:block">
-                                        {{equipment.modelo }}
+                                        {{equipment.garantia }}
                                     </div>
 
                                     <!-- Stock .category -->
@@ -122,11 +111,9 @@
                                         
                                     </div>
 
-                                     <!-- Stock .category -->
-                                     <div class="hidden lg:flex items-center">
-                                        <div class="min-w-4">{{equipment.serie}}</div>
+                                     
                                         
-                                    </div>
+                                    
                                     <!-- Stock .category -->
                                     <div class="hidden lg:flex items-center">
                                         <div class="min-w-4">{{equipment.oficina}}</div>
@@ -219,7 +206,7 @@
                                         <div class="flex">
                                             <!-- Campo Código de Bienes -->
                                             <mat-form-field class="w-1/3 pr-2">
-                                                <mat-label>Código de Bienes</mat-label>
+                                                <mat-label>Código de Tarjeta</mat-label>
                                                 <input matInput formControlName="codigo" placeholder="Ingrese el código">
                                                 <mat-error *ngIf="bienesForm?.get('codigo')?.hasError('required')">
                                                 El código es obligatorio.
@@ -249,78 +236,21 @@
                                                     Generar
                                                 </button>
                                             </div>
+                                            <mat-form-field class="w-full">
+                                                <mat-label>Codigo Tarjeta</mat-label>
+                                                
+                                                <input
+                                                    matInput
+                                                    [formControlName]="'procesador'">
+                                            </mat-form-field>
+                                         
                                             
                                             
 
-                                            <mat-form-field class="w-2/3 pl-2">
-                                            <mat-label>Serie</mat-label>
-                                            <input matInput formControlName="serie">
-                                            </mat-form-field>
+                                            
                                             
                                         </div>
 
-                                        <!-- Category, Brand & Vendor -->
-                                        <div style="display: flex; flex-direction: row; gap: 20px;">
-                                            <form class="example-form2" [formGroup]="selectedEquipmentForm" >
-                                            <!-- Campo Funcionario Usuario -->
-                                            
-                                            <mat-form-field class="w-1/3 pr-2"class="example-full-width2" style="flex: 1; margin-right: 10px;"  >
-                                                <mat-label>Tipo de Hardware</mat-label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Escribe el Tipo de Hardware"
-                                                    aria-label="Tipo de Hardware"
-                                                    matInput
-                                                    formControlName="tipo"
-                                                    [matAutocomplete]="autoTipo"
-                                                    (input)="onSearchTipo($event.target.value)"
-                                                />
-                                                <mat-autocomplete #autoTipo="matAutocomplete" autoActiveFirstOption>
-                                                    <mat-option
-                                                        *ngFor="let tipo of filteredTipos"
-                                                        [value]="tipo.descripcion"
-                                                        (mousedown)="selectTipo(tipo)"
-                                                    >
-                                                        {{ tipo.descripcion }}
-                                                    </mat-option>
-                                                    <mat-option *ngIf="filteredEmpleadosUsuarios.length === 0">
-                                                        No hay resultados
-                                                    </mat-option>
-                                                </mat-autocomplete>
-                                            </mat-form-field>
-                                        
-                                            
-                                            
-                                          
-                                                <mat-form-field class="example-full-width2">
-                                                  <mat-label>Funcionario Asignado Bienes</mat-label>
-                                                  <input
-                                                    type="text"
-                                                    placeholder="Escribe un nombre"
-                                                    aria-label="Funcionario Asignado"
-                                                    matInput
-                                                    formControlName="funcionarioasignado"
-                                                    [matAutocomplete]="auto"
-                                                    (input)="onSearch($event.target.value)"
-                                                  />
-                                                  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
-                                                    <mat-option
-                                                      *ngFor="let empleado of filteredEmpleados"
-                                                      [value]="empleado"
-                                                      (mousedown)="selectEmpleado(empleado)"
-                                                    >
-                                                      {{ empleado }}
-                                                    </mat-option>
-                                                    <mat-option *ngIf="filteredEmpleados.length === 0" >
-                                                      No hay resultados
-                                                      
-                                                    </mat-option>
-                                                  </mat-autocomplete>
-                                                </mat-form-field>
-                                              </form>
-                                              
-                                              
-                                              
 
 
                                            
@@ -340,92 +270,10 @@
                                               
                                               
                                             
-                                        </div>
-
-                                        <!-- Stock and Reserved -->
-                                        <div class="flex">
-                                            <mat-form-field class="w-1/3 pr-2">
-                                                <mat-label>Marca</mat-label>
-                                                <input
-                                                    
-                                                    matInput
-                                                    [formControlName]="'marca'">
-                                            </mat-form-field>
-                                            <mat-form-field class="w-1/3 pl-2">
-                                                <mat-label>Memoria Ram</mat-label>
-                                                <input
-                                                    
-                                                    matInput
-                                                    [formControlName]="'memoria'">
-                                            </mat-form-field>
-                                            <mat-form-field class="w-1/3 pl-2">
-                                                <mat-label>Sistema Operativo</mat-label>
-                                                <input
-                                                    
-                                                    matInput
-                                                    [formControlName]="'so'">
-                                            </mat-form-field>
-                                            
-                                            
-                                        </div>
-                                        <div class="flex">
-                                            <mat-form-field class="w-1/3 pr-2">
-                                                <mat-label>Antivirus</mat-label>
-                                                <input
-                                                    
-                                                    matInput
-                                                    [formControlName]="'antivirus'">
-                                            </mat-form-field>
-                                            <mat-form-field class="w-1/3 pl-2">
-                                                <mat-label>MAC del Equipo</mat-label>
-                                                <input
-                                                    
-                                                    matInput
-                                                    [formControlName]="'mac'">
-                                            </mat-form-field>
-                                            <mat-form-field class="w-1/3 pl-2">
-                                                <mat-label>Ip Asignado</mat-label>
-                                                <input
-                                                    
-                                                    matInput
-                                                    [formControlName]="'ip'">
-                                            </mat-form-field>
-                                            
-                                            
-                                        </div>
+                                       
                                     </div>
 
-                                    <!-- Cost, Base price, Tax & Price -->
-                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Placa Madre</mat-label>
-                                            <input matInput [formControlName]="'tarjetamadre'">
-                                        </mat-form-field>
-
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Procesador</mat-label>
-                                            <input matInput [formControlName]="'procesador'">
-                                        </mat-form-field>
-
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Tarjeta de Video</mat-label>
-                                            <input matInput [formControlName]="'tarjetavideo'">
-                                        </mat-form-field>
-
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Disco Duro</mat-label>
-                                            <input matInput [formControlName]="'discoduro'">
-                                        </mat-form-field>
-
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Modelo</mat-label>
-                                            <input matInput [formControlName]="'modelo'">
-                                        </mat-form-field>
-                                        <mat-checkbox [formControlName]="'lector'">Lector DVD</mat-checkbox>
-                                        
-
-                                        
-                                    </div>
+                                   
 
 
                                     <!-- Weight & Tags -->
@@ -437,9 +285,8 @@
                                                 matInput
                                                 [formControlName]="'oficina'">
                                         </mat-form-field>
-                                     
                                         <mat-form-field class="example-full-width">
-                                            <mat-label>Garantía</mat-label>
+                                            <mat-label>Registro Tarjeta RFID</mat-label>
                                             <input matInput [formControlName]="'garantia'" [matDatepicker]="picker" readonly>
                                             
                                             
@@ -450,25 +297,21 @@
                                             
                                             <mat-datepicker #picker></mat-datepicker>
                                           </mat-form-field>
+                                       
+                                         
                                           
-                                          <mat-form-field class="w-full">
-                                            <mat-label>Fecha Registro</mat-label>
-                                            <input matInput [formControlName]="'fecharegistro'" [disabled]="true" readonly>
-                                        </mat-form-field>
-
-                                        <mat-form-field class="w-full">
-                                            <mat-label>Responsable del Registro</mat-label>
-                                            <input matInput [formControlName]="'responsabledelregistroString'" [disabled]="true" readonly>
-                                        </mat-form-field>
+                                          
 
 
                                           
                                           
                                           
                                           
-                                          
-                                        
-                                          <mat-label><b>Información de Bienes</b></mat-label>
+                                         
+                                    </div>
+                                    <!-- Weight & Tags -->
+                                    <div class="flex flex-col w-full lg:w-1/4 sm:pl-8">
+                                        <mat-label><b>Información de Bienes</b></mat-label>
                                           <mat-card appearance="outlined">
                                             <mat-card-content *ngIf="bienes">
                                                 <!-- Tipo de hardware -->
@@ -496,46 +339,24 @@
                                               </mat-card-content>
                                               
                                           </mat-card>
+                                       
+                                         
                                           
+                                          
+
+
+                                          
+                                          
+                                          
+                                          
+                                         
                                     </div>
 
                                 </div>
 
                             </div>
 
-                            <div class="flex items-center justify-between w-full border-t px-8 py-4">
-                                <button
-                                    class="-ml-4"
-                                    mat-button
-                                    [color]="'warn'"
-                                    (click)="deleteSelectedEquipment()">
-                                    Eliminar
-                                </button>
-                                <div class="flex items-center">
-                                    <div
-                                        class="flex items-center mr-4"
-                                        *ngIf="flashMessage">
-                                        <ng-container *ngIf="flashMessage === 'success'">
-                                            <mat-icon
-                                                class="text-green-500"
-                                                [svgIcon]="'heroicons_outline:check'"></mat-icon>
-                                            <span class="ml-2">Equipo Actualizado</span>
-                                        </ng-container>
-                                        <ng-container *ngIf="flashMessage === 'error'">
-                                            <mat-icon
-                                                class="text-red-500"
-                                                [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
-                                            <span class="ml-2">Occurrio un error, ¡Intentalo de nuevo!</span>
-                                        </ng-container>
-                                    </div>
-                                    <button
-                                        mat-flat-button
-                                        [color]="'primary'"
-                                        (click)="updateSelectedEquipment()">
-                                        Actualizar
-                                    </button>
-                                </div>
-                            </div>
+                           
 
                         </form>
                     </div>

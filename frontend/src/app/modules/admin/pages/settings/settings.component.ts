@@ -61,18 +61,7 @@ export class SettingsComponent implements OnInit, OnDestroy
                 title      : 'Seguridad',
                 description: 'Gestiona tu contraseña y las preferencias de verificación en dos pasos.',
             },
-            {
-                id         : 'plan-billing',
-                icon       : 'heroicons_outline:credit-card',
-                title      : 'Plan y facturación',
-                description: 'Gestiona tu plan de suscripción, método de pago e información de facturación.',
-            },
-            {
-                id         : 'notifications',
-                icon       : 'heroicons_outline:bell',
-                title      : 'Notificaciones',
-                description: 'Gestiona cuándo serás notificado y en qué canales.',
-            },
+           
             {
                 id         : 'team',
                 icon       : 'heroicons_outline:user-group',

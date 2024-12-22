@@ -3,6 +3,7 @@ const router = require("express").Router();
 
 // Importa el módulo de controlador de usuario donde están definidos los métodos para manejar solicitudes relacionadas con usuarios
 const user = require("../controller/user");
+const LecturasController = require("../controller/LecturasController");
 
 
 
@@ -71,6 +72,8 @@ router.put("/service/:servicios_id", service.update);
 
 // Define una ruta DELETE para eliminar un usuario por ID. Utiliza el método 'destroy' del controlador de usuario.
 router.delete("/service/:servicios_id", service.destroy);
+router.get('/service', service.paginate);
+
 
 
 //-----------------------------------------------------------------------------------------------------------
@@ -106,6 +109,15 @@ router.put("/management/:gestions_id", management.update);
 
 // Define una ruta DELETE para eliminar un usuario por ID. Utiliza el método 'destroy' del controlador de usuario.
 router.delete("/management/:gestions_id", management.destroy);
+
+
+//-------------------------------------------------------------------------------------------------------------------------
+// Define las rutas
+router.post("/lecturas", LecturasController.store);
+router.get("/lecturas/:id", LecturasController.show);
+router.get("/lecturas", LecturasController.paginate);
+router.put("/lecturas/:id", LecturasController.update);
+router.delete("/lecturas/:id", LecturasController.destroy);
 
 
 // Exporta el router para ser utilizado en otras partes de la aplicación, típicamente en el archivo principal del servidor.
