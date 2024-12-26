@@ -7,7 +7,7 @@ const now = DateTime.now();
 export const boards = [
     {
         id          : '2c82225f-2a6c-45d3-b18a-1132712a4234',
-        title       : 'Admin Dashboard',
+        title       : 'Servicio en sitio',
         description : 'Roadmap for the new project',
         icon        : 'heroicons_outline:rectangle-group',
         lastActivity: now.startOf('day').minus({day: 1}).toISO(),
@@ -19,7 +19,7 @@ export const boards = [
     },
     {
         id          : '0168b519-3dab-4b46-b2ea-0e678e38a583',
-        title       : 'Weekly Planning',
+        title       : 'Servicio en Laboratorio ',
         description : 'Job related tasks for the week',
         icon        : 'heroicons_outline:calendar',
         lastActivity: now.startOf('day').minus({day: 2}).toISO(),

@@ -24,7 +24,7 @@
                     matInput
                     [formControl]="searchInputControl"
                     [autocomplete]="'off'"
-                    [placeholder]="'Buscar Equipos'">
+                    [placeholder]="'Buscar Servicios'">
             </mat-form-field>
             <!-- Add product button -->
             <button
@@ -51,7 +51,9 @@
                             class="inventory-grid z-10 sticky top-0 grid gap-4 py-4 px-6 md:px-8 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
                             matSort
                             matSortDisableClear>
+                            <div 
                             
+                            [mat-sort-header]="'marca'"> ID</div>
                             <div 
                             
                             [mat-sort-header]="'marca'"> Tipo de servicio</div>
@@ -95,7 +97,9 @@
                                
                                 <!-- Adaptación para mostrar {{ category.name }} en lugar de una imagen -->
                                     
-
+                                <div class="truncate">
+                                    {{service.servicios_id}}
+                                </div>
                                     <div class="truncate">
                                         {{service.tipo}}
                                     </div>
@@ -229,7 +233,7 @@
 
                                             <mat-form-field class="w-1/3 pl-2">
                                                 <mat-label>Cargo</mat-label>
-                                                <input matInput formControlName="cargo">
+                                                <input matInput formControlName="cargoSolicitante">
                                             </mat-form-field>
 
                                             <mat-form-field class="w-1/3 pl-2">
@@ -268,41 +272,55 @@
                                         <!-- Category, Brand & Vendor -->
                                         <div style="display: flex; flex-direction: row; gap: 20px;">
                                             <form class="example-form2" [formGroup]="selectedServiceForm" >
-                                            <!-- Campo Funcionario Usuario -->
+                                            <!-- Campo Funcionario Usuario  appearance="outline"-->
                                             
-                                            <mat-form-field class="w-1/3 pr-2"class="example-full-width2" style="flex: 1; margin-left: 10px;"  >
-                                                <mat-label>Tipo de Servicio</mat-label>
+                                            
+                                            
+                                            <mat-form-field class="w-1/3 pr-2">
+                                                <mat-label>Tipo de servicio</mat-label>
+                                                <mat-select formControlName="tipo" (selectionChange)="onTipoServicioChange($event.value)">
+                                                    <mat-option *ngFor="let tipo of tiposDeServicio" [value]="tipo">
+                                                        {{ tipo }}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                            <mat-form-field  class="w-1/3 pr-2">
+                                                <mat-label>Estado</mat-label>
+                                                <mat-select formControlName="estado" (selectionChange)="onTipoServicioChange($event.value)">
+                                                    <mat-option *ngFor="let estado of tiposDeEstado" [value]="estado">
+                                                        {{ estado }}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                            
+
+                                           
+                                            
+                                            
+
+                                            <mat-form-field class="w-1/3 pr-2"class="example-full-width2" style="flex: 1; margin-right: 10px;"  >
+                                                <mat-label>Tecnico Asignado</mat-label>
                                                 <input
                                                     type="text"
                                                     placeholder="Escribe el Tipo de Hardware"
-                                                    aria-label="Tipo de Hardware"
+                                                    aria-label="Tecnico Asignado"
                                                     matInput
-                                                    formControlName="tipo"
-                                                    [matAutocomplete]="autoTipo"
-                                                    (input)="onSearchTipo($event.target.value)"
+                                                    formControlName="tecnicoAsignadoString"
+                                                    [matAutocomplete]="autoTecnico"
+                                                    (input)="onSearchUsuarioTecnico($event.target.value)"
                                                 />
-                                                <mat-autocomplete #autoTipo="matAutocomplete" autoActiveFirstOption>
+                                                <mat-autocomplete #autoTecnico="matAutocomplete" autoActiveFirstOption>
                                                     <mat-option
-                                                        *ngFor="let tipo of filteredTipos"
-                                                        [value]="tipo.descripcion"
-                                                        (mousedown)="selectTipo(tipo)"
+                                                        *ngFor="let usuario of filtredUsuarios"
+                                                        [value]="usuario.nombre + ' ' + usuario.apellido"
+                                                        (mousedown)="selectUsuarioTecnico(usuario)"
                                                     >
-                                                        {{ tipo.descripcion }}
+                                                        {{ usuario.nombre }} {{ usuario.apellido }}
                                                     </mat-option>
-                                                    <mat-option *ngIf="filteredEmpleadosUsuarios.length === 0">
+                                                    <mat-option *ngIf="filtredUsuarios.length === 0">
                                                         No hay resultados
                                                     </mat-option>
                                                 </mat-autocomplete>
-                                            </mat-form-field>
-
-                                            <mat-form-field class="w-1/3 pl-2">
-                                                <mat-label>Estado</mat-label>
-                                                <input matInput formControlName="estado">
-                                            </mat-form-field>
-                                            
-                                            <mat-form-field class="w-1/3 pl-2">
-                                                <mat-label>Tecnico Asignado</mat-label>
-                                                <input matInput formControlName="tecnicoAsignado">
                                             </mat-form-field>
 
                                             
@@ -349,8 +367,9 @@
                                         <div class="flex">
                                             <mat-form-field class="example-full-width">
                                                 <mat-label>Tècnico del Registro</mat-label>
-                                                <input matInput [formControlName]="'tecnicoRegistro'" [disabled]="true" readonly>
+                                                <input matInput [formControlName]="'tecnicoRegistroString'" readonly>
                                             </mat-form-field>
+                                            
 
                                             <mat-form-field class="example-full-width3" >
                                                 
@@ -429,6 +448,9 @@
                                             El código debe tener al menos 5 caracteres.
                                             </mat-error>
                                         </mat-form-field>
+                                        
+                                       
+                                        
                                     
                                         
                                             <!-- Botón Buscar -->

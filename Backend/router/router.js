@@ -19,6 +19,7 @@ router.put("/user/:usuarios_id", user.update);
 // Define una ruta DELETE para eliminar un usuario por ID. Utiliza el método 'destroy' del controlador de usuario.
 router.delete("/user/:usuarios_id", user.destroy);
 
+router.get('/user', user.paginate);
 
 //-----------------------------------------------------------------------------------------------------------
 // Importa el módulo de controlador de usuario donde están definidos los métodos para manejar solicitudes relacionadas con usuarios

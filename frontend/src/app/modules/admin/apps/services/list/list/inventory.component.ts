@@ -24,6 +24,7 @@ import { NativeDateAdapter, DateAdapter } from '@angular/material/core';
 
 
 
+
 import {  FormControl } from '@angular/forms';
 
 
@@ -68,15 +69,15 @@ export const MY_DATE_FORMATS = {
                 grid-template-columns: 48px auto 112px 72px;
 
                 @screen sm {
-                    grid-template-columns: 48px auto 112px 72px;
+                    grid-template-columns: 48px 48px auto 112px 72px;
                 }
 
                 @screen md {
-                    grid-template-columns: 65px 115px auto 112px 72px;
+                    grid-template-columns: 48px 65px 115px auto 112px 72px;
                 }
 
                 @screen lg {
-                    grid-template-columns: 125px 115px auto 100px 120px 220px 250px 72px;
+                    grid-template-columns: 48px 125px 115px auto 100px 120px 220px 200px 72px;
                 }
             }
 
@@ -231,6 +232,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     filteredEmpleados: string[] = [];
     //filteredTipos: string[] = [];
     filteredTipos: { descripcion: string; tipos_id: number }[] = [];
+    filtredUsuarios: { usuarios_id: number; nombre: string; apellido: string }[] = [];
+
 
     filteredEmpleadosUsuarios: string[] = [];
     
@@ -241,6 +244,25 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     tags: InventoryTag[]; // Arreglo de etiquetas
     tagsEditMode: boolean = false; // Modo de edición de etiquetas
     vendors: InventoryVendor[]; // Arreglo de vendedores
+
+
+    tiposDeServicio: string[] = [
+        
+        'EN LABORATORIO',
+        'SOLICITUD DE ASISTENCIA',
+        'ASISTENCIA',
+        'REMOTA'
+    ];
+    tiposDeEstado: string[] = [
+        
+        'SIN ASIGNAR',
+        'PENDIENTE',
+        'EN PROGRESO',
+        'TERMINADO'
+    ];
+    servicioForm: FormGroup;
+
+    
     private _unsubscribeAll: Subject<any> = new Subject<any>(); // Observable para manejar la destrucción de suscripciones
 
     /**
@@ -304,8 +326,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             tecnicoRegistro: [null], // Técnico que registró el servicio
             tecnicoEgreso: [null], // Técnico que realizó el egreso (si aplica)
             ciResponsableEgreso: [null], // CI del responsable del egreso
+            tecnicoAsignadoString:[null],
+            tecnicoRegistroString:[null],
         });
 
+        this.servicioForm = this.fb.group({
+            tipoServicio: ['EN LABORATORIO'] // Valor predeterminado
+        });
+        this.servicioForm = this.fb.group({
+            tipoServicio: ['SIN ASIGNAR'] // Valor predeterminado
+        });
+        
 
         
 
@@ -401,10 +432,15 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
 
             this.form = new FormGroup({
-                funcionarioasignado: new FormControl(''), // Agrega 'funcionarioasignado' aquí
+                funcionarioasignado: new FormControl({ value: 'tecnicoRegistro', disabled: true }, Validators.required), // Agrega 'funcionarioasignado' aquí
               });
     }
 
+
+    onTipoServicioChange(selectedTipo: string): void {
+        console.log('Tipo de servicio seleccionado:', selectedTipo);
+        // Aquí puedes realizar acciones adicionales según el valor seleccionado
+    }
     /**
      * Método que se ejecuta después de que la vista se ha inicializado
      */
@@ -473,6 +509,17 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.selectedService = response.data;
                 this.selectedServiceForm.patchValue(response.data);
                 this._changeDetectorRef.markForCheck(); // Forzar la detección de cambios
+                this.onSearch(response.data.nombreSolicitante);
+                console.log("nombre solicitente:",response.data.nombreSolicitante)
+                this.selectedServiceForm.controls['nombreSolicitante'].setValue(response.data.nombreSolicitante); // Copia el valor al input
+                this.getBienes(response.data.equipo);
+                
+                const primerasSeisLetrasSlice = response.data.tecnicoAsignadoString.slice(0, 6);
+                this.selectedServiceForm.controls['tecnicoAsignado'].setValue(response.data.tecnicoAsignadoString); // Copia el valor al input
+                this.onSearchUsuarioTecnico("");
+                
+                
+                
                 /*
                 // Verifica que `getBienes` también devuelva un Observable
                 this.getBienes(response.data.codigo);
@@ -575,7 +622,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     getBienes(codigo:string): void {
         if(codigo==null){
-             codigo = this.selectedServiceForm.get('codigo')?.value;
+             codigo = this.selectedServiceForm.get('equipo')?.value;
         }
         //const codigoBien = this.selectedEquipmentForm.get('codigo')?.value;
         console.log('Valor de código de bienes antes de validar:', codigo);
@@ -906,6 +953,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
       
       onSearch(query: string): void {
         if (query.length > 2) {
+            console.log('Empleados onSearch query (antes de transformar):', query);
           this._inventoryService.buscarEmpleados(query).pipe(
             debounceTime(300), // Evita búsquedas excesivas
             switchMap((data: any[]) => {
@@ -969,6 +1017,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
     selectEmpleadoUsuario(empleado: string): void {
         this.selectedEquipmentForm.controls['funcionariousuario'].setValue(empleado);
+        this.selectedServiceForm.controls['ciSolicitante'].setValue(empleado); // Copia el valor al input
         this.showDropdown = false;
         this.cd.detectChanges();
     }
@@ -1026,6 +1075,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         }
         selectTipo3(empleado: string): void {
             this.selectedEquipmentForm.controls['tipo'].setValue(empleado);
+           this.selectedServiceForm.controls['ciSolicitante'].setValue(empleado); // Copia el valor al input
+               
             this.showDropdown = false;
             this.cd.detectChanges();
         }
@@ -1093,6 +1144,34 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.filteredTipos = []; // Restablecer la lista si la consulta tiene menos de 1 carácter
             }
         }
+
+        selectUsuarioTecnico(usuario: { usuarios_id: number; nombre: string; apellido: string }): void {
+            //this.selectedServiceForm.controls['nombreSolicitante'].setValue(`${usuario.nombre} ${usuario.apellido}`);
+            this.selectedServiceForm.controls['tecnicoAsignado'].setValue(usuario.usuarios_id);
+            this.showDropdown = false;
+            this.cd.detectChanges();
+        }
+        
+
+        onSearchUsuarioTecnico(query: string): void {
+            if (query.length >= 0) {
+                this._inventoryService.buscarUsuariosTecnico(1, 100, query)
+                    .pipe(debounceTime(100))
+                    .subscribe({
+                        next: (usuarios: { usuarios_id: number; nombre: string; apellido: string }[]) => {
+                            this.filtredUsuarios = usuarios;
+                            console.log('Usuarios encontrados:', this.filtredUsuarios);
+                        },
+                        error: (err) => {
+                            console.error('Error al buscar usuarios:', err);
+                            this.filtredUsuarios = [];
+                        },
+                    });
+            } else {
+                this.filtredUsuarios = []; // Restablecer la lista si la consulta tiene menos de 1 carácter
+            }
+        }
+        
         displayTipo(tipo: any): string {
             return tipo && tipo.descripcion ? tipo.descripcion : '';
         }

@@ -143,6 +143,32 @@ class UserController {
         }
     }
 
+    static async paginate(req, res) {
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10;
+        const search = req.query.search || ''; // Obtiene el término de búsqueda de la consulta
+    
+        try {
+            // Llama al servicio de paginación con los parámetros
+            const { count, rows } = await userService.paginate({ page, limit, search });
+    
+            // Transforma los resultados en DTOs
+            const userDTOs = rows.map(user => new UserDTO(user));
+    
+            // Retorna la respuesta con paginación y resultados
+            return jsonResponse.successResponse(res, 200, "Users retrieved successfully", {
+                total: count,
+                perPage: limit,
+                currentPage: page,
+                totalPages: Math.ceil(count / limit),
+                data: userDTOs,
+            });
+        } catch (error) {
+            return jsonResponse.errorResponse(res, 500, error.message);
+        }
+    }
+    
+
 }
 
 // Exporta la clase UserController para que pueda ser utilizada en otros archivos

@@ -8,8 +8,9 @@ import { shareReplay } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 
 const now = new Date();
-const formattedDate = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
+//const formattedDate = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getFullYear()}`;
 
+const formattedDate: string = new Date().toISOString();
 
 
 
@@ -279,6 +280,32 @@ getServiceById(servicios_id: number): Observable<{ message: string; data: Servic
                     );
                 }
             }
+            else {
+                // Si no existe técnico asignado, asignar un valor predeterminado
+                console.warn('El técnico asignado no está definido o es nulo.');
+                service.tecnicoAsignadoString = ''; // Valor predeterminado
+            }
+
+             // Si existe `tecnicoAsignado`, realizar una solicitud para obtener su información
+             if (service.tecnicoRegistro) {
+                const tecnicoId = Number(service.tecnicoRegistro);
+                if (!isNaN(tecnicoId)) {
+                    requests.push(
+                        this._httpClient.get<{ message: string; data: { nombres: string; apellidos: string } }>(
+                            `${this.baseUrl}/user/${tecnicoId}`
+                        ).pipe(
+                            map((userResponse) => {
+                                service.tecnicoRegistroString = `${userResponse.data.nombres} ${userResponse.data.apellidos}`;
+                            })
+                        )
+                    );
+                }
+            }
+            else {
+                // Si no existe técnico asignado, asignar un valor predeterminado
+                console.warn('El técnico asignado no está definido o es nulo.');
+                service.tecnicoRegistroString = ''; // Valor predeterminado
+            }
 
             // Si existe `tipo`, realizar una solicitud para obtener su descripción
             /*
@@ -295,10 +322,12 @@ getServiceById(servicios_id: number): Observable<{ message: string; data: Servic
             }
                 */
 
-            // Ejecutar todas las solicitudes en paralelo y esperar a que terminen
-            return forkJoin(requests).pipe(
-                map(() => ({ message: 'Service fetched successfully', data: service }))
-            );
+            return requests.length > 0
+                    ? forkJoin(requests).pipe(
+                        map(() => ({ message: 'Service fetched successfully', data: service }))
+                    )
+                    : of({ message: 'Service fetched successfully', data: service }); // Retornar directamente si no hay solicitudes
+
         }),
         catchError((error) => {
             console.error('Error al obtener el servicio:', error);
@@ -326,7 +355,7 @@ createService(serviceData:  any = {}): Observable<Servicio> {
         informe: " ",
         cargoResponsableEgreso: " ",
         oficinaSolicitante: " ",
-        fechaRegistro: " ",
+        fechaRegistro: formattedDate,
         equipo: 1,
         problema: " ",
         telefonoResponsableEgreso: " ",
@@ -591,13 +620,13 @@ deleteService(servicios_id: number): Observable<boolean> {
 
 
     buscarEmpleados(nombreCompleto: string): Observable<Empleado[] | null> {
-
+        console.log("nombreCompleto",nombreCompleto);
         // Configuramos las cabeceras de la solicitud para indicar que el contenido será de tipo 'application/x-www-form-urlencoded'
         const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     
         // Creamos el cuerpo de la solicitud, codificando el parámetro nombre_completo para asegurar que sea adecuado para la URL
         const body = `nombre_completo=${encodeURIComponent(nombreCompleto)}`;
-    
+        console.log("body",body);
         // Realizamos la solicitud POST al servidor en el endpoint 'http://localhost:3001/api/empleados'
         // Enviamos el cuerpo de la solicitud y las cabeceras configuradas
         return this._httpClient.post<{ status: boolean; data: Empleado[] }>('http://localhost:3001/api/empleados', body, { headers })
@@ -605,7 +634,7 @@ deleteService(servicios_id: number): Observable<boolean> {
             // Usamos el operador 'map' para extraer solo el array de empleados desde el campo 'data'
             map(response => {
             // Si la respuesta tiene éxito y contiene datos, devolvemos el array de empleados
-            if (response && response.status) {
+            if (response ) {
                 //console.log('Empleados encontrados:', response.data);
                 return response.data; // Extraemos el array de empleados
 
@@ -622,6 +651,60 @@ deleteService(servicios_id: number): Observable<boolean> {
             })
         );
     }
+
+    buscarEmpleados23(nombreCompleto: string): Observable<Empleado[]> {
+        console.log("nombreCompleto:", nombreCompleto);
+    
+        // Configuramos las cabeceras de la solicitud
+        const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    
+        // Creamos el cuerpo de la solicitud
+        const body = `nombre_completo=${encodeURIComponent(nombreCompleto)}`;
+        console.log("body:", body);
+    
+        // Realizamos la solicitud POST
+        return this._httpClient.post<{ status: boolean; data: Empleado[] }>('http://localhost:3001/api/empleados', body, { headers })
+            .pipe(
+                map(response => {
+                    if (response && response.status) {
+                        // Si hay éxito, devolvemos los empleados
+                        console.log('Empleados encontrados:', response.data);
+                        return response.data;
+                    } else {
+                        // Si no hay éxito, devolvemos un array con un objeto ficticio
+                        console.warn('No se encontraron empleados o la respuesta es inválida.');
+                        return [{
+                            nombre_completo: nombreCompleto,
+                            otroNombre: '',
+                            nombre: '',
+                            paterno: '',
+                            materno: '',
+                            fechanac: '',
+                            sexo: '',
+                            nroItem: '',
+                            tipoContrato: '',
+                            cargo: '',
+                            unidad: '',
+                            numDocumento: '',
+                            expedidoci: '',
+                            email: '',
+                            telefono: '',
+                            direccion: '',
+                            fechaIncorporacion: '',
+                            fechaBaja: null,
+                            resideCapital: '',
+                        }];
+                    }
+                }),
+                catchError((error) => {
+                    console.error('Error en la búsqueda de empleados:', error);
+                    return of([]);
+                })
+            );
+    }
+    
+    
+    
   
   
   
@@ -686,6 +769,31 @@ deleteService(servicios_id: number): Observable<boolean> {
             })
         );
     }
+
+    buscarUsuariosTecnico(page: number, limit: number, search: string): Observable<{ usuarios_id: number; nombre: string; apellido: string }[]> {
+        const url = `${this.baseUrl}/user?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+    
+        return this._httpClient.get<any>(url).pipe(
+            map((response) => {
+                if (response?.data?.data) {
+                    // Mapear los datos para extraer `usuarios_id`, `nombres` y `apellidos`
+                    return response.data.data.map((user: any) => ({
+                        usuarios_id: user.usuarios_id.usuarios_id || 0,
+                        nombre: user.usuarios_id.nombres?.trim() || '',
+                        apellido: user.usuarios_id.apellidos?.trim() || ''
+                    }));
+                } else {
+                    console.warn('Respuesta inesperada de la API:', response);
+                    return [];
+                }
+            }),
+            catchError((err) => {
+                console.error('Error al buscar usuarios:', err);
+                return of([]); // Devuelve un array vacío en caso de error
+            })
+        );
+    }
+    
     getTipoById(tiposId: number): Observable<{ descripcion: string }> {
         return this._httpClient.get<any>(`${this.baseUrl}/type/${tiposId}`).pipe(
             map((response) => {
@@ -698,6 +806,31 @@ deleteService(servicios_id: number): Observable<boolean> {
             catchError((err) => {
                 console.error('Error al obtener el tipo por ID:', err);
                 return of({ descripcion: '' }); // Devuelve un valor vacío si hay error
+            })
+        );
+    }
+
+
+    buscarUsuarios(page: number, limit: number, search: string): Observable<{ descripcion: string; tipos_id: number }[]> {
+        const url = `${this.baseUrl}/user?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+    
+        return this._httpClient.get<any>(url).pipe(
+            map((response) => {
+                if (response?.data?.data) {
+                    // Mapear los datos para extraer `descripcion` y `tipos_id`
+                    return response.data.data.map((tipo: any) => ({
+                        descripcion: tipo.tipos_id.descripcion?.trim() || '',
+                        tipos_id: tipo.tipos_id.tipos_id || 0,
+                    }));
+                    
+                } else {
+                    console.warn('Respuesta inesperada de la API:', response);
+                    return [];
+                }
+            }),
+            catchError((err) => {
+                console.error('Error al buscar tipos:', err);
+                return of([]); // Devuelve un array vacío en caso de error
             })
         );
     }

@@ -2,7 +2,7 @@ const { Service, sequelize } = require("../models"); // Requiere el modelo 'Serv
 const storeDTO = require("../http/request/service/storeDTO"); // DTO para validar los datos del servicio en la operación de almacenamiento
 const updateDTO = require("../http/request/service/updateDTO"); // DTO para validar los datos del servicio en la operación de actualización
 const idDTO = require("../http/request/service/idDTO"); // DTO para validar los identificadores de servicios
-
+const { Op, Sequelize } = require("sequelize");
 class ServiceService {
 
     // Método para almacenar un nuevo servicio

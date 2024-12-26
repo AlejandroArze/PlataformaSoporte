@@ -163,6 +163,7 @@ export interface Empleado {
     tecnicoEgreso: string | null;
     ciResponsableEgreso: string;
     tecnicoAsignadoString:string | null;
+    tecnicoRegistroString:string | null;
     tipoDescripcion: string | null;
 }
 
