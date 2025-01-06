@@ -38,8 +38,7 @@ const serviceDTO = Joi.object({
         .required(),
 
     // Validación del campo 'equipo'.
-    equipo: Joi.number().integer()
-        .required(),
+    equipo: Joi.number().allow(null),
 
     // Validación del campo 'problema'.
     problema: Joi.string()
@@ -65,7 +64,8 @@ const serviceDTO = Joi.object({
 
     // Validación del campo 'tecnicoAsignado'.
     tecnicoAsignado: Joi.number().integer()
-        .required(),
+        .allow(null)
+        .optional(),
 
     // Validación del campo 'observaciones'.
     observaciones: Joi.string()

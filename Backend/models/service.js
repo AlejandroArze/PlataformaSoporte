@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     // Campo 'cargoSolicitante'.
     cargoSolicitante: {
       type: DataTypes.TEXT, 
-      allowNull: false, 
+      allowNull: true,  // Permitir nulo
     },
     // Campo 'informe'.
     informe: {
@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     // Campo 'oficinaSolicitante'.
     oficinaSolicitante: {
       type: DataTypes.TEXT, 
-      allowNull: false, 
+      allowNull: true,  // Permitir nulo
     },
     // Campo 'fechaRegistro'.
     fechaRegistro: {
@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
         model: 'equipos',
         key: 'equipos_id'
       },
-      allowNull: false, 
+      allowNull: true,  // Permitir nulo
     },
     // Campo 'problema'.
     problema: {
@@ -77,12 +77,12 @@ module.exports = (sequelize, DataTypes) => {
     // Campo 'telefonoSolicitante'.
     telefonoSolicitante: {
       type: DataTypes.TEXT, 
-      allowNull: false, 
+      allowNull: true,  // Permitir nulo
     },
     // Campo 'tecnicoAsignado'.
     tecnicoAsignado: {
       type: DataTypes.INTEGER, 
-      allowNull: false, 
+      allowNull: true,  // Cambiar a true para permitir valores nulos
     },
     // Campo 'observaciones'.
     observaciones: {
@@ -102,7 +102,7 @@ module.exports = (sequelize, DataTypes) => {
     // Campo 'tipoSolicitante'.
     tipoSolicitante: {
       type: DataTypes.TEXT, 
-      allowNull: false, 
+      allowNull: true,  // Permitir nulo
     },
     // Campo 'fechaTerminado'.
     fechaTerminado: {
@@ -132,12 +132,12 @@ module.exports = (sequelize, DataTypes) => {
     // Campo 'ciSolicitante'.
     ciSolicitante: {
       type: DataTypes.TEXT, 
-      allowNull: false, 
+      allowNull: true,  // Permitir nulo
     },
     // Campo 'nombreSolicitante'.
     nombreSolicitante: {
       type: DataTypes.TEXT, 
-      allowNull: false, 
+      allowNull: true,  // Permitir nulo
     },
     // Campo 'tipo'.
     tipo: {

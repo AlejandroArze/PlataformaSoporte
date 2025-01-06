@@ -6,6 +6,9 @@ const express = require('express');
 const morgan = require("morgan"); // Middleware para registrar solicitudes HTTP
 const router = require('./router/router'); // Importa el enrutador con las rutas de la API
 const axios = require('axios');
+const FormData = require('form-data');
+const multer = require('multer');
+const upload = multer();
 
 const qs = require('qs'); // Para serializar los datos
 // Crea una instancia de la aplicación Express
@@ -83,6 +86,46 @@ app.get('/api/bienes', async (req, res) => {
       res.send(response.data);
     } catch (error) {
       res.status(500).send(error.message);
+    }
+  });
+
+  app.post('/api/v1/proxy/buscar-empleados-ci', upload.none(), async (req, res) => {
+    try {
+        console.log('Datos recibidos en el backend:', req.body); // Debug
+        
+        if (!req.body.dato) {
+            return res.status(400).json({
+                status: false,
+                data: "No ingresaste datos"
+            });
+        }
+
+        const data = qs.stringify({
+            dato: req.body.dato,
+            tipo: 'D'
+        });
+
+        console.log('Datos a enviar a la API externa:', data); // Debug
+
+        const response = await axios.post(
+            'https://appgamc.cochabamba.bo/transparencia/servicio/busqueda_empleados.php',
+            data,
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+
+        console.log('Respuesta de la API externa:', response.data); // Debug
+
+        res.json(response.data);
+    } catch (error) {
+        console.error('Error en proxy buscar-empleados-ci:', error);
+        res.status(500).json({ 
+            error: 'Error al buscar empleados por CI',
+            details: error.message 
+        });
     }
   });
   

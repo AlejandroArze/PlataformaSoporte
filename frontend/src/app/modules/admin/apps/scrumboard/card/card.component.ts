@@ -1,44 +1,51 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ScrumboardCardDetailsComponent } from 'app/modules/admin/apps/scrumboard/card/details/details.component';
+import { Component, Input } from '@angular/core';
+import { NgClass, NgIf } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { Card, EstadoServicio } from '../scrumboard.models';
 
 @Component({
-    selector       : 'scrumboard-card',
-    templateUrl    : './card.component.html',
-    encapsulation  : ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone     : true,
+    selector: 'scrumboard-card',
+    templateUrl: './card.component.html',
+    standalone: true,
+    imports: [
+        NgIf,
+        NgClass,
+        MatIconModule
+    ]
 })
-export class ScrumboardCardComponent implements OnInit
-{
+export class ScrumboardCardComponent {
+    @Input() card: Card;
+    @Input() boardId: string;
+
+    // Hacer el enum disponible en el template
+    protected EstadoServicio = EstadoServicio;
+
     /**
-     * Constructor
+     * Devuelve el color de estado para la tarjeta
      */
-    constructor(
-        private _activatedRoute: ActivatedRoute,
-        private _matDialog: MatDialog,
-        private _router: Router,
-    )
-    {
+    getStatusColor(): string {
+        switch (this.card.estado) {
+            case EstadoServicio.SIN_ASIGNAR:
+                return 'bg-gray-500';
+            case EstadoServicio.PENDIENTE:
+                return 'bg-orange-500';
+            case EstadoServicio.EN_PROGRESO:
+                return 'bg-blue-500';
+            case EstadoServicio.TERMINADO:
+                return 'bg-green-500';
+            default:
+                return 'bg-gray-500';
+        }
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
     /**
-     * On init
+     * Formatea la fecha en formato relativo
      */
-    ngOnInit(): void
-    {
-        // Launch the modal
-        this._matDialog.open(ScrumboardCardDetailsComponent, {autoFocus: false})
-            .afterClosed()
-            .subscribe(() =>
-            {
-                // Go up twice because card routes are set up like this; "card/CARD_ID"
-                this._router.navigate(['./../..'], {relativeTo: this._activatedRoute});
-            });
+    getRelativeDate(date: Date): string {
+        if (!date) {
+            return '';
+        }
+        // Aquí podrías usar una librería como date-fns o moment para formatear la fecha
+        return new Date(date).toLocaleDateString();
     }
 }

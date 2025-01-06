@@ -1,331 +1,301 @@
-import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, CdkDropListGroup, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { CdkScrollable } from '@angular/cdk/scrolling';
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
+import { RouterLink } from '@angular/router';
+import { NgFor, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { Board, Card, List } from 'app/modules/admin/apps/scrumboard/scrumboard.models';
-import { ScrumboardService } from 'app/modules/admin/apps/scrumboard/scrumboard.service';
-import { DateTime } from 'luxon';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { ScrumboardBoardAddCardComponent } from './add-card/add-card.component';
-import { ScrumboardBoardAddListComponent } from './add-list/add-list.component';
+import { Board, Card, EstadoServicio, TipoServicio } from '../scrumboard.models';
+import { ScrumboardService } from '../scrumboard.service';
+import { BoardFiltersComponent } from './board-filters/board-filters.component';
+import { ScrumboardCardComponent } from '../card/card.component';
+import { AddCardComponent } from './add-card/add-card.component';
 
 @Component({
-    selector       : 'scrumboard-board',
-    templateUrl    : './board.component.html',
-    styleUrls      : ['./board.component.scss'],
-    encapsulation  : ViewEncapsulation.None,
+    selector: 'scrumboard-board',
+    templateUrl: './board.component.html',
+    styleUrls: ['./board.component.scss'],
+    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone     : true,
-    imports        : [MatButtonModule, RouterLink, MatIconModule, CdkScrollable, CdkDropList, CdkDropListGroup, NgFor, CdkDrag, CdkDragHandle, MatMenuModule, NgIf, NgClass, ScrumboardBoardAddCardComponent, ScrumboardBoardAddListComponent, RouterOutlet, DatePipe],
+    standalone: true,
+    imports: [
+        RouterLink,
+        NgFor,
+        NgIf,
+        MatIconModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatMenuModule,
+        DragDropModule,
+        BoardFiltersComponent,
+        ScrumboardCardComponent
+    ]
 })
-export class ScrumboardBoardComponent implements OnInit, OnDestroy
-{
-    board: Board;
-    listTitleForm: UntypedFormGroup;
-
-    // Private
-    private readonly _positionStep: number = 65536;
-    private readonly _maxListCount: number = 200;
-    private readonly _maxPosition: number = this._positionStep * 500;
+export class ScrumboardBoardComponent implements OnInit, OnDestroy {
+    board: Board = {
+        id: '',
+        title: '',
+        description: '',
+        icon: '',
+        lists: []
+    };
+    
+    filteredCards: Card[] = [];
+    tecnicos: any[] = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
+    hiddenLists: string[] = [];
 
-    /**
-     * Constructor
-     */
+    private readonly HIDDEN_LISTS_KEY = 'scrumboard_hidden_lists';
+
+    lists = [
+        {
+            id: 'sin-asignar',
+            title: EstadoServicio.SIN_ASIGNAR,
+            position: 1,
+            cards: []
+        },
+        {
+            id: 'pendiente',
+            title: EstadoServicio.PENDIENTE,
+            position: 2,
+            cards: []
+        },
+        {
+            id: 'en-progreso',
+            title: EstadoServicio.EN_PROGRESO,
+            position: 3,
+            cards: []
+        },
+        {
+            id: 'terminado',
+            title: EstadoServicio.TERMINADO,
+            position: 4,
+            cards: []
+        }
+    ];
+
     constructor(
+        private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _formBuilder: UntypedFormBuilder,
-        private _fuseConfirmationService: FuseConfirmationService,
-        private _scrumboardService: ScrumboardService,
-    )
-    {
+        private _dialog: MatDialog,
+        private _scrumboardService: ScrumboardService
+    ) {
+        // Cargar listas ocultas del localStorage
+        this.loadHiddenListsFromStorage();
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
+    ngOnInit(): void {
+        // Obtener el ID del tablero de la URL
+        const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
+        if (boardId) {
+            // Inicializar el tablero con las listas
+            this.board = {
+                id: boardId,
+                title: this.getTipoServicio(boardId),
+                description: '',
+                icon: '',
+                lists: this.lists
+            };
+
+            // Obtener los servicios
+            this._scrumboardService.getServices(this.getTipoServicio(boardId))
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe(cards => {
+                    this.distributeCards(cards);
+                    this._changeDetectorRef.markForCheck();
+                });
+
+            // Cargar técnicos usando el método unificado
+            this._scrumboardService.getTecnicos()
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe(tecnicos => {
+                    this.tecnicos = tecnicos;
+                    this._changeDetectorRef.markForCheck();
+                });
+        }
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next(null);
+        this._unsubscribeAll.complete();
+    }
 
     /**
-     * On init
+     * Cargar tarjetas
      */
-    ngOnInit(): void
-    {
-        // Initialize the list title form
-        this.listTitleForm = this._formBuilder.group({
-            title: [''],
-        });
-
-        // Get the board
-        this._scrumboardService.board$
+    loadCards(boardId: string): void {
+        this._scrumboardService.getServices(this.getTipoServicio(boardId))
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((board: Board) =>
-            {
-                this.board = {...board};
-
-                // Mark for check
+            .subscribe(cards => {
+                this.filteredCards = cards;
+                this.distributeCards(cards);
                 this._changeDetectorRef.markForCheck();
             });
     }
 
     /**
-     * On destroy
+     * Manejar cambio de filtro de técnico
      */
-    ngOnDestroy(): void
-    {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Focus on the given element to start editing the list title
-     *
-     * @param listTitleInput
-     */
-    renameList(listTitleInput: HTMLElement): void
-    {
-        // Use timeout so it can wait for menu to close
-        setTimeout(() =>
-        {
-            listTitleInput.focus();
-        });
-    }
-
-    /**
-     * Add new list
-     *
-     * @param title
-     */
-    addList(title: string): void
-    {
-        // Limit the max list count
-        if ( this.board.lists.length >= this._maxListCount )
-        {
-            return;
-        }
-
-        // Create a new list model
-        const list = new List({
-            boardId : this.board.id,
-            position: this.board.lists.length ? this.board.lists[this.board.lists.length - 1].position + this._positionStep : this._positionStep,
-            title   : title,
-        });
-
-        // Save the list
-        this._scrumboardService.createList(list).subscribe();
-    }
-
-    /**
-     * Update the list title
-     *
-     * @param event
-     * @param list
-     */
-    updateListTitle(event: any, list: List): void
-    {
-        // Get the target element
-        const element: HTMLInputElement = event.target;
-
-        // Get the new title
-        const newTitle = element.value;
-
-        // If the title is empty...
-        if ( !newTitle || newTitle.trim() === '' )
-        {
-            // Reset to original title and return
-            element.value = list.title;
-            return;
-        }
-
-        // Update the list title and element value
-        list.title = element.value = newTitle.trim();
-
-        // Update the list
-        this._scrumboardService.updateList(list).subscribe();
-    }
-
-    /**
-     * Delete the list
-     *
-     * @param id
-     */
-    deleteList(id): void
-    {
-        // Open the confirmation dialog
-        const confirmation = this._fuseConfirmationService.open({
-            title  : 'Delete list',
-            message: 'Are you sure you want to delete this list and its cards? This action cannot be undone!',
-            actions: {
-                confirm: {
-                    label: 'Delete',
-                },
-            },
-        });
-
-        // Subscribe to the confirmation dialog closed action
-        confirmation.afterClosed().subscribe((result) =>
-        {
-            // If the confirm button pressed...
-            if ( result === 'confirmed' )
-            {
-                // Delete the list
-                this._scrumboardService.deleteList(id).subscribe();
-            }
-        });
-    }
-
-    /**
-     * Add new card
-     */
-    addCard(list: List, title: string): void
-    {
-        // Create a new card model
-        const card = new Card({
-            boardId : this.board.id,
-            listId  : list.id,
-            position: list.cards.length ? list.cards[list.cards.length - 1].position + this._positionStep : this._positionStep,
-            title   : title,
-        });
-
-        // Save the card
-        this._scrumboardService.createCard(card).subscribe();
-    }
-
-    /**
-     * List dropped
-     *
-     * @param event
-     */
-    listDropped(event: CdkDragDrop<List[]>): void
-    {
-        // Move the item
-        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-
-        // Calculate the positions
-        const updated = this._calculatePositions(event);
-
-        // Update the lists
-        this._scrumboardService.updateLists(updated).subscribe();
-    }
-
-    /**
-     * Card dropped
-     *
-     * @param event
-     */
-    cardDropped(event: CdkDragDrop<Card[]>): void
-    {
-        // Move or transfer the item
-        if ( event.previousContainer === event.container )
-        {
-            // Move the item
-            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-        }
-        else
-        {
-            // Transfer the item
-            transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-
-            // Update the card's list it
-            event.container.data[event.currentIndex].listId = event.container.id;
-        }
-
-        // Calculate the positions
-        const updated = this._calculatePositions(event);
-
-        // Update the cards
-        this._scrumboardService.updateCards(updated).subscribe();
-    }
-
-    /**
-     * Check if the given ISO_8601 date string is overdue
-     *
-     * @param date
-     */
-    isOverdue(date: string): boolean
-    {
-        return DateTime.fromISO(date).startOf('day') < DateTime.now().startOf('day');
-    }
-
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any
-    {
-        return item.id || index;
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Private methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Calculate and set item positions
-     * from given CdkDragDrop event
-     *
-     * @param event
-     * @private
-     */
-    private _calculatePositions(event: CdkDragDrop<any[]>): any[]
-    {
-        // Get the items
-        let items = event.container.data;
-        const currentItem = items[event.currentIndex];
-        const prevItem = items[event.currentIndex - 1] || null;
-        const nextItem = items[event.currentIndex + 1] || null;
-
-        // If the item moved to the top...
-        if ( !prevItem )
-        {
-            // If the item moved to an empty container
-            if ( !nextItem )
-            {
-                currentItem.position = this._positionStep;
-            }
-            else
-            {
-                currentItem.position = nextItem.position / 2;
-            }
-        }
-        // If the item moved to the bottom...
-        else if ( !nextItem )
-        {
-            currentItem.position = prevItem.position + this._positionStep;
-        }
-        // If the item moved in between other items...
-        else
-        {
-            currentItem.position = (prevItem.position + nextItem.position) / 2;
-        }
-
-        // Check if all item positions need to be updated
-        if ( !Number.isInteger(currentItem.position) || currentItem.position >= this._maxPosition )
-        {
-            // Re-calculate all orders
-            items = items.map((value, index) =>
-            {
-                value.position = (index + 1) * this._positionStep;
-                return value;
+    onTecnicoFilterChange(tecnicoId: number): void {
+        const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
+        if (boardId) {
+            this._scrumboardService.getServices(
+                this.getTipoServicio(boardId), 
+                tecnicoId ? tecnicoId.toString() : undefined
+            )
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(cards => {
+                this.filteredCards = cards;
+                this.distributeCards(cards);
+                this._changeDetectorRef.markForCheck();
             });
-
-            // Return items
-            return items;
         }
+    }
 
-        // Return currentItem
-        return [currentItem];
+    /**
+     * Filtrar tarjetas
+     */
+    filterCards(cards: Card[]): void {
+        this.filteredCards = cards;
+        this.distributeCards(cards);
+        this._changeDetectorRef.markForCheck();
+    }
+
+    /**
+     * Abrir diálogo de nueva tarjeta
+     */
+    openNewCardDialog(): void {
+        const dialogRef = this._dialog.open(AddCardComponent, {
+            width: '700px',
+            maxHeight: '90vh',
+            disableClose: false,
+            autoFocus: false
+        });
+
+        dialogRef.afterClosed().subscribe((result: Partial<Card>) => {
+            if (result) {
+                this._scrumboardService.createService(result)
+                    .pipe(takeUntil(this._unsubscribeAll))
+                    .subscribe(() => {
+                        const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
+                        if (boardId) {
+                            this.loadCards(boardId);
+                        }
+                    });
+            }
+        });
+    }
+
+    /**
+     * Manejar el drop de una tarjeta
+     */
+    cardDropped(event: CdkDragDrop<Card[]>): void {
+        if (event.previousContainer === event.container) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+        } else {
+            transferArrayItem(
+                event.previousContainer.data,
+                event.container.data,
+                event.previousIndex,
+                event.currentIndex
+            );
+
+            const newStatus = this.lists.find(l => l.id === event.container.id)?.title as EstadoServicio;
+            const card = event.container.data[event.currentIndex];
+
+            this._scrumboardService.updateServiceStatus(card.id, newStatus)
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe(() => {
+                    const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
+                    if (boardId) {
+                        this.loadCards(boardId);
+                    }
+                });
+        }
+    }
+
+    /**
+     * Distribuir tarjetas en las listas
+     */
+    private distributeCards(cards: Card[]): void {
+        // Limpiar las listas existentes
+        this.lists.forEach(list => list.cards = []);
+        
+        // Distribuir las tarjetas según su estado
+        cards.forEach(card => {
+            const list = this.lists.find(l => l.title === card.estado);
+            if (list) {
+                list.cards.push(card);
+            }
+        });
+    }
+
+    private getTipoServicio(boardId: string): TipoServicio {
+        switch (boardId) {
+            case 'asistencia-sitio':
+                return TipoServicio.ASISTENCIA_SITIO;
+            case 'servicio-laboratorio':
+                return TipoServicio.SERVICIO_LABORATORIO;
+            case 'asistencia-remota':
+                return TipoServicio.ASISTENCIA_REMOTA;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Cargar listas ocultas del localStorage
+     */
+    private loadHiddenListsFromStorage(): void {
+        const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
+        if (boardId) {
+            const storedLists = localStorage.getItem(`${this.HIDDEN_LISTS_KEY}_${boardId}`);
+            if (storedLists) {
+                this.hiddenLists = JSON.parse(storedLists);
+            }
+        }
+    }
+
+    /**
+     * Guardar listas ocultas en localStorage
+     */
+    private saveHiddenListsToStorage(): void {
+        const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
+        if (boardId) {
+            localStorage.setItem(
+                `${this.HIDDEN_LISTS_KEY}_${boardId}`, 
+                JSON.stringify(this.hiddenLists)
+            );
+        }
+    }
+
+    /**
+     * Ocultar lista
+     */
+    hideList(listId: string): void {
+        this.hiddenLists.push(listId);
+        this.saveHiddenListsToStorage();
+        this._changeDetectorRef.markForCheck();
+    }
+
+    /**
+     * Mostrar lista
+     */
+    showList(listId: string): void {
+        this.hiddenLists = this.hiddenLists.filter(id => id !== listId);
+        this.saveHiddenListsToStorage();
+        this._changeDetectorRef.markForCheck();
+    }
+
+    isListHidden(listId: string): boolean {
+        return this.hiddenLists.includes(listId);
+    }
+
+    getListTitle(listId: string): string {
+        const list = this.lists.find(l => l.id === listId);
+        return list ? list.title : '';
     }
 }

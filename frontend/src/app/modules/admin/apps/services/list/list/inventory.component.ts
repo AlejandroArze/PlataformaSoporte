@@ -25,6 +25,8 @@ import { NativeDateAdapter, DateAdapter } from '@angular/material/core';
 
 
 
+
+
 import {  FormControl } from '@angular/forms';
 
 
@@ -233,6 +235,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
     //filteredTipos: string[] = [];
     filteredTipos: { descripcion: string; tipos_id: number }[] = [];
     filtredUsuarios: { usuarios_id: number; nombre: string; apellido: string }[] = [];
+    filtredEquipos: { equipos_id: number; codigo: string }[] = [];
 
 
     filteredEmpleadosUsuarios: string[] = [];
@@ -328,6 +331,9 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             ciResponsableEgreso: [null], // CI del responsable del egreso
             tecnicoAsignadoString:[null],
             tecnicoRegistroString:[null],
+
+            equipos_id: [null], // ID del equipo
+            codigo: [null],     // Código del equipo
         });
 
         this.servicioForm = this.fb.group({
@@ -1171,6 +1177,32 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 this.filtredUsuarios = []; // Restablecer la lista si la consulta tiene menos de 1 carácter
             }
         }
+
+        onSearchEquipos(query: string): void {
+            if (query.length >= 0) {
+                this._inventoryService.buscarEquipos(1, 100, query)
+                    .pipe(debounceTime(100))
+                    .subscribe({
+                        next: (equipos: { equipos_id: number; codigo: string }[]) => {
+                            this.filtredEquipos = equipos;
+                            console.log('Equipos encontrados:', this.filtredEquipos);
+                        },
+                        error: (err) => {
+                            console.error('Error al buscar equipos:', err);
+                            this.filtredEquipos = [];
+                        },
+                    });
+            } else {
+                this.filtredEquipos = []; // Restablecer la lista si la consulta tiene menos de 1 carácter
+            }
+        }
+        selectEquipo(equipo: { equipos_id: number; codigo: string }): void {
+            this.selectedServiceForm.controls['equipos_id'].setValue(equipo.equipos_id); // Guarda el ID del equipo
+            this.selectedServiceForm.controls['equipo'].setValue(equipo.codigo); // Guarda el código del equipo
+            this.showDropdown = false;
+            this.cd.detectChanges();
+        }
+        
         
         displayTipo(tipo: any): string {
             return tipo && tipo.descripcion ? tipo.descripcion : '';

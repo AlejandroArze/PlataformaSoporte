@@ -307,6 +307,8 @@ getServiceById(servicios_id: number): Observable<{ message: string; data: Servic
                 service.tecnicoRegistroString = ''; // Valor predeterminado
             }
 
+
+
             // Si existe `tipo`, realizar una solicitud para obtener su descripción
             /*
             if (service.tipo) {
@@ -616,6 +618,28 @@ deleteService(servicios_id: number): Observable<boolean> {
 
   }
   // Método para obtener bienes desde el backend utilizando un código de bienes como parámetro
+buscarEquipos(page: number, limit: number, search: string): Observable<{ equipos_id: number; codigo: string }[]> {
+    const url = `${this.baseUrl}/equipment?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+
+    return this._httpClient.get<any>(url).pipe(
+        map((response) => {
+            if (response?.data?.data) {
+                // Mapear los datos para extraer `equipos_id` y `codigo`
+                return response.data.data.map((equipment: any) => ({
+                    equipos_id: equipment.equipos_id.equipos_id || 0,
+                    codigo: equipment.equipos_id.codigo?.trim() || '',
+                }));
+            } else {
+                console.warn('Respuesta inesperada de la API:', response);
+                return [];
+            }
+        }),
+        catchError((err) => {
+            console.error('Error al buscar equipos:', err);
+            return of([]); // Devuelve un array vacío en caso de error
+        })
+    );
+}
 
 
 

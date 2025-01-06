@@ -2,181 +2,95 @@
 
     <!-- Header -->
     <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
-        <!-- Title -->
-        <div class="flex-1 min-w-0">
-            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                {{board.title}}
-            </h2>
-        </div>
-        <!-- Actions -->
-        <div class="flex shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
-            <a
-                mat-stroked-button
-                [routerLink]="['..']">
-                <mat-icon
-                    class="icon-size-5"
-                    [svgIcon]="'heroicons_solid:view-columns'"></mat-icon>
-                <span class="ml-2">Tableros</span>
-            </a>
-            <button
-                class="ml-3"
-                mat-stroked-button>
-                <mat-icon
-                    class="icon-size-5"
-                    [svgIcon]="'heroicons_solid:cog-8-tooth'"></mat-icon>
-                <span class="ml-2">Configuración</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Main -->
-    <div
-        class="flex-auto p-6 sm:p-8 sm:pt-4 overflow-y-auto"
-        cdkScrollable>
-
-        <!-- Lists -->
-        <div
-            class="flex"
-            cdkDropList
-            [cdkDropListData]="board.lists"
-            [cdkDropListOrientation]="'horizontal'"
-            (cdkDropListDropped)="listDropped($event)">
-
-            <!-- Group all cdkDropList's after this point together so that the cards can be transferred between lists -->
-            <div
-                class="flex items-start"
-                cdkDropListGroup>
-
-                <!-- List -->
-                <ng-container *ngFor="let list of board.lists; trackBy: trackByFn">
-                    <div
-                        class="flex-0 w-72 p-2 rounded-2xl bg-default"
-                        cdkDrag
-                        [cdkDragLockAxis]="'x'">
-
-                        <div
-                            class="flex items-center justify-between"
-                            cdkDragHandle>
-                            <div class="flex items-center w-full py-2 px-3 rounded-md cursor-text border border-transparent focus-within:bg-white focus-within:shadow-sm focus-within:border-primary dark:focus-within:bg-gray-900">
-                                <input
-                                    class="w-full font-medium leading-5 bg-transparent"
-                                    [spellcheck]="'false'"
-                                    [value]="list.title"
-                                    (focusout)="updateListTitle($event, list)"
-                                    (keydown.enter)="listTitleInput.blur()"
-                                    #listTitleInput>
-                            </div>
-                            <div class="flex items-center justify-center min-w-6 ml-4 text-sm font-semibold leading-6 rounded-full bg-gray-300 text-secondary dark:bg-gray-700">
-                                {{list.cards.length}}
-                            </div>
-                            <div class="ml-1">
-                                <button
-                                    class="w-8 h-8 min-h-8"
-                                    mat-icon-button
-                                    [matMenuTriggerFor]="listMenu">
-                                    <mat-icon
-                                        class="icon-size-5"
-                                        [svgIcon]="'heroicons_solid:ellipsis-vertical'"></mat-icon>
-                                </button>
-                                <mat-menu #listMenu="matMenu">
-                                    <button
-                                        mat-menu-item
-                                        (click)="renameList(listTitleInput)">
-                                        <mat-icon
-                                            class="icon-size-5"
-                                            [svgIcon]="'heroicons_solid:pencil-square'"></mat-icon>
-                                        Renombrar Lista
-                                    </button>
-                                    <button
-                                        mat-menu-item
-                                        (click)="deleteList(list.id)">
-                                        <mat-icon
-                                            class="icon-size-5"
-                                            [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                        Eliminar Lista
-                                    </button>
-                                </mat-menu>
-                            </div>
-                        </div>
-
-                        <!-- Cards -->
-                        <div class="mt-2 rounded-xl bg-gray-400 bg-opacity-12 dark:bg-transparent dark:border">
-                            <div
-                                [id]="list.id"
-                                class="p-3 pb-0"
-                                cdkDropList
-                                [cdkDropListData]="list.cards"
-                                (cdkDropListDropped)="cardDropped($event)">
-
-                                <!-- Card -->
-                                <ng-container *ngFor="let card of list.cards; trackBy: trackByFn">
-                                    <a
-                                        class="flex flex-col items-start mb-3 p-5 space-y-3 shadow rounded-lg overflow-hidden bg-card"
-                                        [routerLink]="['card', card.id]"
-                                        cdkDrag>
-                                        <!-- Cover image -->
-                                        <ng-container *ngIf="card.coverImage">
-                                            <div class="-mx-5 -mt-5 mb-2">
-                                                <img
-                                                    class="w-full object-cover"
-                                                    [src]="card.coverImage">
-                                            </div>
-                                        </ng-container>
-                                        <!-- Title -->
-                                        <div class="text-lg font-medium leading-5">{{card.title}}</div>
-                                        <!-- Labels -->
-                                        <ng-container *ngIf="card.labels.length">
-                                            <div>
-                                                <div class="flex flex-wrap -mx-1 -mb-2">
-                                                    <ng-container *ngFor="let label of card.labels; trackBy: trackByFn">
-                                                        <div class="mx-1 mb-2 py-0.5 px-3 rounded-full text-sm font-medium text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700">
-                                                            {{label.title}}
-                                                        </div>
-                                                    </ng-container>
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                        <!-- Due date -->
-                                        <ng-container *ngIf="card.dueDate">
-                                            <div
-                                                class="flex items-center rounded text-sm font-medium leading-5 text-secondary"
-                                                [ngClass]="{'text-red-600': isOverdue(card.dueDate)}">
-                                                <mat-icon
-                                                    class="icon-size-4 text-current"
-                                                    [svgIcon]="'heroicons_outline:clock'"></mat-icon>
-                                                <div class="ml-1">
-                                                    {{card.dueDate | date: 'longDate'}}
-                                                </div>
-                                            </div>
-                                        </ng-container>
-                                    </a>
-                                </ng-container>
-                            </div>
-
-                            <!-- New card -->
-                            <scrumboard-board-add-card
-                                (saved)="addCard(list, $event)"
-                                [buttonTitle]="list.cards.length ? 'Add another card' : 'Add a card'">
-                            </scrumboard-board-add-card>
-                        </div>
-                    </div>
-                </ng-container>
-
-                <!-- New list -->
-                <scrumboard-board-add-list
-                    (saved)="addList($event)"
-                    [buttonTitle]="board.lists.length ? 'Add another list' : 'Add a list'">
-                </scrumboard-board-add-list>
-
+        <!-- Título y Filtros -->
+        <div class="flex flex-col sm:flex-row w-full items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+            <div class="flex-1">
+                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
+                    {{board?.title}}
+                </h2>
             </div>
-
+            <div class="flex items-center space-x-4">
+                <button
+                    mat-flat-button
+                    [color]="'primary'"
+                    (click)="openNewCardDialog()">
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                    <span class="ml-2">Nuevo Servicio</span>
+                </button>
+                <board-filters
+                    (filterChange)="onTecnicoFilterChange($event)">
+                </board-filters>
+            </div>
         </div>
-
     </div>
 
-</div>
+    <!-- Board -->
+    <div class="flex flex-col flex-auto h-full min-h-0">
+        <!-- Main -->
+        <div class="flex flex-auto min-h-0 w-full overflow-x-auto">
+            <div class="flex flex-row gap-4 p-4">
+                <!-- Lists -->
+                <div *ngFor="let list of lists"
+                     [class.hidden]="isListHidden(list.id)"
+                     class="flex flex-col w-80 min-w-80 max-w-80 bg-card dark:bg-[#1e1e2d] rounded-lg">
 
-<!-- Invisible router-outlet for ScrumboardCard component -->
-<div class="absolute invisible w-0 h-0 opacity-0 pointer-events-none">
-    <router-outlet></router-outlet>
+                    <!-- List header -->
+                    <div class="flex items-center justify-between p-4 border-b dark:border-gray-700">
+                        <div class="flex items-center">
+                            <div class="font-medium text-secondary dark:text-gray-400">{{list.title}}</div>
+                            <div class="ml-2 px-2 py-0.5 rounded text-sm bg-gray-100 dark:bg-[#2B2B3F] dark:text-gray-400">
+                                {{list.cards?.length || 0}}
+                            </div>
+                        </div>
+
+                        <!-- Menu -->
+                        <button mat-icon-button [matMenuTriggerFor]="listMenu" class="dark:text-gray-400">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #listMenu="matMenu">
+                            <button mat-menu-item (click)="hideList(list.id)">
+                                <mat-icon>visibility_off</mat-icon>
+                                <span>Ocultar lista</span>
+                            </button>
+                        </mat-menu>
+                    </div>
+
+                    <!-- List content -->
+                    <div class="flex flex-col flex-auto p-2 overflow-y-auto">
+                        <!-- Cards -->
+                        <div class="flex flex-col gap-2">
+                            <ng-container *ngFor="let card of list.cards">
+                                <scrumboard-card
+                                    [card]="card"
+                                    [boardId]="board.id">
+                                </scrumboard-card>
+                            </ng-container>
+                        </div>
+                        
+                        <!-- Add card button -->
+                        <button 
+                            class="mt-2 p-2 text-left text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#2B2B3F] rounded-lg"
+                            (click)="openNewCardDialog()">
+                            <span class="inline-flex items-center">
+                                <mat-icon class="icon-size-5 mr-2">add</mat-icon>
+                                Add another card
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hidden Lists Menu -->
+                <div *ngIf="hiddenLists.length > 0"
+                     class="flex flex-col w-80 min-w-80 max-w-80 bg-card dark:bg-[#1e1e2d] rounded-lg p-4">
+                    <div class="font-medium mb-4 dark:text-gray-400">Listas Ocultas</div>
+                    <div *ngFor="let listId of hiddenLists" class="mb-2">
+                        <button mat-button class="w-full justify-start dark:text-gray-400" (click)="showList(listId)">
+                            <mat-icon class="mr-2">visibility</mat-icon>
+                            <span>Mostrar {{ getListTitle(listId) }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

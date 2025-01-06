@@ -1,55 +1,59 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Board, Card, Label, List } from 'app/modules/admin/apps/scrumboard/scrumboard.models';
-import { BehaviorSubject, map, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { Board, Card, EstadoServicio, TipoServicio } from './scrumboard.models';
+import { environment } from 'environments/environment';
+
+interface UserResponse {
+    message: string;
+    data: {
+        total: number;
+        perPage: number;
+        currentPage: number;
+        totalPages: number;
+        data: {
+            usuarios_id: {
+                usuarios_id: number;
+                email: string;
+                usuario: string;
+                nombres: string;
+                apellidos: string;
+                role: string;
+                estado: number;
+            }
+        }[]
+    }
+}
 
 @Injectable({providedIn: 'root'})
-export class ScrumboardService
-{
+export class ScrumboardService {
+    private readonly apiUrl = environment.baseUrl;
+
     // Private
-    private _board: BehaviorSubject<Board | null>;
-    private _boards: BehaviorSubject<Board[] | null>;
-    private _card: BehaviorSubject<Card | null>;
+    private _board: BehaviorSubject<Board | null> = new BehaviorSubject(null);
+    private _cards: BehaviorSubject<Card[]> = new BehaviorSubject<Card[]>([]);
 
     /**
      * Constructor
      */
-    constructor(
-        private _httpClient: HttpClient,
-    )
-    {
-        // Set the private defaults
-        this._board = new BehaviorSubject(null);
-        this._boards = new BehaviorSubject(null);
-        this._card = new BehaviorSubject(null);
-    }
+    constructor(private _httpClient: HttpClient) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Getter for board
+     * Getter para board
      */
-    get board$(): Observable<Board>
-    {
+    get board$(): Observable<Board> {
         return this._board.asObservable();
     }
 
     /**
-     * Getter for boards
+     * Getter para cards
      */
-    get boards$(): Observable<Board[]>
-    {
-        return this._boards.asObservable();
-    }
-
-    /**
-     * Getter for card
-     */
-    get card$(): Observable<Card>
-    {
-        return this._card.asObservable();
+    get cards$(): Observable<Card[]> {
+        return this._cards.asObservable();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -57,520 +61,156 @@ export class ScrumboardService
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Get boards
+     * Obtener servicios según tipo y técnico
      */
-    getBoards(): Observable<Board[]>
-    {
-        return this._httpClient.get<Board[]>('api/apps/scrumboard/boards').pipe(
-            map(response => response.map(item => new Board(item))),
-            tap(boards => this._boards.next(boards)),
-        );
+    getServices(tipoServicio: TipoServicio, tecnicoId?: string): Observable<Card[]> {
+        // Construir parámetros de consulta
+        let params = new HttpParams()
+            .set('page', '1')
+            .set('limit', '100')
+            .set('tipo', tipoServicio)
+            .set('search', '');
+        
+        // Agregar tecnicoAsignado solo si se proporciona
+        if (tecnicoId) {
+            params = params.set('tecnicoAsignado', tecnicoId);
+        }
+
+        return this._httpClient.get<ServiceResponse>(`${this.apiUrl}/service/board`, { params })
+            .pipe(
+                map(response => response.data.data.map(item => ({
+                    id: item.servicios_id.servicios_id.toString(),
+                    nombreSolicitante: item.servicios_id.nombreSolicitante,
+                    solicitante: item.servicios_id.nombreSolicitante,
+                    carnet: item.servicios_id.ciSolicitante,
+                    cargo: item.servicios_id.cargoSolicitante,
+                    tipoSolicitante: item.servicios_id.tipoSolicitante,
+                    problema: item.servicios_id.problema,
+                    tipo: item.servicios_id.tipo as TipoServicio,
+                    estado: item.servicios_id.estado as EstadoServicio || EstadoServicio.SIN_ASIGNAR,
+                    tecnicoAsignado: item.servicios_id.tecnicoAsignado,
+                    fechaRegistro: item.servicios_id.fechaRegistro,
+                    fechaInicio: item.servicios_id.fechaInicio,
+                    fechaTerminado: item.servicios_id.fechaTerminado,
+                    informe: item.servicios_id.informe,
+                    observacionesProblema: item.servicios_id.observaciones || '',
+                    codigoBienes: item.servicios_id.equipo || '',
+                    listId: '',
+                    position: 0
+                }) as unknown as Card)),
+                tap((cards: Card[]) => {
+                    this._cards.next(cards);
+                })
+            );
     }
 
     /**
-     * Get board
-     *
-     * @param id
+     * Actualizar el estado de un servicio
      */
-    getBoard(id: string): Observable<Board>
-    {
-        return this._httpClient.get<Board>('api/apps/scrumboard/board', {params: {id}}).pipe(
-            map(response => new Board(response)),
-            tap(board => this._board.next(board)),
-        );
-    }
-
-    /**
-     * Create board
-     *
-     * @param board
-     */
-    createBoard(board: Board): Observable<Board>
-    {
-        return this.boards$.pipe(
-            take(1),
-            switchMap(boards => this._httpClient.put<Board>('api/apps/scrumboard/board', {board}).pipe(
-                map((newBoard) =>
-                {
-                    // Update the boards with the new board
-                    this._boards.next([...boards, newBoard]);
-
-                    // Return new board from observable
-                    return newBoard;
-                }),
-            )),
-        );
-    }
-
-    /**
-     * Update the board
-     *
-     * @param id
-     * @param board
-     */
-    updateBoard(id: string, board: Board): Observable<Board>
-    {
-        return this.boards$.pipe(
-            take(1),
-            switchMap(boards => this._httpClient.patch<Board>('api/apps/scrumboard/board', {
-                id,
-                board,
+    updateServiceStatus(serviceId: string, newStatus: EstadoServicio): Observable<Card> {
+        return this._httpClient.patch<Card>(`${this.apiUrl}/servicios/${serviceId}/estado`, {
+            estado: newStatus
             }).pipe(
-                map((updatedBoard) =>
-                {
-                    // Find the index of the updated board
-                    const index = boards.findIndex(item => item.id === id);
-
-                    // Update the board
-                    boards[index] = updatedBoard;
-
-                    // Update the boards
-                    this._boards.next(boards);
-
-                    // Return the updated board
-                    return updatedBoard;
-                }),
-            )),
-        );
-    }
-
-    /**
-     * Delete the board
-     *
-     * @param id
-     */
-    deleteBoard(id: string): Observable<boolean>
-    {
-        return this.boards$.pipe(
-            take(1),
-            switchMap(boards => this._httpClient.delete('api/apps/scrumboard/board', {params: {id}}).pipe(
-                map((isDeleted: boolean) =>
-                {
-                    // Find the index of the deleted board
-                    const index = boards.findIndex(item => item.id === id);
-
-                    // Delete the board
-                    boards.splice(index, 1);
-
-                    // Update the boards
-                    this._boards.next(boards);
-
-                    // Update the board
-                    this._board.next(null);
-
-                    // Update the card
-                    this._card.next(null);
-
-                    // Return the deleted status
-                    return isDeleted;
-                }),
-            )),
-        );
-    }
-
-    /**
-     * Create list
-     *
-     * @param list
-     */
-    createList(list: List): Observable<List>
-    {
-        return this._httpClient.post<List>('api/apps/scrumboard/board/list', {list}).pipe(
-            map(response => new List(response)),
-            tap((newList) =>
-            {
-                // Get the board value
-                const board = this._board.value;
-
-                // Update the board lists with the new list
-                board.lists = [...board.lists, newList];
-
-                // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
-
-                // Update the board
-                this._board.next(board);
-            }),
-        );
-    }
-
-    /**
-     * Update the list
-     *
-     * @param list
-     */
-    updateList(list: List): Observable<List>
-    {
-        return this._httpClient.patch<List>('api/apps/scrumboard/board/list', {list}).pipe(
-            map(response => new List(response)),
-            tap((updatedList) =>
-            {
-                // Get the board value
-                const board = this._board.value;
-
-                // Find the index of the updated list
-                const index = board.lists.findIndex(item => item.id === list.id);
-
-                // Update the list
-                board.lists[index] = updatedList;
-
-                // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
-
-                // Update the board
-                this._board.next(board);
-            }),
-        );
-    }
-
-    /**
-     * Update the lists
-     *
-     * @param lists
-     */
-    updateLists(lists: List[]): Observable<List[]>
-    {
-        return this._httpClient.patch<List[]>('api/apps/scrumboard/board/lists', {lists}).pipe(
-            map(response => response.map(item => new List(item))),
-            tap((updatedLists) =>
-            {
-                // Get the board value
-                const board = this._board.value;
-
-                // Go through the updated lists
-                updatedLists.forEach((updatedList) =>
-                {
-                    // Find the index of the updated list
-                    const index = board.lists.findIndex(item => item.id === updatedList.id);
-
-                    // Update the list
-                    board.lists[index] = updatedList;
-                });
-
-                // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
-
-                // Update the board
-                this._board.next(board);
-            }),
-        );
-    }
-
-    /**
-     * Delete the list
-     *
-     * @param id
-     */
-    deleteList(id: string): Observable<boolean>
-    {
-        return this._httpClient.delete<boolean>('api/apps/scrumboard/board/list', {params: {id}}).pipe(
-            tap((isDeleted) =>
-            {
-                // Get the board value
-                const board = this._board.value;
-
-                // Find the index of the deleted list
-                const index = board.lists.findIndex(item => item.id === id);
-
-                // Delete the list
-                board.lists.splice(index, 1);
-
-                // Sort the board lists
-                board.lists.sort((a, b) => a.position - b.position);
-
-                // Update the board
-                this._board.next(board);
-            }),
-        );
-    }
-
-    /**
-     * Get card
-     */
-    getCard(id: string): Observable<Card>
-    {
-        return this._board.pipe(
-            take(1),
-            map((board) =>
-            {
-                // Find the card
-                const card = board.lists.find(list => list.cards.some(item => item.id === id))
-                    .cards.find(item => item.id === id);
-
-                // Update the card
-                this._card.next(card);
-
-                // Return the card
-                return card;
-            }),
-            switchMap((card) =>
-            {
-                if ( !card )
-                {
-                    return throwError('Could not found the card with id of ' + id + '!');
+            tap(updatedService => {
+                // Actualizar el servicio en el estado local
+                const currentCards = this._cards.value;
+                const index = currentCards.findIndex(card => card.id === serviceId);
+                if (index !== -1) {
+                    currentCards[index] = updatedService;
+                    this._cards.next([...currentCards]);
                 }
-
-                return of(card);
-            }),
+            })
         );
     }
 
     /**
-     * Create card
-     *
-     * @param card
+     * Obtener técnicos disponibles
      */
-    createCard(card: Card): Observable<Card>
-    {
-        return this._httpClient.put<Card>('api/apps/scrumboard/board/card', {card}).pipe(
-            map(response => new Card(response)),
-            tap((newCard) =>
-            {
-                // Get the board value
-                const board = this._board.value;
+    getTecnicos(search: string = ''): Observable<any[]> {
+        const params = new HttpParams()
+            .set('page', '1')
+            .set('limit', '1000')
+            .set('search', search);
 
-                // Find the list and push the new card in it
-                board.lists.forEach((listItem, index, list) =>
-                {
-                    if ( listItem.id === newCard.listId )
-                    {
-                        list[index].cards.push(newCard);
+        return this._httpClient.get<UserResponse>(`${this.apiUrl}/user`, { params })
+            .pipe(
+                map(response => [
+                    { id: null, nombre: 'Todos' },
+                    ...response.data.data
+                        .filter(item => item.usuarios_id.role === 'TECNICO')
+                        .map(item => ({
+                            id: item.usuarios_id.usuarios_id,
+                            nombre: `${item.usuarios_id.nombres} ${item.usuarios_id.apellidos}`
+                        }))
+                ])
+            );
+    }
+
+    /**
+     * Obtener detalles de un servicio específico
+     */
+    getServiceDetails(serviceId: string): Observable<Card> {
+        return this._httpClient.get<Card>(`${this.apiUrl}/servicios/${serviceId}`);
+    }
+
+    /**
+     * Actualizar servicio completo
+     */
+    updateService(card: Card): Observable<Card> {
+        return this._httpClient.put<Card>(`${this.apiUrl}/servicios/${card.id}`, card)
+            .pipe(
+                tap(() => {
+                    // Actualizar la lista de tarjetas
+                    const cards = this._cards.value;
+                    const index = cards.findIndex(c => c.id === card.id);
+                    if (index !== -1) {
+                        cards[index] = card;
+                        this._cards.next([...cards]);
                     }
-                });
-
-                // Update the board
-                this._board.next(board);
-
-                // Return the new card
-                return newCard;
-            }),
+                })
         );
     }
 
     /**
-     * Update the card
-     *
-     * @param id
-     * @param card
+     * Crear nuevo servicio
      */
-    updateCard(id: string, card: Card): Observable<Card>
-    {
-        return this.board$.pipe(
-            take(1),
-            switchMap(board => this._httpClient.patch<Card>('api/apps/scrumboard/board/card', {
-                id,
-                card,
-            }).pipe(
-                map((updatedCard) =>
-                {
-                    // Find the card and update it
-                    board.lists.forEach((listItem) =>
-                    {
-                        listItem.cards.forEach((cardItem, index, array) =>
-                        {
-                            if ( cardItem.id === id )
-                            {
-                                array[index] = updatedCard;
-                            }
-                        });
-                    });
-
-                    // Update the board
-                    this._board.next(board);
-
-                    // Update the card
-                    this._card.next(updatedCard);
-
-                    // Return the updated card
-                    return updatedCard;
-                }),
-            )),
-        );
+    createService(card: Partial<Card>): Observable<Card> {
+        return this._httpClient.post<Card>(`${this.apiUrl}/servicios`, card)
+            .pipe(
+                tap(newCard => {
+                    const cards = this._cards.value;
+                    this._cards.next([...cards, newCard]);
+                })
+            );
     }
+}
 
-    /**
-     * Update the cards
-     *
-     * @param cards
-     */
-    updateCards(cards: Card[]): Observable<Card[]>
-    {
-        return this._httpClient.patch<Card[]>('api/apps/scrumboard/board/cards', {cards}).pipe(
-            map(response => response.map(item => new Card(item))),
-            tap((updatedCards) =>
-            {
-                // Get the board value
-                const board = this._board.value;
-
-                // Go through the updated cards
-                updatedCards.forEach((updatedCard) =>
-                {
-                    // Find the index of the updated card's list
-                    const listIndex = board.lists.findIndex(list => list.id === updatedCard.listId);
-
-                    // Find the index of the updated card
-                    const cardIndex = board.lists[listIndex].cards.findIndex(item => item.id === updatedCard.id);
-
-                    // Update the card
-                    board.lists[listIndex].cards[cardIndex] = updatedCard;
-
-                    // Sort the cards
-                    board.lists[listIndex].cards.sort((a, b) => a.position - b.position);
-                });
-
-                // Update the board
-                this._board.next(board);
-            }),
-        );
-    }
-
-    /**
-     * Delete the card
-     *
-     * @param id
-     */
-    deleteCard(id: string): Observable<boolean>
-    {
-        return this.board$.pipe(
-            take(1),
-            switchMap(board => this._httpClient.delete('api/apps/scrumboard/board/card', {params: {id}}).pipe(
-                map((isDeleted: boolean) =>
-                {
-                    // Find the card and delete it
-                    board.lists.forEach((listItem) =>
-                    {
-                        listItem.cards.forEach((cardItem, index, array) =>
-                        {
-                            if ( cardItem.id === id )
-                            {
-                                array.splice(index, 1);
-                            }
-                        });
-                    });
-
-                    // Update the board
-                    this._board.next(board);
-
-                    // Update the card
-                    this._card.next(null);
-
-                    // Return the deleted status
-                    return isDeleted;
-                }),
-            )),
-        );
-    }
-
-    /**
-     * Create label
-     *
-     * @param label
-     */
-    createLabel(label: Label): Observable<Label>
-    {
-        return this.board$.pipe(
-            take(1),
-            switchMap(board => this._httpClient.post<Label>('api/apps/scrumboard/board/label', {label}).pipe(
-                map((newLabel) =>
-                {
-                    // Update the board labels with the new label
-                    board.labels = [...board.labels, newLabel];
-
-                    // Update the board
-                    this._board.next(board);
-
-                    // Return new label from observable
-                    return newLabel;
-                }),
-            )),
-        );
-    }
-
-    /**
-     * Update the label
-     *
-     * @param id
-     * @param label
-     */
-    updateLabel(id: string, label: Label): Observable<Label>
-    {
-        return this.board$.pipe(
-            take(1),
-            switchMap(board => this._httpClient.patch<Label>('api/apps/scrumboard/board/label', {
-                id,
-                label,
-            }).pipe(
-                map((updatedLabel) =>
-                {
-                    // Find the index of the updated label
-                    const index = board.labels.findIndex(item => item.id === id);
-
-                    // Update the label
-                    board.labels[index] = updatedLabel;
-
-                    // Update the board
-                    this._board.next(board);
-
-                    // Return the updated label
-                    return updatedLabel;
-                }),
-            )),
-        );
-    }
-
-    /**
-     * Delete the label
-     *
-     * @param id
-     */
-    deleteLabel(id: string): Observable<boolean>
-    {
-        return this.board$.pipe(
-            take(1),
-            switchMap(board => this._httpClient.delete('api/apps/scrumboard/board/label', {params: {id}}).pipe(
-                map((isDeleted: boolean) =>
-                {
-                    // Find the index of the deleted label
-                    const index = board.labels.findIndex(item => item.id === id);
-
-                    // Delete the label
-                    board.labels.splice(index, 1);
-
-                    // If the label is deleted...
-                    if ( isDeleted )
-                    {
-                        // Remove the label from any card that uses it
-                        board.lists.forEach((list) =>
-                        {
-                            list.cards.forEach((card) =>
-                            {
-                                const labelIndex = card.labels.findIndex(label => label.id === id);
-                                if ( labelIndex > -1 )
-                                {
-                                    card.labels.splice(labelIndex, 1);
-                                }
-                            });
-                        });
-                    }
-
-                    // Update the board
-                    this._board.next(board);
-
-                    // Return the deleted status
-                    return isDeleted;
-                }),
-            )),
-        );
-    }
-
-    /**
-     * Search within board cards
-     *
-     * @param query
-     */
-    search(query: string): Observable<Card[] | null>
-    {
-        // @TODO: Update the board cards based on the search results
-        return this._httpClient.get<Card[] | null>('api/apps/scrumboard/board/search', {params: {query}});
+interface ServiceResponse {
+    message: string;
+    data: {
+        total: number;
+        perPage: number;
+        currentPage: number;
+        totalPages: number;
+        data: {
+            servicios_id: {
+                servicios_id: number;
+                nombreSolicitante: string;
+                ciSolicitante: string;
+                cargoSolicitante: string;
+                tipoSolicitante: string;
+                problema: string;
+                tipo: string;
+                estado: string;
+                tecnicoAsignado: number;
+                fechaRegistro: string;
+                fechaInicio: string;
+                fechaTerminado: string;
+                equipo: string;
+                observaciones: string;
+                informe: string;
+                oficinaSolicitante: string;
+            }
+        }[]
     }
 }

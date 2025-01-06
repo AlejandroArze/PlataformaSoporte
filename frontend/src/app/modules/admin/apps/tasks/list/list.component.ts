@@ -1,51 +1,56 @@
-import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDragPreview, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { DatePipe, DOCUMENT, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation';
-import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
-import { TasksService } from 'app/modules/admin/apps/tasks/tasks.service';
-import { Tag, Task } from 'app/modules/admin/apps/tasks/tasks.types';
-import { filter, fromEvent, Subject, takeUntil } from 'rxjs';
+import { CdkDrag, CdkDragDrop, CdkDragHandle, CdkDragPreview, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop'; // Importa módulos para funcionalidades de arrastrar y soltar
+import { DatePipe, DOCUMENT, NgClass, NgFor, NgIf, TitleCasePipe } from '@angular/common'; // Importa módulos comunes de Angular
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core'; // Importa decoradores y servicios esenciales de Angular
+import { MatButtonModule } from '@angular/material/button'; // Importa el módulo de botones de Angular Material
+import { MatIconModule } from '@angular/material/icon'; // Importa el módulo de íconos de Angular Material
+import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav'; // Importa módulos relacionados con paneles laterales
+import { MatTooltipModule } from '@angular/material/tooltip'; // Importa el módulo de tooltips de Angular Material
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router'; // Importa servicios y directivas para enrutamiento
+import { FuseNavigationService, FuseVerticalNavigationComponent } from '@fuse/components/navigation'; // Importa servicios de navegación de Fuse
+import { FuseMediaWatcherService } from '@fuse/services/media-watcher'; // Importa servicio para observar cambios en los medios
+import { TasksService } from 'app/modules/admin/apps/tasks/tasks.service'; // Importa el servicio de tareas personalizado
+import { Tag, Servicio } from 'app/modules/admin/apps/tasks/tasks.types'; // Importa tipos de datos personalizados
+import { filter, fromEvent, Subject, takeUntil } from 'rxjs'; // Importa operadores y clases de RxJS
 
 @Component({
-    selector       : 'tasks-list',
-    templateUrl    : './list.component.html',
-    encapsulation  : ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone     : true,
-    imports        : [MatSidenavModule, RouterOutlet, NgIf, MatButtonModule, MatTooltipModule, MatIconModule, CdkDropList, NgFor, CdkDrag, NgClass, CdkDragPreview, CdkDragHandle, RouterLink, TitleCasePipe, DatePipe],
+    selector       : 'tasks-list', // Define el selector del componente
+    templateUrl    : './list.component.html', // Ruta del archivo de plantilla HTML
+    encapsulation  : ViewEncapsulation.None, // Define el nivel de encapsulación del CSS
+    changeDetection: ChangeDetectionStrategy.OnPush, // Define la estrategia de detección de cambios
+    standalone     : true, // Indica que el componente es independiente
+    imports        : [MatSidenavModule, RouterOutlet, NgIf, MatButtonModule, MatTooltipModule, MatIconModule, CdkDropList, NgFor, CdkDrag, NgClass, CdkDragPreview, CdkDragHandle, RouterLink, TitleCasePipe, DatePipe], // Lista de módulos importados
 })
 export class TasksListComponent implements OnInit, OnDestroy
 {
-    @ViewChild('matDrawer', {static: true}) matDrawer: MatDrawer;
+    @ViewChild('matDrawer', {static: true}) matDrawer: MatDrawer; // Referencia al panel lateral (drawer)
 
-    drawerMode: 'side' | 'over';
-    selectedTask: Task;
-    tags: Tag[];
-    tasks: Task[];
-    tasksCount: any = {
-        completed : 0,
-        incomplete: 0,
-        total     : 0,
+    drawerMode: 'side' | 'over'; // Define el modo del panel lateral
+    selectedService: Servicio; // Servicio seleccionado
+    tags: Tag[]; // Lista de etiquetas
+    services: Servicio[]= []; // Inicializar como un array vacío; // Lista de servicios
+    servicesCount: any = {
+        completed : 0, // Contador de servicios completados
+        incomplete: 0, // Contador de servicios incompletos
+        total     : 0, // Contador total de servicios
     };
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    tasksCount = {
+        incomplete: 0, // Número de tareas incompletas
+        completed: 0,  // Número de tareas completadas
+    };
+    
+    private _unsubscribeAll: Subject<any> = new Subject<any>(); // Sujeto para gestionar las suscripciones
 
     /**
      * Constructor
      */
     constructor(
-        private _activatedRoute: ActivatedRoute,
-        private _changeDetectorRef: ChangeDetectorRef,
-        @Inject(DOCUMENT) private _document: any,
-        private _router: Router,
-        private _tasksService: TasksService,
-        private _fuseMediaWatcherService: FuseMediaWatcherService,
-        private _fuseNavigationService: FuseNavigationService,
+        private _activatedRoute: ActivatedRoute, // Servicio para rutas activas
+        private _changeDetectorRef: ChangeDetectorRef, // Servicio para detección manual de cambios
+        @Inject(DOCUMENT) private _document: any, // Referencia al objeto documento
+        private _router: Router, // Servicio para la navegación
+        private _tasksService: TasksService, // Servicio de tareas personalizado
+        private _fuseMediaWatcherService: FuseMediaWatcherService, // Servicio para observar cambios en medios
+        private _fuseNavigationService: FuseNavigationService, // Servicio de navegación de Fuse
     )
     {
     }
@@ -59,98 +64,72 @@ export class TasksListComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
-        // Get the tags
+        // Obtiene las etiquetas
         this._tasksService.tags$
-            .pipe(takeUntil(this._unsubscribeAll))
+            .pipe(takeUntil(this._unsubscribeAll)) // Cancela la suscripción al destruir el componente
             .subscribe((tags: Tag[]) =>
             {
-                this.tags = tags;
+                this.tags = tags; // Asigna las etiquetas recibidas
 
-                // Mark for check
+                // Marca el componente para chequeo de cambios
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get the tasks
-        this._tasksService.tasks$
+            this.servicesCount = {
+                incomplete: this.services.filter(task => task.estado !== 'completado').length,
+                completed: this.services.filter(task => task.estado === 'completado').length,
+            };
+            
+
+        // Obtiene los servicios
+        this._tasksService.services$
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((tasks: Task[]) =>
-            {
-                this.tasks = tasks;
+            .subscribe((services: Servicio[]) => {
+                this.services = services;
 
-                // Update the counts
-                this.tasksCount.total = this.tasks.filter(task => task.type === 'task').length;
-                this.tasksCount.completed = this.tasks.filter(task => task.type === 'task' && task.completed).length;
-                this.tasksCount.incomplete = this.tasksCount.total - this.tasksCount.completed;
+                // Actualiza los contadores
+                this.servicesCount = {
+                    total: services.length,
+                    completed: services.filter(service => service.estado === 'completado').length,
+                    incomplete: services.filter(service => service.estado !== 'completado').length
+                };
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+                // Actualiza el contador de tareas
+                this.tasksCount = {
+                    completed: this.servicesCount.completed,
+                    incomplete: this.servicesCount.incomplete
+                };
 
-                // Update the count on the navigation
-                setTimeout(() =>
-                {
-                    // Get the component -> navigation data -> item
-                    const mainNavigationComponent = this._fuseNavigationService.getComponent<FuseVerticalNavigationComponent>('mainNavigation');
+                // Actualizar la navegación
+                this.updateNavigationBadge();
 
-                    // If the main navigation component exists...
-                    if ( mainNavigationComponent )
-                    {
-                        const mainNavigation = mainNavigationComponent.navigation;
-                        const menuItem = this._fuseNavigationService.getItem('apps.tasks', mainNavigation);
-
-                        // Update the subtitle of the item
-                        menuItem.subtitle = this.tasksCount.incomplete + ' remaining tasks';
-
-                        // Refresh the navigation
-                        mainNavigationComponent.refresh();
-                    }
-                });
-            });
-
-        // Get the task
-        this._tasksService.task$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((task: Task) =>
-            {
-                this.selectedTask = task;
-
-                // Mark for check
+                // Marca para detección de cambios
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Subscribe to media query change
-        this._fuseMediaWatcherService.onMediaQueryChange$('(min-width: 1440px)')
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((state) =>
-            {
-                // Calculate the drawer mode
-                this.drawerMode = state.matches ? 'side' : 'over';
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-
-        // Listen for shortcuts
-        fromEvent(this._document, 'keydown')
+        // Obtiene el servicio seleccionado
+        this._tasksService.services$
             .pipe(
                 takeUntil(this._unsubscribeAll),
-                filter<KeyboardEvent>(event =>
-                    (event.ctrlKey === true || event.metaKey) // Ctrl or Cmd
-                    && (event.key === '/' || event.key === '.'), // '/' or '.' key
-                ),
+                filter(services => services.length > 0)
             )
-            .subscribe((event: KeyboardEvent) =>
+            .subscribe((services: Servicio[]) =>
             {
-                // If the '/' pressed
-                if ( event.key === '/' )
-                {
-                    this.createTask('task');
-                }
+                this.selectedService = services[0]; // Asigna el primer servicio como seleccionado por defecto
 
-                // If the '.' pressed
-                if ( event.key === '.' )
-                {
-                    this.createTask('section');
-                }
+                // Marca el componente para chequeo de cambios
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Se suscribe a los cambios de media query
+        this._fuseMediaWatcherService.onMediaQueryChange$('(min-width: 1440px)')
+            .pipe(takeUntil(this._unsubscribeAll)) // Cancela la suscripción al destruir el componente
+            .subscribe((state) =>
+            {
+                this.drawerMode = state.matches ? 'side' : 'over'; // Cambia el modo del panel lateral según el estado del media query
+
+                // Marca el componente para chequeo de cambios
+                this._changeDetectorRef.markForCheck();
             });
     }
 
@@ -159,9 +138,8 @@ export class TasksListComponent implements OnInit, OnDestroy
      */
     ngOnDestroy(): void
     {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
+        this._unsubscribeAll.next(null); // Emite un valor nulo para cancelar todas las suscripciones
+        this._unsubscribeAll.complete(); // Completa el sujeto
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -169,78 +147,96 @@ export class TasksListComponent implements OnInit, OnDestroy
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * On backdrop clicked
+     * Maneja el clic en el fondo
      */
     onBackdropClicked(): void
     {
-        // Go back to the list
-        this._router.navigate(['./'], {relativeTo: this._activatedRoute});
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+        this._router.navigate(['./'], {relativeTo: this._activatedRoute}); // Navega a la ruta relativa
+        this._changeDetectorRef.markForCheck(); // Marca el componente para chequeo de cambios
     }
 
     /**
-     * Create task
-     *
-     * @param type
+     * Crea un nuevo servicio
      */
-    createTask(type: 'task' | 'section'): void
+    createService(): void
     {
-        // Create the task
-        this._tasksService.createTask(type).subscribe((newTask) =>
+        this._tasksService.createTask({}).subscribe((newService: Servicio) =>
         {
-            // Go to the new task
-            this._router.navigate(['./', newTask.id], {relativeTo: this._activatedRoute});
-
-            // Mark for check
-            this._changeDetectorRef.markForCheck();
+            this.services.push(newService); // Agrega el nuevo servicio a la lista local
+            this._router.navigate(['./', newService.servicios_id], {relativeTo: this._activatedRoute}); // Navega al nuevo servicio creado
+            this._changeDetectorRef.markForCheck(); // Marca el componente para chequeo de cambios
         });
     }
 
     /**
-     * Toggle the completed status
-     * of the given task
+     * Cambia el estado completado del servicio dado
      *
-     * @param task
+     * @param service Servicio cuyo estado será cambiado
      */
-    toggleCompleted(task: Task): void
-    {
-        // Toggle the completed status
-        task.completed = !task.completed;
+    toggleCompleted(service: Servicio): void {
+        const updatedService = {
+            ...service,
+            estado: service.estado === 'completado' ? 'pendiente' : 'completado'
+        };
 
-        // Update the task on the server
-        this._tasksService.updateTask(task.id, task).subscribe();
-
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+        this._tasksService.updateTask(service.servicios_id, updatedService).subscribe({
+            next: () => {
+                // La actualización de la lista se maneja automáticamente a través del BehaviorSubject
+                this._changeDetectorRef.markForCheck();
+            },
+            error: (error) => {
+                console.error('Error al cambiar el estado:', error);
+                // Revertir el cambio en caso de error
+                service.estado = service.estado === 'completado' ? 'pendiente' : 'completado';
+                this._changeDetectorRef.markForCheck();
+            }
+        });
     }
 
     /**
-     * Task dropped
-     *
-     * @param event
-     */
-    dropped(event: CdkDragDrop<Task[]>): void
-    {
-        // Move the item in the array
-        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+ * Maneja el evento de arrastre y soltar
+ * @param event Evento de arrastre y soltar
+ */
+dropped(event: CdkDragDrop<Servicio[]>): void {
+    // Reordena los servicios localmente
+    const reorderedService = this.services[event.previousIndex];
+    moveItemInArray(this.services, event.previousIndex, event.currentIndex);
 
-        // Save the new order
-        this._tasksService.updateTasksOrders(event.container.data).subscribe();
-
-        // Mark for check
+    // Actualiza el backend con el servicio reordenado
+    this._tasksService.updateTask(reorderedService.servicios_id, reorderedService).subscribe(() => {
+        // Marca el componente para chequeo de cambios
         this._changeDetectorRef.markForCheck();
-    }
+    });
+}
+
+
 
     /**
-     * Track by function for ngFor loops
+     * Función para rastrear elementos en ngFor
      *
-     * @param index
-     * @param item
+     * @param index Índice del elemento
+     * @param item Elemento actual
      */
     trackByFn(index: number, item: any): any
     {
-        return item.id || index;
+        return item.servicios_id || index; // Retorna el ID del servicio o el índice
+    }
+
+    // Método para actualizar el badge de navegación
+    private updateNavigationBadge(): void {
+        setTimeout(() => {
+            const mainNavigationComponent = 
+                this._fuseNavigationService.getComponent<FuseVerticalNavigationComponent>('mainNavigation');
+
+            if (mainNavigationComponent) {
+                const mainNavigation = mainNavigationComponent.navigation;
+                const menuItem = this._fuseNavigationService.getItem('apps.services', mainNavigation);
+
+                if (menuItem) {
+                    menuItem.subtitle = this.servicesCount.incomplete + ' servicios pendientes';
+                    mainNavigationComponent.refresh();
+                }
+            }
+        });
     }
 }

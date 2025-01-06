@@ -1,54 +1,158 @@
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { TemplatePortal } from '@angular/cdk/portal';
-import { TextFieldModule } from '@angular/cdk/text-field';
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRippleModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDrawerToggleResult } from '@angular/material/sidenav';
-import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
-import { FuseFindByKeyPipe } from '@fuse/pipes/find-by-key/find-by-key.pipe';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { TasksListComponent } from 'app/modules/admin/apps/tasks/list/list.component';
-import { TasksService } from 'app/modules/admin/apps/tasks/tasks.service';
-import { Tag, Task } from 'app/modules/admin/apps/tasks/tasks.types';
-import { assign } from 'lodash-es';
-import { DateTime } from 'luxon';
-import { debounceTime, filter, Subject, takeUntil, tap } from 'rxjs';
+import { Overlay, OverlayRef } from '@angular/cdk/overlay'; // Importa módulos para crear superposiciones flotantes
+import { TemplatePortal } from '@angular/cdk/portal'; // Importa portal para proyectar contenido en superposiciones
+import { TextFieldModule } from '@angular/cdk/text-field'; // Importa módulo para campos de texto
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common'; // Importa directivas comunes de Angular
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation } from '@angular/core'; // Importa elementos core de Angular
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, FormControl, FormGroupDirective, NgForm } from '@angular/forms'; // Importa módulos para manejo de formularios
+import { MatButtonModule } from '@angular/material/button'; // Importa módulo de botones de Material
+import { MatCheckboxModule } from '@angular/material/checkbox'; // Importa módulo de checkbox de Material
+import { MatRippleModule } from '@angular/material/core'; // Importa módulo de efectos ripple de Material
+import { MatDatepickerModule } from '@angular/material/datepicker'; // Importa módulo de selector de fechas
+import { MatDividerModule } from '@angular/material/divider'; // Importa módulo de divisores de Material
+import { MatFormFieldModule } from '@angular/material/form-field'; // Importa módulo de campos de formulario Material
+import { MatIconModule } from '@angular/material/icon'; // Importa módulo de iconos de Material
+import { MatInputModule } from '@angular/material/input'; // Importa módulo de inputs de Material
+import { MatMenuModule } from '@angular/material/menu'; // Importa módulo de menús de Material
+import { MatDrawerToggleResult } from '@angular/material/sidenav'; // Importa tipo para resultado de toggle del drawer
+import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router'; // Importa módulos de enrutamiento
+import { FuseFindByKeyPipe } from '@fuse/pipes/find-by-key/find-by-key.pipe'; // Importa pipe personalizado de Fuse
+import { FuseConfirmationService } from '@fuse/services/confirmation'; // Importa servicio de confirmación de Fuse
+import { TasksListComponent } from 'app/modules/admin/apps/tasks/list/list.component'; // Importa componente de lista de tareas
+import { TasksService } from 'app/modules/admin/apps/tasks/tasks.service'; // Importa servicio de tareas
+import { Tag, Task, Servicio } from 'app/modules/admin/apps/tasks/tasks.types'; // Importa interfaces de tipos
+import { assign } from 'lodash-es'; // Importa función assign de lodash
+import { DateTime } from 'luxon'; // Importa librería para manejo de fechas
+import { debounceTime, filter, Subject, takeUntil, tap, switchMap, of, catchError, EMPTY, retry } from 'rxjs'; // Importa operadores y tipos de RxJS
+import { MatTooltipModule } from '@angular/material/tooltip'; // Importa módulo de tooltip de Material
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+export class CustomErrorStateMatcher implements ErrorStateMatcher {
+    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+        return !!(control && control.value && 
+            typeof control.value === 'string' && 
+            control.value !== '' && 
+            control.value !== null);
+    }
+}
+
+// Primero, definimos una interfaz para los datos del empleado
+interface EmpleadoDetalle {
+    nombre_completo: string;
+    otro_nombre?: string;
+    nombre?: string;
+    paterno?: string;
+    materno?: string;
+    numdocumento: string;
+    cargo: string;
+    tipo_contrato: string;
+    unidad: string;
+    telefono?: string;
+    telefono_coorp?: string;
+    email?: string;
+    direccion?: string;
+    fecha_incorporacion?: string;
+    fecha_baja?: string | null;
+}
+
+interface EmpleadoOption {
+    id: number;
+    nombre_completo: string;
+    numdocumento: string;
+    cargo: string;
+    tipo_contrato: string;
+    unidad: string;
+    telefono?: string;
+    telefono_coorp?: string;
+}
 
 @Component({
-    selector       : 'tasks-details',
-    templateUrl    : './details.component.html',
-    encapsulation  : ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone     : true,
-    imports        : [FormsModule, ReactiveFormsModule, MatButtonModule, NgIf, MatIconModule, MatMenuModule, RouterLink, MatDividerModule, MatFormFieldModule, MatInputModule, TextFieldModule, NgFor, MatRippleModule, MatCheckboxModule, NgClass, MatDatepickerModule, FuseFindByKeyPipe, DatePipe],
+    selector       : 'tasks-details',                    // Selector del componente para uso en templates
+    templateUrl    : './details.component.html',         // Ruta al archivo de template HTML
+    encapsulation  : ViewEncapsulation.None,            // Desactiva la encapsulación de estilos
+    changeDetection: ChangeDetectionStrategy.OnPush,     // Estrategia de detección de cambios optimizada
+    standalone     : true,                              // Indica que es un componente independiente
+    imports        : [FormsModule, ReactiveFormsModule,  // Lista de módulos importados necesarios
+                     MatButtonModule, NgIf, MatIconModule, 
+                     MatMenuModule, RouterLink, MatDividerModule, 
+                     MatFormFieldModule, MatInputModule, TextFieldModule, 
+                     NgFor, MatRippleModule, MatCheckboxModule, NgClass, 
+                     MatDatepickerModule, FuseFindByKeyPipe, DatePipe,
+                     MatTooltipModule, MatSelectModule,
+                     MatCardModule, MatAutocompleteModule],
 })
-export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
+// Clase del componente que implementa los hooks del ciclo de vida OnInit (inicialización), AfterViewInit (después de inicializar la vista) y OnDestroy (limpieza)
+export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy 
 {
-    @ViewChild('tagsPanelOrigin') private _tagsPanelOrigin: ElementRef;
-    @ViewChild('tagsPanel') private _tagsPanel: TemplateRef<any>;
-    @ViewChild('titleField') private _titleField: ElementRef;
+    @ViewChild('tagsPanelOrigin') private _tagsPanelOrigin: ElementRef;    // Referencia al elemento origen del panel de etiquetas
+    @ViewChild('tagsPanel') private _tagsPanel: TemplateRef<any>;          // Referencia a la plantilla del panel de etiquetas
+    @ViewChild('titleField') private _titleField: ElementRef;              // Referencia al campo de título
 
-    tags: Tag[];
-    tagsEditMode: boolean = false;
-    filteredTags: Tag[];
-    task: Task;
-    taskForm: UntypedFormGroup;
-    tasks: Task[];
-    private _tagsPanelOverlayRef: OverlayRef;
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    tags: Tag[];                                                           // Array que almacena todas las etiquetas disponibles
+    tagsEditMode: boolean = false;                                         // Bandera que indica si está activo el modo de edición de etiquetas
+    filteredTags: Tag[];                                                   // Array de etiquetas filtradas según búsqueda
+    task: Task = {
+        id: '',
+        type: 'task',
+        title: '',
+        notes: '',
+        completed: false,
+        dueDate: null,
+        priority: 0,
+        tags: [],
+        order: 0
+    };
+    taskForm: UntypedFormGroup;                                           // Formulario reactivo para la tarea
+    tasks: Task[];                                                        // Array que almacena todas las tareas
+    private _tagsPanelOverlayRef: OverlayRef;                            // Referencia al overlay del panel de etiquetas
+    private _unsubscribeAll: Subject<any> = new Subject<any>();          // Subject para gestionar la limpieza de subscripciones
+    servicioForm: UntypedFormGroup;
+    servicio: Servicio;
+    public flashMessage: 'success' | 'error' | null = null;
+    bienes: {
+        data: {
+            tipo?: string;
+            observacion?: string;
+            unidad?: string;
+            caracteristicas?: {
+                MARCA: string;
+                MODELO: string;
+                SERIE: string;
+            };
+        };
+    } | null = null;
+    filteredEquipos: { equipos_id: number; codigo: string }[] = [];
+    searchEquipoCtrl = new FormControl<{equipos_id: number; codigo: string} | string>('');
+    isOptionSelected = false;
+    matcher = new CustomErrorStateMatcher();
+    filteredEmpleados: any[] = [];
+    filteredEmpleadosCI: any[] = [];
+    empleadosCargados: any[] = [];
+    empleadosCargadosCI: any[] = [];
+
+    // Agregar un mapa para almacenar los detalles de los empleados
+    private empleadosDetalles = new Map<string, EmpleadoDetalle>();
+
+    // Agregar una bandera para controlar si se seleccionó de la lista
+    private selectedFromList: boolean = false;
 
     /**
-     * Constructor
+     * Constructor del componente TasksDetailsComponent
+     * 
+     * @param _activatedRoute - Servicio para acceder a información sobre la ruta activa
+     * @param _changeDetectorRef - Servicio para detectar y forzar cambios en la vista
+     * @param _formBuilder - Servicio para crear formularios reactivos
+     * @param _fuseConfirmationService - Servicio para mostrar diálogos de confirmación
+     * @param _renderer2 - Servicio para manipular elementos del DOM
+     * @param _router - Servicio para la navegación
+     * @param _tasksListComponent - Referencia al componente padre de la lista de tareas
+     * @param _tasksService - Servicio para gestionar las operaciones CRUD de tareas
+     * @param _overlay - Servicio para crear superposiciones flotantes
+     * @param _viewContainerRef - Referencia al contenedor de la vista
+     * @param _snackBar - Servicio para mostrar notificaciones
      */
     constructor(
         private _activatedRoute: ActivatedRoute,
@@ -61,137 +165,320 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
         private _tasksService: TasksService,
         private _overlay: Overlay,
         private _viewContainerRef: ViewContainerRef,
+        private _snackBar: MatSnackBar
     )
     {
     }
 
     // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
+    // @ Hooks del ciclo de vida
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * On init
+     * Al inicializar
      */
     ngOnInit(): void
     {
-        // Open the drawer
+        // Abre el drawer (panel lateral)
         this._tasksListComponent.matDrawer.open();
 
-        // Create the task form
+        // Crea el formulario de tarea
         this.taskForm = this._formBuilder.group({
-            id       : [''],
-            type     : [''],
-            title    : [''],
-            notes    : [''],
-            completed: [false],
-            dueDate  : [null],
-            priority : [0],
-            tags     : [[]],
-            order    : [0],
+            id       : [''],        // Identificador único de la tarea
+            type     : [''],        // Tipo de tarea
+            title    : [''],        // Título de la tarea
+            notes    : [''],        // Notas o descripción de la tarea
+            completed: [false],     // Estado de completado de la tarea
+            dueDate  : [null],      // Fecha de vencimiento
+            priority : [0],         // Prioridad de la tarea
+            tags     : [[]],        // Etiquetas asociadas
+            order    : [0],         // Orden de la tarea en la lista
         });
 
-        // Get the tags
+        // Obtener las etiquetas
         this._tasksService.tags$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((tags: Tag[]) =>
             {
+                // Asignar las etiquetas obtenidas a la propiedad 'tags'
                 this.tags = tags;
+                // Inicializar 'filteredTags' con todas las etiquetas
                 this.filteredTags = tags;
 
-                // Mark for check
+                // Marcar para verificación de cambios
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get the tasks
+        // Obtener las tareas
         this._tasksService.tasks$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((tasks: Task[]) =>
             {
+                // Asignar las tareas obtenidas a la propiedad 'tasks'
                 this.tasks = tasks;
 
-                // Mark for check
+                // Marcar para verificación de cambios
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Get the task
+        // Obtener la tarea actual
         this._tasksService.task$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((task: Task) =>
             {
-                // Open the drawer in case it is closed
+                // Abrir el cajón si está cerrado
                 this._tasksListComponent.matDrawer.open();
 
-                // Get the task
+                // Asignar la tarea obtenida a la propiedad 'task'
                 this.task = task;
 
-                // Patch values to the form from the task
+                // Actualizar el formulario con los valores de la tarea
                 this.taskForm.patchValue(task, {emitEvent: false});
 
-                // Mark for check
+                // Marcar para verificación de cambios
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Update task when there is a value change on the task form
+        // Actualiza la tarea cuando hay cambios en el formulario
         this.taskForm.valueChanges
             .pipe(
                 tap((value) =>
                 {
-                    // Update the task object
-                    this.task = assign(this.task, value);
+                    // Actualiza el objeto de tarea
+                    this.task = assign(this.task, value);    // Combina los nuevos valores con la tarea existente
                 }),
-                debounceTime(300),
+                debounceTime(300),                          // Espera 300ms antes de realizar la actualización
                 takeUntil(this._unsubscribeAll),
             )
             .subscribe((value) =>
             {
-                // Update the task on the server
+                // Actualiza la tarea en el servidor
                 this._tasksService.updateTask(value.id, value).subscribe();
 
-                // Mark for check
+                // Marca para verificación de cambios
                 this._changeDetectorRef.markForCheck();
             });
 
-        // Listen for NavigationEnd event to focus on the title field
+        // Escucha el evento NavigationEnd para enfocar el campo de título
         this._router.events
             .pipe(
                 takeUntil(this._unsubscribeAll),
                 filter(event => event instanceof NavigationEnd),
             )
-            .subscribe(() =>
-            {
-                // Focus on the title field
-                this._titleField.nativeElement.focus();
+            .subscribe(() => {
+                // Verificar que el elemento existe antes de intentar enfocarlo
+                if (this._titleField && this._titleField.nativeElement) {
+                    this._titleField.nativeElement.focus();
+                }
             });
+
+        // Crea el formulario de servicio
+        this.servicioForm = this._formBuilder.group({
+            servicios_id: [''],
+            nombreSolicitante: [''],
+            ciSolicitante: [''],
+            cargoSolicitante: [''],
+            tipoSolicitante: [''],
+            oficinaSolicitante: [''],
+            telefonoSolicitante: [''],
+            nombreResponsableEgreso: [''],
+            cargoResponsableEgreso: [''],
+            informe: [''],
+            fechaRegistro: [''],
+            equipo: [''],
+            equipos_id: [''],
+            problema: [''],
+            telefonoResponsableEgreso: [''],
+            gestion: [0],
+            tecnicoAsignado: [0],
+            observaciones: [''],
+            tipoResponsableEgreso: [''],
+            estado: [''],
+            fechaTerminado: [''],
+            oficinaResponsableEgreso: [''],
+            numero: [0],
+            fechaInicio: [''],
+            fechaEgreso: [null],
+            tipo: [''],
+            tecnicoRegistro: [''],
+            tecnicoEgreso: [null],
+            ciResponsableEgreso: [''],
+            tecnicoAsignadoString: [null],
+            tecnicoRegistroString: [{value: '', disabled: true}],
+            tipoDescripcion: [null],
+            codigo: ['']
+        });
+
+        // Obtener el servicio actual
+        this._activatedRoute.paramMap.pipe(
+            switchMap((params) => {
+                const id = Number(params.get('id'));
+                return this._tasksService.getTaskById(id);
+            }),
+            takeUntil(this._unsubscribeAll)
+        ).subscribe((response) => {
+            if (response && response.data) {
+                this.servicio = response.data;
+                console.log('Servicio cargado:', this.servicio);
+                
+                // Cargar el formulario con los datos del servicio
+                this.servicioForm.patchValue(this.servicio);
+
+                // Si hay un equipo, buscar su información
+                if (this.servicio.equipo) {
+                    console.log('Buscando equipo con ID:', this.servicio.equipo);
+                    this._tasksService.getEquipoById(this.servicio.equipo).subscribe(
+                        equipoEncontrado => {
+                            console.log('Equipo encontrado:', equipoEncontrado);
+                            
+                            if (equipoEncontrado) {
+                                const equipoParaSelect = {
+                                    equipos_id: equipoEncontrado.equipos_id,
+                                    codigo: equipoEncontrado.codigo
+                                };
+                                
+                                // Actualizar el control de búsqueda
+                                this.searchEquipoCtrl.setValue(equipoParaSelect, { emitEvent: false });
+                                
+                                // Actualizar el formulario
+                                this.servicioForm.patchValue({
+                                    equipo: equipoEncontrado.equipos_id,
+                                    equipos_id: equipoEncontrado.equipos_id,
+                                    codigo: equipoEncontrado.codigo
+                                });
+
+                                // Cargar la lista inicial de equipos incluyendo el equipo actual
+                                this._tasksService.buscarEquipos(0, 100, 'name', 'asc', '').subscribe(response => {
+                                    let equipos = response.equipments.map(equipo => ({
+                                        equipos_id: equipo.equipos_id,
+                                        codigo: equipo.codigo
+                                    }));
+
+                                    // Asegurarse de que el equipo actual esté en la lista
+                                    const existeEquipo = equipos.some(e => e.equipos_id === equipoEncontrado.equipos_id);
+                                    if (!existeEquipo) {
+                                        equipos = [equipoParaSelect, ...equipos];
+                                    }
+
+                                    this.filteredEquipos = equipos;
+                                    this._changeDetectorRef.markForCheck();
+                                });
+                                
+                                this.isOptionSelected = true;
+                                this.getBienes();
+                            }
+                        },
+                        error => {
+                            console.error('Error al obtener el equipo:', error);
+                        }
+                    );
+                }
+
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+
+        // Actualiza el servicio cuando hay cambios en el formulario
+        this.servicioForm.valueChanges
+            .pipe(
+                tap((value) => {
+                    this.servicio = assign(this.servicio, value);
+                }),
+                debounceTime(300),
+                takeUntil(this._unsubscribeAll),
+            )
+            .subscribe((value) => {
+                this._tasksService.updateTask(value.servicios_id, value).subscribe({
+                    next: () => {
+                        this.flashMessage = 'success';
+                        setTimeout(() => {
+                            this.flashMessage = null;
+                            this._changeDetectorRef.markForCheck();
+                        }, 3000);
+                    },
+                    error: () => {
+                        this.flashMessage = 'error';
+                        setTimeout(() => {
+                            this.flashMessage = null;
+                            this._changeDetectorRef.markForCheck();
+                        }, 3000);
+                    }
+                });
+                this._changeDetectorRef.markForCheck();
+            });
+
+        // Suscribirse a los cambios del campo equipo para la búsqueda
+        this.searchEquipoCtrl.valueChanges.pipe(
+            debounceTime(300),
+            takeUntil(this._unsubscribeAll)
+        ).subscribe(value => {
+            if (typeof value === 'string') {
+                this.isOptionSelected = false;
+                this.servicioForm.patchValue({ equipo: '', equipos_id: '' });
+                this._tasksService.buscarEquipos(0, 100, 'name', 'asc', value).subscribe(response => {
+                    this.filteredEquipos = response.equipments.map(equipo => ({
+                        equipos_id: equipo.equipos_id,
+                        codigo: equipo.codigo
+                    }));
+                    this._changeDetectorRef.markForCheck();
+                });
+            }
+        });
+
+        // Suscribirse a los cambios del campo nombreSolicitante
+        this.servicioForm.get('nombreSolicitante').valueChanges.pipe(
+            debounceTime(300),
+            takeUntil(this._unsubscribeAll)
+        ).subscribe(value => {
+            if (typeof value === 'string' && value.length > 2) {
+                this.buscarEmpleados(value);
+            } else {
+                this.filteredEmpleados = [];
+            }
+        });
+
+        // Suscribirse a los cambios del campo ciSolicitante
+        this.servicioForm.get('ciSolicitante').valueChanges.pipe(
+            debounceTime(300),
+            takeUntil(this._unsubscribeAll)
+        ).subscribe(value => {
+            if (typeof value === 'string' && value.length > 2) {
+                this.buscarEmpleadosPorCI(value);
+            } else {
+                this.filteredEmpleadosCI = [];
+            }
+        });
     }
 
     /**
-     * After view init
+     * Después de la inicialización de la vista
      */
     ngAfterViewInit(): void
     {
-        // Listen for matDrawer opened change
+        // Escucha los cambios cuando se abre el matDrawer // Detecta cuando el panel lateral se abre
         this._tasksListComponent.matDrawer.openedChange
             .pipe(
-                takeUntil(this._unsubscribeAll),
-                filter(opened => opened),
+                takeUntil(this._unsubscribeAll),   // Cancela la suscripción cuando el componente se destruye
+                filter(opened => opened),           // Filtra solo cuando el drawer está abierto
             )
-            .subscribe(() =>
-            {
-                // Focus on the title element
-                this._titleField.nativeElement.focus();
+            .subscribe(() => {
+                // Verificar que el elemento existe antes de intentar enfocarlo
+                if (this._titleField && this._titleField.nativeElement) {
+                    this._titleField.nativeElement.focus();
+                }
             });
     }
 
     /**
-     * On destroy
+     * Al destruir el componente
      */
     ngOnDestroy(): void
     {
-        // Unsubscribe from all subscriptions
+        // Cancela todas las suscripciones // Limpia las suscripciones para evitar memory leaks
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
 
-        // Dispose the overlay
+        // Elimina el overlay // Limpia el panel flotante de etiquetas si existe
         if ( this._tagsPanelOverlayRef )
         {
             this._tagsPanelOverlayRef.dispose();
@@ -199,357 +486,748 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
+    // @ Métodos públicos
     // -----------------------------------------------------------------------------------------------------
 
     /**
-     * Close the drawer
+     * Cierra el panel lateral
      */
-    closeDrawer(): Promise<MatDrawerToggleResult>
+    closeDrawer(): Promise<MatDrawerToggleResult>  // Método para cerrar el panel lateral
     {
-        return this._tasksListComponent.matDrawer.close();
+        return this._tasksListComponent.matDrawer.close(); // Retorna la promesa del cierre del panel
     }
 
     /**
-     * Toggle the completed status
+     * Alterna el estado de completado
      */
-    toggleCompleted(): void
+    toggleCompleted(): void  // Método para cambiar el estado de completado de la tarea
     {
-        // Get the form control for 'completed'
-        const completedFormControl = this.taskForm.get('completed');
+        // Obtiene el control del formulario para 'completed'
+        const completedFormControl = this.taskForm.get('completed');  // Obtiene la referencia al control del formulario
 
-        // Toggle the completed status
-        completedFormControl.setValue(!completedFormControl.value);
+        // Alterna el estado de completado
+        completedFormControl.setValue(!completedFormControl.value);  // Invierte el valor actual del control
     }
 
     /**
-     * Open tags panel
+     * Abre el panel de etiquetas
      */
-    openTagsPanel(): void
+    openTagsPanel(): void  // Método para abrir el panel de etiquetas
     {
-        // Create the overlay
-        this._tagsPanelOverlayRef = this._overlay.create({
-            backdropClass   : '',
-            hasBackdrop     : true,
-            scrollStrategy  : this._overlay.scrollStrategies.block(),
-            positionStrategy: this._overlay.position()
-                .flexibleConnectedTo(this._tagsPanelOrigin.nativeElement)
-                .withFlexibleDimensions(true)
-                .withViewportMargin(64)
-                .withLockedPosition(true)
-                .withPositions([
+        // Crea el overlay
+        this._tagsPanelOverlayRef = this._overlay.create({  // Configura y crea un nuevo overlay
+            backdropClass   : '',  // Clase CSS para el fondo
+            hasBackdrop     : true,  // Habilita el fondo oscuro
+            scrollStrategy  : this._overlay.scrollStrategies.block(),  // Estrategia de scroll
+            positionStrategy: this._overlay.position()  // Configura la estrategia de posicionamiento
+                .flexibleConnectedTo(this._tagsPanelOrigin.nativeElement)  // Conecta al elemento origen
+                .withFlexibleDimensions(true)  // Permite dimensiones flexibles
+                .withViewportMargin(64)  // Establece el margen con el viewport
+                .withLockedPosition(true)  // Bloquea la posición
+                .withPositions([  // Define las posiciones posibles
                     {
-                        originX : 'start',
-                        originY : 'bottom',
-                        overlayX: 'start',
-                        overlayY: 'top',
+                        originX : 'start',  // Alineación horizontal del origen
+                        originY : 'bottom',  // Alineación vertical del origen
+                        overlayX: 'start',  // Alineación horizontal del overlay
+                        overlayY: 'top',  // Alineación vertical del overlay
                     },
                 ]),
         });
 
-        // Subscribe to the attachments observable
-        this._tagsPanelOverlayRef.attachments().subscribe(() =>
+        // Se suscribe al observable de adjuntos
+        this._tagsPanelOverlayRef.attachments().subscribe(() =>  // Maneja el evento de adjunto del overlay
         {
-            // Focus to the search input once the overlay has been attached
-            this._tagsPanelOverlayRef.overlayElement.querySelector('input').focus();
+            // Enfoca el campo de búsqueda cuando el overlay se adjunta
+            this._tagsPanelOverlayRef.overlayElement.querySelector('input').focus();  // Establece el foco en el input
         });
 
-        // Create a portal from the template
-        const templatePortal = new TemplatePortal(this._tagsPanel, this._viewContainerRef);
+        // Crea un portal desde la plantilla
+        const templatePortal = new TemplatePortal(this._tagsPanel, this._viewContainerRef);  // Crea un portal para el contenido
 
-        // Attach the portal to the overlay
-        this._tagsPanelOverlayRef.attach(templatePortal);
+        // Adjunta el portal al overlay
+        this._tagsPanelOverlayRef.attach(templatePortal);  // Conecta el contenido al overlay
 
-        // Subscribe to the backdrop click
-        this._tagsPanelOverlayRef.backdropClick().subscribe(() =>
+        // Se suscribe al clic en el fondo
+        this._tagsPanelOverlayRef.backdropClick().subscribe(() =>  // Maneja los clics en el fondo
         {
-            // If overlay exists and attached...
-            if ( this._tagsPanelOverlayRef && this._tagsPanelOverlayRef.hasAttached() )
+            // Si el overlay existe y está adjunto...
+            if ( this._tagsPanelOverlayRef && this._tagsPanelOverlayRef.hasAttached() )  // Verifica si el overlay está activo
             {
-                // Detach it
-                this._tagsPanelOverlayRef.detach();
+                // Lo desconecta
+                this._tagsPanelOverlayRef.detach();  // Desconecta el overlay
 
-                // Reset the tag filter
-                this.filteredTags = this.tags;
+                // Reinicia el filtro de etiquetas
+                this.filteredTags = this.tags;  // Restaura las etiquetas sin filtrar
 
-                // Toggle the edit mode off
-                this.tagsEditMode = false;
+                // Desactiva el modo de edición
+                this.tagsEditMode = false;  // Desactiva la edición
             }
 
-            // If template portal exists and attached...
-            if ( templatePortal && templatePortal.isAttached )
+            // Si el portal de plantilla existe y está adjunto...
+            if ( templatePortal && templatePortal.isAttached )  // Verifica si el portal está conectado
             {
-                // Detach it
-                templatePortal.detach();
+                // Lo desconecta
+                templatePortal.detach();  // Desconecta el portal
             }
         });
     }
 
     /**
-     * Toggle the tags edit mode
+     * Alterna el modo de edición de etiquetas
      */
-    toggleTagsEditMode(): void
+    toggleTagsEditMode(): void  // Método para activar/desactivar el modo de edición
     {
-        this.tagsEditMode = !this.tagsEditMode;
+        this.tagsEditMode = !this.tagsEditMode;  // Invierte el estado del modo de edición
     }
 
     /**
-     * Filter tags
-     *
-     * @param event
+     * Filtra las etiquetas
      */
-    filterTags(event): void
+    filterTags(event): void  // Método para filtrar las etiquetas
     {
-        // Get the value
-        const value = event.target.value.toLowerCase();
+        // Obtiene el valor
+        const value = event.target.value.toLowerCase();  // Obtiene el texto de búsqueda en minúsculas
 
-        // Filter the tags
-        this.filteredTags = this.tags.filter(tag => tag.title.toLowerCase().includes(value));
+        // Filtra las etiquetas
+        this.filteredTags = this.tags.filter(tag => tag.title.toLowerCase().includes(value));  // Filtra las etiquetas que coinciden
     }
 
     /**
-     * Filter tags input key down event
-     *
-     * @param event
+     * Evento de tecla presionada en el input de filtrado
      */
-    filterTagsInputKeyDown(event): void
+    filterTagsInputKeyDown(event): void  // Maneja el evento de tecla presionada
     {
-        // Return if the pressed key is not 'Enter'
-        if ( event.key !== 'Enter' )
+        // Retorna si la tecla presionada no es 'Enter'
+        if ( event.key !== 'Enter' )  // Verifica si la tecla es Enter
         {
             return;
         }
 
-        // If there is no tag available...
-        if ( this.filteredTags.length === 0 )
+        // Si no hay etiquetas disponibles...
+        if ( this.filteredTags.length === 0 )  // Verifica si no hay resultados del filtro
         {
-            // Create the tag
-            this.createTag(event.target.value);
+            // Crea la etiqueta
+            this.createTag(event.target.value);  // Crea una nueva etiqueta
 
-            // Clear the input
-            event.target.value = '';
+            // Limpia el input
+            event.target.value = '';  // Vacía el campo de entrada
 
-            // Return
+            // Retorna
             return;
         }
 
-        // If there is a tag...
-        const tag = this.filteredTags[0];
-        const isTagApplied = this.task.tags.find(id => id === tag.id);
+        // Si hay una etiqueta...
+        const tag = this.filteredTags[0];  // Obtiene la primera etiqueta filtrada
+        const isTagApplied = this.task.tags.find(id => id === tag.id);  // Verifica si ya está aplicada
 
-        // If the found tag is already applied to the task...
-        if ( isTagApplied )
+        // Si la etiqueta encontrada ya está aplicada a la tarea...
+        if ( isTagApplied )  // Comprueba si la etiqueta ya está en uso
         {
-            // Remove the tag from the task
-            this.deleteTagFromTask(tag);
+            // Elimina la etiqueta de la tarea
+            this.deleteTagFromTask(tag);  // Quita la etiqueta
         }
         else
         {
-            // Otherwise add the tag to the task
-            this.addTagToTask(tag);
+            // Si no, añade la etiqueta a la tarea
+            this.addTagToTask(tag);  // Agrega la etiqueta
         }
     }
 
     /**
-     * Create a new tag
-     *
-     * @param title
+     * Crea una nueva etiqueta
      */
-    createTag(title: string): void
+    createTag(title: string): void  // Método para crear una nueva etiqueta
     {
         const tag = {
-            title,
+            title,  // Objeto con el título de la etiqueta
         };
 
-        // Create tag on the server
-        this._tasksService.createTag(tag)
-            .subscribe((response) =>
+        // Crea la etiqueta en el servidor
+        this._tasksService.createTag(tag)  // Llama al servicio para crear la etiqueta
+            .subscribe((response) =>  // Maneja la respuesta
             {
-                // Add the tag to the task
-                this.addTagToTask(response);
+                // Añade la etiqueta a la tarea
+                this.addTagToTask(response);  // Agrega la nueva etiqueta
             });
     }
 
     /**
-     * Update the tag title
-     *
-     * @param tag
-     * @param event
+     * Actualiza el título de la etiqueta
      */
-    updateTagTitle(tag: Tag, event): void
+    updateTagTitle(tag: Tag, event): void  // Método para actualizar el título de una etiqueta
     {
-        // Update the title on the tag
-        tag.title = event.target.value;
+        // Actualiza el título en la etiqueta
+        tag.title = event.target.value;  // Actualiza el valor del título
 
-        // Update the tag on the server
-        this._tasksService.updateTag(tag.id, tag)
-            .pipe(debounceTime(300))
+        // Actualiza la etiqueta en el servidor
+        this._tasksService.updateTag(tag.id, tag)  // Llama al servicio para actualizar
+            .pipe(debounceTime(300))  // Aplica un retraso para evitar múltiples llamadas
             .subscribe();
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+        // Marca para verificación
+        this._changeDetectorRef.markForCheck();  // Notifica cambios al detector
     }
 
     /**
-     * Delete the tag
-     *
-     * @param tag
+     * Elimina la etiqueta
      */
-    deleteTag(tag: Tag): void
+    deleteTag(tag: Tag): void  // Método para eliminar una etiqueta
     {
-        // Delete the tag from the server
-        this._tasksService.deleteTag(tag.id).subscribe();
+        // Elimina la etiqueta del servidor
+        this._tasksService.deleteTag(tag.id).subscribe();  // Llama al servicio para eliminar
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+        // Marca para verificación
+        this._changeDetectorRef.markForCheck();  // Notifica cambios al detector
     }
 
     /**
-     * Add tag to the task
-     *
-     * @param tag
+     * Añade una etiqueta a la tarea
      */
-    addTagToTask(tag: Tag): void
+    addTagToTask(tag: Tag): void  // Método para agregar una etiqueta a la tarea
     {
-        // Add the tag
-        this.task.tags.unshift(tag.id);
+        // Añade la etiqueta
+        this.task.tags.unshift(tag.id);  // Agrega el ID al inicio del array
 
-        // Update the task form
-        this.taskForm.get('tags').patchValue(this.task.tags);
+        // Actualiza el formulario de la tarea
+        this.taskForm.get('tags').patchValue(this.task.tags);  // Actualiza el control del formulario
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+        // Marca para verificación
+        this._changeDetectorRef.markForCheck();  // Notifica cambios al detector
     }
 
     /**
-     * Delete tag from the task
-     *
-     * @param tag
+     * Elimina una etiqueta de la tarea
      */
-    deleteTagFromTask(tag: Tag): void
+    deleteTagFromTask(tag: Tag): void  // Método para eliminar una etiqueta de la tarea
     {
-        // Remove the tag
-        this.task.tags.splice(this.task.tags.findIndex(item => item === tag.id), 1);
+        // Elimina la etiqueta
+        this.task.tags.splice(this.task.tags.findIndex(item => item === tag.id), 1);  // Elimina el ID del array
 
-        // Update the task form
-        this.taskForm.get('tags').patchValue(this.task.tags);
+        // Actualiza el formulario de la tarea
+        this.taskForm.get('tags').patchValue(this.task.tags);  // Actualiza el control del formulario
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
+        // Marca para verificación
+        this._changeDetectorRef.markForCheck();  // Notifica cambios al detector
     }
 
     /**
-     * Toggle task tag
-     *
-     * @param tag
+     * Alterna una etiqueta de la tarea
      */
-    toggleTaskTag(tag: Tag): void
+    toggleTaskTag(tag: Tag): void  // Método para alternar una etiqueta en la tarea
     {
-        if ( this.task.tags.includes(tag.id) )
+        if ( this.task.tags.includes(tag.id) )  // Verifica si la etiqueta ya está presente
         {
-            this.deleteTagFromTask(tag);
+            this.deleteTagFromTask(tag);  // Si existe, la elimina
         }
         else
         {
-            this.addTagToTask(tag);
+            this.addTagToTask(tag);  // Si no existe, la agrega
         }
     }
 
     /**
-     * Should the create tag button be visible
-     *
-     * @param inputValue
+     * Verifica si debe mostrarse el botón de crear etiqueta
      */
-    shouldShowCreateTagButton(inputValue: string): boolean
+    shouldShowCreateTagButton(inputValue: string): boolean  // Método para controlar la visibilidad del botón
     {
-        return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);
+        return !!!(inputValue === '' || this.tags.findIndex(tag => tag.title.toLowerCase() === inputValue.toLowerCase()) > -1);  // Retorna verdadero si el input no está vacío y la etiqueta no existe
     }
 
     /**
-     * Set the task priority
-     *
-     * @param priority
+     * Establece la prioridad de la tarea
      */
-    setTaskPriority(priority): void
+    setTaskPriority(priority): void  // Método para establecer la prioridad
     {
-        // Set the value
-        this.taskForm.get('priority').setValue(priority);
+        // Establece el valor
+        this.taskForm.get('priority').setValue(priority);  // Actualiza el valor en el formulario
     }
 
     /**
-     * Check if the task is overdue or not
+     * Verifica si la tarea está vencida
      */
-    isOverdue(): boolean
+    isOverdue(): boolean  // Método para verificar si la tarea está vencida
     {
-        return DateTime.fromISO(this.task.dueDate).startOf('day') < DateTime.now().startOf('day');
+        return DateTime.fromISO(this.task.dueDate).startOf('day') < DateTime.now().startOf('day');  // Compara la fecha de vencimiento con la actual
     }
 
     /**
-     * Delete the task
+     * Elimina la tarea
      */
-    deleteTask(): void
+    deleteTask4(): void  // Método para eliminar la tarea
     {
-        // Open the confirmation dialog
-        const confirmation = this._fuseConfirmationService.open({
-            title  : 'Delete task',
-            message: 'Are you sure you want to delete this task? This action cannot be undone!',
+        // Abre el diálogo de confirmación
+        const confirmation = this._fuseConfirmationService.open({  // Configura y muestra el diálogo
+            title  : 'Eliminar tarea',  // Título del diálogo
+            message: '¿Estás seguro de que quieres eliminar esta tarea? ¡Esta acción no se puede deshacer!',  // Mensaje de confirmación
             actions: {
                 confirm: {
-                    label: 'Delete',
+                    label: 'Eliminar',  // Texto del botón de confirmación
                 },
             },
         });
 
-        // Subscribe to the confirmation dialog closed action
-        confirmation.afterClosed().subscribe((result) =>
+        // Se suscribe al evento de cierre del diálogo
+        confirmation.afterClosed().subscribe((result) =>  // Maneja la respuesta del usuario
         {
-            // If the confirm button pressed...
-            if ( result === 'confirmed' )
+            // Si se presionó el botón confirmar...
+            if ( result === 'confirmed' )  // Verifica si se confirmó la eliminación
             {
-                // Get the current task's id
-                const id = this.task.id;
+                // Obtiene el id de la tarea actual
+                const id = this.task.id;  // Almacena el ID de la tarea
 
-                // Get the next/previous task's id
-                const currentTaskIndex = this.tasks.findIndex(item => item.id === id);
-                const nextTaskIndex = currentTaskIndex + ((currentTaskIndex === (this.tasks.length - 1)) ? -1 : 1);
-                const nextTaskId = (this.tasks.length === 1 && this.tasks[0].id === id) ? null : this.tasks[nextTaskIndex].id;
+                // Obtiene el id de la siguiente/anterior tarea
+                const currentTaskIndex = this.tasks.findIndex(item => item.id === id);  // Encuentra el índice actual
+                const nextTaskIndex = currentTaskIndex + ((currentTaskIndex === (this.tasks.length - 1)) ? -1 : 1);  // Calcula el siguiente índice
+                const nextTaskId = (this.tasks.length === 1 && this.tasks[0].id === id) ? null : this.tasks[nextTaskIndex].id;  // Determina la siguiente tarea
 
-                // Delete the task
-                this._tasksService.deleteTask(id)
-                    .subscribe((isDeleted) =>
+                // Elimina la tarea
+                this._tasksService.deleteTask(Number(id))  // Llama al servicio para eliminar
+                    .subscribe((isDeleted) =>  // Maneja la respuesta
                     {
-                        // Return if the task wasn't deleted...
-                        if ( !isDeleted )
+                        // Retorna si la tarea no fue eliminada...
+                        if ( !isDeleted )  // Verifica si la eliminación fue exitosa
                         {
                             return;
                         }
 
-                        // Navigate to the next task if available
-                        if ( nextTaskId )
+                        // Navega a la siguiente tarea si está disponible
+                        if ( nextTaskId )  // Si hay una siguiente tarea
                         {
-                            this._router.navigate(['../', nextTaskId], {relativeTo: this._activatedRoute});
+                            this._router.navigate(['../', nextTaskId], {relativeTo: this._activatedRoute});  // Navega a la siguiente tarea
                         }
-                        // Otherwise, navigate to the parent
+                        // Si no, navega al padre
                         else
                         {
-                            this._router.navigate(['../'], {relativeTo: this._activatedRoute});
+                            this._router.navigate(['../'], {relativeTo: this._activatedRoute});  // Vuelve a la lista de tareas
                         }
                     });
 
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
+                // Marca para verificación
+                this._changeDetectorRef.markForCheck();  // Notifica cambios al detector
             }
         });
     }
 
     /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
+     * Función de seguimiento para bucles ngFor
      */
-    trackByFn(index: number, item: any): any
+    trackByFn(index: number, item: any): any  // Método para optimizar el rendimiento de ngFor
     {
-        return item.id || index;
+        return item.id || index;  // Retorna el ID del item o el índice como fallback
+    }
+
+    /**
+     * Elimina el servicio actual
+     */
+    deleteTask(): void {
+        if (this.servicio && this.servicio.servicios_id) {
+            const confirmation = this._fuseConfirmationService.open({
+                title: 'Eliminar servicio',
+                message: '¿Está seguro que desea eliminar este servicio? Esta acción no se puede deshacer.',
+                actions: {
+                    confirm: {
+                        label: 'Eliminar'
+                    }
+                }
+            });
+
+            confirmation.afterClosed().subscribe((result) => {
+                if (result === 'confirmed') {
+                    this._tasksService.deleteTask(this.servicio.servicios_id)
+                        .subscribe(() => {
+                            // Navegar de vuelta a la lista
+                            this._router.navigate(['../'], {relativeTo: this._activatedRoute});
+                        });
+                }
+            });
+        }
+    }
+
+    /**
+     * Busca los bienes asociados al equipo
+     */
+    public getBienes(): void {
+        // Obtener el código del equipo del control de búsqueda
+        const equipoSeleccionado = this.searchEquipoCtrl.value;
+        const codigo = equipoSeleccionado && typeof equipoSeleccionado === 'object' 
+            ? equipoSeleccionado.codigo 
+            : this.servicioForm.get('equipo')?.value;
+
+        console.log('Obteniendo bienes para código:', codigo);
+
+        if (codigo && codigo.toString().trim()) {
+            this._tasksService.getBienes(codigo.toString()).subscribe({
+                next: (response) => {
+                    this.bienes = response;
+                    console.log('Bienes encontrados:', this.bienes);
+                    this._changeDetectorRef.markForCheck();
+                },
+                error: (err) => {
+                    console.error('Error al obtener bienes:', err);
+                    this.bienes = null;
+                },
+            });
+        } else {
+            console.warn('El código de bienes está vacío o no válido.');
+            this.bienes = null;
+        }
+    }
+
+    selectEquipo(equipo: { equipos_id: number; codigo: string }): void {
+        console.log('Equipo seleccionado:', equipo);
+        this.isOptionSelected = true;
+        
+        // Actualizar el formulario
+        this.servicioForm.patchValue({
+            equipo: equipo.equipos_id,     // Guardamos el ID en equipo
+            equipos_id: equipo.equipos_id,  // Campo auxiliar
+            codigo: equipo.codigo          // Campo auxiliar para mostrar
+        });
+        
+        // Actualizar el control de búsqueda
+        this.searchEquipoCtrl.setValue(equipo, { emitEvent: false });
+        
+        this._changeDetectorRef.markForCheck();
+        this.getBienes();
+    }
+
+    displayFn = (equipo: any): string => {
+        if (equipo && typeof equipo === 'object') {
+            return equipo.codigo;
+        }
+        return equipo || '';
+    };
+
+    // Método para cargar equipos iniciales al hacer focus
+    onFocus(): void {
+        // Obtener el equipo actual del control
+        const equipoActual = this.searchEquipoCtrl.value;
+        
+        // Obtener el código actual para la búsqueda inicial
+        const codigoActual = equipoActual && typeof equipoActual === 'object' 
+            ? equipoActual.codigo 
+            : this.servicioForm.get('codigo')?.value;
+
+        console.log('Buscando equipos con código:', codigoActual);
+        
+        // Usar el código actual como término de búsqueda
+        this._tasksService.buscarEquipos(0, 100, 'name', 'asc', codigoActual || '').subscribe(response => {
+            let equipos = response.equipments.map(equipo => ({
+                equipos_id: equipo.equipos_id,
+                codigo: equipo.codigo
+            }));
+
+            // Si tenemos un equipo actual y no está en la lista, agregarlo al principio
+            if (equipoActual && typeof equipoActual === 'object') {
+                const existeEquipo = equipos.some(e => e.equipos_id === equipoActual.equipos_id);
+                if (!existeEquipo) {
+                    equipos = [equipoActual, ...equipos];
+                }
+            }
+
+            console.log('Equipos encontrados:', equipos);
+            this.filteredEquipos = equipos;
+            this._changeDetectorRef.markForCheck();
+        });
+    }
+
+    buscarEmpleados(query: string): void {
+        // Limpiar espacios en blanco al inicio y final de la consulta
+        const queryLimpia = query.trim();
+
+        if (queryLimpia.length > 2) {
+            // Primero buscar en los empleados ya cargados
+            const empleadosFiltrados = this.empleadosCargados.filter(emp => 
+                emp.nombre_completo.toLowerCase().includes(queryLimpia.toLowerCase())
+            );
+
+            if (empleadosFiltrados.length > 0) {
+                this.filteredEmpleados = empleadosFiltrados;
+                this._changeDetectorRef.markForCheck();
+            } else {
+                // Si no hay coincidencias locales, consultar la API con la consulta limpia
+                this._tasksService.buscarEmpleados(queryLimpia).pipe(
+                    debounceTime(300)
+                ).subscribe({
+                    next: (data) => {
+                        if (data && Array.isArray(data)) {
+                            const nuevosEmpleados = data.map(empleado => ({
+                                id: empleado.id || parseInt(empleado.nro_item) || 0,
+                                nombre_completo: empleado.nombre_completo.trim(),
+                                numdocumento: empleado.numdocumento,
+                                cargo: empleado.cargo,
+                                tipo_contrato: empleado.tipo_contrato,
+                                unidad: empleado.unidad,
+                                telefono: empleado.telefono,
+                                telefono_coorp: empleado.telefono_coorp
+                            }));
+
+                            // Agregar los nuevos empleados al cache local
+                            nuevosEmpleados.forEach(emp => {
+                                if (!this.empleadosCargados.some(e => e.id === emp.id)) {
+                                    this.empleadosCargados.push(emp);
+                                }
+                            });
+
+                            this.filteredEmpleados = nuevosEmpleados;
+                            this._changeDetectorRef.markForCheck();
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error al buscar empleados:', error);
+                        this.filteredEmpleados = empleadosFiltrados;
+                        this._changeDetectorRef.markForCheck();
+                    }
+                });
+            }
+        } else {
+            this.filteredEmpleados = [];
+        }
+    }
+
+    onEmpleadoSelected(event: any): void {
+        const empleadoSeleccionado = event.option.value;
+        
+        if (!empleadoSeleccionado) {
+            return;
+        }
+
+        // Actualizar el formulario con los datos del empleado
+        this.servicioForm.patchValue({
+            nombreSolicitante: empleadoSeleccionado.nombre_completo,
+            ciSolicitante: empleadoSeleccionado.numdocumento || " ",
+            cargoSolicitante: empleadoSeleccionado.cargo || " ",
+            tipoSolicitante: empleadoSeleccionado.tipo_contrato || " ",
+            oficinaSolicitante: empleadoSeleccionado.unidad || " ",
+            telefonoSolicitante: empleadoSeleccionado.telefono_coorp || empleadoSeleccionado.telefono || " "
+        });
+
+        // Actualizar el servicio manteniendo el formato exacto
+        if (this.servicio && this.servicio.servicios_id) {
+            const servicioActualizado: Servicio = {
+                ...this.servicio,  // Mantener todas las propiedades existentes
+                nombreSolicitante: empleadoSeleccionado.nombre_completo || " " // Asegurar que siempre tenga al menos un espacio
+            };
+
+            this._tasksService.updateTask(this.servicio.servicios_id, servicioActualizado)
+                .subscribe({
+                    next: () => {
+                        this.servicio = servicioActualizado;
+                        this._changeDetectorRef.markForCheck();
+                    },
+                    error: () => {
+                        // Revertir cambios si hay error
+                        this.servicioForm.patchValue({
+                            nombreSolicitante: this.servicio.nombreSolicitante
+                        });
+                    }
+                });
+        }
+    }
+
+    displayFnEmpleado = (empleado: any): string => {
+        if (!empleado) {
+            return '';
+        }
+        if (typeof empleado === 'string') {
+            return empleado;
+        }
+        // Mostrar CI o nombre según el campo que se está usando
+        return empleado.numdocumento || empleado.nombre_completo || '';
+    };
+
+    // Método para manejar cambios en el input
+    onInputChange(event: any): void {
+        const query = event?.target?.value || '';
+        const field = event?.target?.getAttribute('formControlName');
+        
+        if (field === 'nombreSolicitante') {
+            const currentValue = this.servicioForm.get(field).value;
+            if (currentValue === ' ') {
+                this.servicioForm.get(field).setValue('', { emitEvent: false });
+            }
+
+            if (query && query.length > 2) {
+                this.buscarEmpleados(query);
+            } else {
+                this.filteredEmpleados = [];
+            }
+        }
+    }
+
+    // Agregar nuevo método para buscar por CI
+    buscarEmpleadosPorCI(ci: string): void {
+        // Limpiar espacios en blanco al inicio y final de la consulta
+        const ciLimpio = ci.trim();
+
+        if (ciLimpio.length > 2) {
+            // Primero buscar en los empleados ya cargados
+            const empleadosFiltrados = this.empleadosCargadosCI.filter(emp => 
+                emp.numdocumento.includes(ciLimpio)
+            );
+
+            if (empleadosFiltrados.length > 0) {
+                this.filteredEmpleadosCI = empleadosFiltrados;
+                this._changeDetectorRef.markForCheck();
+            } else {
+                // Si no hay coincidencias locales, consultar la API
+                this._tasksService.buscarEmpleadosPorCI(ciLimpio).pipe(
+                    debounceTime(300)
+                ).subscribe({
+                    next: (data) => {
+                        if (data && Array.isArray(data)) {
+                            const nuevosEmpleados = data.map(empleado => ({
+                                id: empleado.id || parseInt(empleado.nro_item) || 0,
+                                nombre_completo: empleado.nombre_completo.trim(),
+                                numdocumento: empleado.numdocumento,
+                                cargo: empleado.cargo,
+                                tipo_contrato: empleado.tipo_contrato,
+                                unidad: empleado.unidad,
+                                telefono: empleado.telefono,
+                                telefono_coorp: empleado.telefono_coorp
+                            }));
+
+                            // Agregar los nuevos empleados al cache local
+                            nuevosEmpleados.forEach(emp => {
+                                if (!this.empleadosCargadosCI.some(e => e.id === emp.id)) {
+                                    this.empleadosCargadosCI.push(emp);
+                                }
+                            });
+
+                            this.filteredEmpleadosCI = nuevosEmpleados;
+                            this._changeDetectorRef.markForCheck();
+                        }
+                    },
+                    error: (error) => {
+                        console.error('Error al buscar empleados por CI:', error);
+                        this.filteredEmpleadosCI = empleadosFiltrados;
+                        this._changeDetectorRef.markForCheck();
+                    }
+                });
+            }
+        } else {
+            this.filteredEmpleadosCI = [];
+        }
+    }
+
+    // Nuevo método para buscar por CI con botón
+    buscarPorCI(): void {
+        // Obtener el valor y limpiar espacios al inicio y final
+        const ci = this.servicioForm.get('ciSolicitante').value?.trim() || '';
+
+        if (!ci) {
+            this._snackBar.open('Por favor ingrese un número de CI', 'Cerrar', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom'
+            });
+            return;
+        }
+
+        // Actualizar el campo en el formulario con el valor limpio
+        this.servicioForm.get('ciSolicitante').setValue(ci, { emitEvent: false });
+
+        console.log('Iniciando búsqueda para CI:', ci);
+
+        this._tasksService.buscarEmpleadosPorCI(ci).subscribe({
+            next: (response) => {
+                console.log('Respuesta recibida:', response);
+
+                if (response && response.length > 0) {
+                    const empleado = response[0];
+                    console.log('Datos del empleado encontrado:', empleado);
+
+                    // Construir nombre completo desde los componentes individuales
+                    const nombreCompleto = [
+                        empleado.paterno || '',
+                        empleado.materno || '',
+                        empleado.nombre || '',
+                        empleado.otro_nombre || ''
+                    ].filter(Boolean).join(' ').trim();
+
+                    // Actualizar el formulario mapeando correctamente los campos
+                    const datosActualizados = {
+                        nombreSolicitante: nombreCompleto || empleado.empleado || " ",
+                        ciSolicitante: empleado.ci || ci,
+                        cargoSolicitante: empleado.cargo || " ",
+                        tipoSolicitante: empleado.tipocontrato || " ",
+                        oficinaSolicitante: empleado.unidad || " ",
+                        telefonoSolicitante: empleado.telefono || empleado.telefono_coorp || " "
+                    };
+
+                    console.log('Actualizando formulario con:', datosActualizados);
+                    this.servicioForm.patchValue(datosActualizados);
+
+                    // Actualizar el servicio si es necesario
+                    if (this.servicio && this.servicio.servicios_id) {
+                        const servicioActualizado: Servicio = {
+                            ...this.servicio,
+                            ...datosActualizados
+                        };
+
+                        this._tasksService.updateTask(this.servicio.servicios_id, servicioActualizado)
+                            .subscribe({
+                                next: () => {
+                                    this.servicio = servicioActualizado;
+                                    this._changeDetectorRef.markForCheck();
+                                }
+                            });
+                    }
+
+                    this._snackBar.open('Empleado encontrado correctamente', 'Cerrar', {
+                        duration: 3000,
+                        panelClass: ['success-snackbar'],
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom'
+                    });
+                } else {
+                    console.log('No se encontraron resultados para el CI:', ci);
+                    this._snackBar.open('No se encontró ningún empleado con ese CI', 'Cerrar', {
+                        duration: 3000,
+                        panelClass: ['error-snackbar'],
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom'
+                    });
+                }
+            },
+            error: (error) => {
+                console.error('Error al buscar empleado:', error);
+                this._snackBar.open('Error al buscar empleado', 'Cerrar', {
+                    duration: 3000,
+                    panelClass: ['error-snackbar'],
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom'
+                });
+            }
+        });
+    }
+
+    /**
+     * Save the task
+     */
+    saveServicio(): void {
+        const servicio = this.servicioForm.getRawValue();
+
+        if (this.servicio.servicios_id) {
+            this._tasksService.updateTask(this.servicio.servicios_id, servicio).subscribe({
+                next: () => {
+                    this.flashMessage = 'success';
+                },
+                error: (err) => {
+                    console.error('Error al actualizar:', err);
+                    this.flashMessage = 'error';
+                }
+            });
+        } else {
+            this._tasksService.createTask(servicio).subscribe({
+                next: () => {
+                    this.flashMessage = 'success';
+                },
+                error: (err) => {
+                    console.error('Error al crear:', err);
+                    this.flashMessage = 'error';
+                }
+            });
+        }
     }
 }

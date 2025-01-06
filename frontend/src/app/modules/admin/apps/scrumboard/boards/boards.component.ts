@@ -1,91 +1,42 @@
-import { CdkScrollable } from '@angular/cdk/scrolling';
-import { NgFor, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Board } from 'app/modules/admin/apps/scrumboard/scrumboard.models';
-import { ScrumboardService } from 'app/modules/admin/apps/scrumboard/scrumboard.service';
-import { DateTime } from 'luxon';
-import { Subject, takeUntil } from 'rxjs';
+import { NgFor } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { Board, TipoServicio } from '../scrumboard.models';
 
 @Component({
-    selector       : 'scrumboard-boards',
-    templateUrl    : './boards.component.html',
-    encapsulation  : ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone     : true,
-    imports        : [CdkScrollable, NgFor, RouterLink, MatIconModule, NgIf],
+    selector: 'scrumboard-boards',
+    templateUrl: './boards.component.html',
+    standalone: true,
+    imports: [RouterLink, NgFor, MatIconModule]
 })
-export class ScrumboardBoardsComponent implements OnInit, OnDestroy
-{
-    boards: Board[];
+export class ScrumboardBoardsComponent {
+    // Tableros estáticos
+    boards: Board[] = [
+        {
+            id: 'asistencia-sitio',
+            title: TipoServicio.ASISTENCIA_SITIO,
+            description: 'Servicios de asistencia técnica en sitio',
+            icon: 'heroicons_outline:computer-desktop',
+            lists: [] // Se llenarán dinámicamente
+        },
+        {
+            id: 'servicio-laboratorio',
+            title: TipoServicio.SERVICIO_LABORATORIO,
+            description: 'Servicios de mantenimiento en laboratorio',
+            icon: 'heroicons_outline:beaker',
+            lists: []
+        },
+        {
+            id: 'asistencia-remota',
+            title: TipoServicio.ASISTENCIA_REMOTA,
+            description: 'Servicios de asistencia técnica remota',
+            icon: 'heroicons_outline:globe-alt',
+            lists: []
+        }
+    ];
 
-    // Private
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
-
-    /**
-     * Constructor
-     */
-    constructor(
-        private _changeDetectorRef: ChangeDetectorRef,
-        private _scrumboardService: ScrumboardService,
-    )
-    {
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * On init
-     */
-    ngOnInit(): void
-    {
-        // Get the boards
-        this._scrumboardService.boards$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((boards: Board[]) =>
-            {
-                this.boards = boards;
-
-                // Mark for check
-                this._changeDetectorRef.markForCheck();
-            });
-    }
-
-    /**
-     * On destroy
-     */
-    ngOnDestroy(): void
-    {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Format the given ISO_8601 date as a relative date
-     *
-     * @param date
-     */
-    formatDateAsRelative(date: string): string
-    {
-        return DateTime.fromISO(date).toRelative();
-    }
-
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any
-    {
+    trackByFn(index: number, item: any): any {
         return item.id || index;
     }
 }

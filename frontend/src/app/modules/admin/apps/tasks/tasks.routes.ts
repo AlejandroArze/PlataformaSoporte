@@ -1,105 +1,94 @@
-import { inject } from '@angular/core';
-import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, Routes } from '@angular/router';
-import { TasksDetailsComponent } from 'app/modules/admin/apps/tasks/details/details.component';
-import { TasksListComponent } from 'app/modules/admin/apps/tasks/list/list.component';
-import { TasksComponent } from 'app/modules/admin/apps/tasks/tasks.component';
-import { TasksService } from 'app/modules/admin/apps/tasks/tasks.service';
-import { catchError, throwError } from 'rxjs';
+import { inject } from '@angular/core'; // Importa la función 'inject' para la inyección de dependencias
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, Routes } from '@angular/router'; // Importa módulos necesarios para rutas
+import { TasksDetailsComponent } from 'app/modules/admin/apps/tasks/details/details.component'; // Componente de detalles de tareas
+import { TasksListComponent } from 'app/modules/admin/apps/tasks/list/list.component'; // Componente de lista de tareas
+import { TasksComponent } from 'app/modules/admin/apps/tasks/tasks.component'; // Componente principal de tareas
+import { TasksService } from 'app/modules/admin/apps/tasks/tasks.service'; // Servicio para gestionar las tareas
+import { catchError, throwError } from 'rxjs'; // Operadores de RxJS para manejo de errores
 
 /**
- * Task resolver
+ * Resolución de tareas
  *
- * @param route
- * @param state
+ * @param route Ruta activa con los parámetros actuales
+ * @param state Estado del enrutador
  */
-const taskResolver = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) =>
-{
-    const tasksService = inject(TasksService);
-    const router = inject(Router);
+const taskResolver = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+    const tasksService = inject(TasksService); // Inyecta el servicio de tareas
+    const router = inject(Router); // Inyecta el enrutador
 
-    return tasksService.getTaskById(route.paramMap.get('id'))
-        .pipe(
-            // Error here means the requested task is not available
-            catchError((error) =>
-            {
-                // Log the error
-                console.error(error);
+    const id = Number(route.paramMap.get('id')); // Convierte el parámetro 'id' de la ruta a un número
 
-                // Get the parent url
-                const parentUrl = state.url.split('/').slice(0, -1).join('/');
+    if (isNaN(id)) { // Verifica si el 'id' no es un número válido
+        console.error('Invalid ID provided'); // Registra un error en la consola
+        router.navigateByUrl('/tasks'); // Redirige al usuario a la lista de tareas
+        return throwError(() => new Error('Invalid ID provided')); // Lanza un error
+    }
 
-                // Navigate to there
-                router.navigateByUrl(parentUrl);
+    return tasksService.getTaskById(id).pipe(
+        catchError((error) => { // Maneja errores al obtener la tarea
+            console.error(error); // Registra el error en la consola
 
-                // Throw an error
-                return throwError(error);
-            }),
-        );
+            const parentUrl = state.url.split('/').slice(0, -1).join('/'); // Obtiene la URL del nivel superior
+
+            router.navigateByUrl(parentUrl); // Navega a la URL del nivel superior
+
+            return throwError(() => new Error(error)); // Lanza un nuevo error
+        })
+    );
 };
 
 /**
- * Can deactivate tasks details
+ * Verificación de desactivación del componente de detalles de tareas
  *
- * @param component
- * @param currentRoute
- * @param currentState
- * @param nextState
+ * @param component Componente actual de detalles de tareas
+ * @param currentRoute Ruta activa actual
+ * @param currentState Estado actual del enrutador
+ * @param nextState Siguiente estado del enrutador
  */
 const canDeactivateTasksDetails = (
     component: TasksDetailsComponent,
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
-    nextState: RouterStateSnapshot) =>
-{
-    // Get the next route
-    let nextRoute: ActivatedRouteSnapshot = nextState.root;
-    while ( nextRoute.firstChild )
-    {
+    nextState: RouterStateSnapshot
+) => {
+    let nextRoute: ActivatedRouteSnapshot = nextState.root; // Obtiene la siguiente ruta
+    while (nextRoute.firstChild) { // Recorre las rutas anidadas
         nextRoute = nextRoute.firstChild;
     }
 
-    // If the next state doesn't contain '/tasks'
-    // it means we are navigating away from the
-    // tasks app
-    if ( !nextState.url.includes('/tasks') )
-    {
-        // Let it navigate
-        return true;
+    if (!nextState.url.includes('/tasks')) { // Si la siguiente URL no contiene '/tasks'
+        return true; // Permite la navegación
     }
 
-    // If we are navigating to another task...
-    if ( nextRoute.paramMap.get('id') )
-    {
-        // Just navigate
-        return true;
+    if (nextRoute.paramMap.get('id')) { // Si la siguiente ruta contiene un 'id'
+        return true; // Permite la navegación
     }
 
-    // Otherwise, close the drawer first, and then navigate
-    return component.closeDrawer().then(() => true);
+    return component.closeDrawer().then(() => true); // Cierra el panel lateral antes de navegar
 };
 
 export default [
     {
-        path     : '',
-        component: TasksComponent,
-        resolve  : {
-            tags: () => inject(TasksService).getTags(),
+        path: '', // Ruta base
+        component: TasksComponent, // Componente principal de tareas
+        resolve: {
+            tags: () => inject(TasksService).getTags(), // Obtiene las etiquetas antes de cargar el componente
         },
-        children : [
+        children: [
             {
-                path     : '',
-                component: TasksListComponent,
-                resolve  : {
-                    tasks: () => inject(TasksService).getTasks(),
+                path: '', // Ruta para la lista de tareas
+                component: TasksListComponent, // Componente de lista de tareas
+                resolve: {
+                    tasks: () => inject(TasksService).getTasks(), // Obtiene las tareas antes de cargar el componente
                 },
-                children : [
+                children: [
                     {
-                        path         : ':id',
-                        component    : TasksDetailsComponent,
-                        resolve      : {
-                            task: taskResolver,
+                        path: ':id', // Ruta para los detalles de una tarea específica
+                        component: TasksDetailsComponent, // Componente de detalles de tareas
+                        resolve: {
+                            task: taskResolver, // Resuelve los datos de la tarea específica
                         },
-                        canDeactivate: [canDeactivateTasksDetails],
+                        canDeactivate: [canDeactivateTasksDetails], // Verifica si se puede desactivar el componente actual
                     },
                 ],
             },

@@ -1,4 +1,5 @@
 // Importa el servicio 'service' desde la carpeta 'service'
+const { Service } = require("../models");
 const serviceService = require("../service/service");
 // Importa una utilidad para responder en formato JSON
 const jsonResponse = require("../http/response/jsonResponse");
@@ -43,9 +44,12 @@ class ServiceController {
                 ciResponsableEgreso
             } = req.body;
 
+            // Convertir NaN o undefined a null para tecnicoAsignado
+            const tecnicoAsignadoValue = isNaN(tecnicoAsignado) || tecnicoAsignado === undefined ? 
+                null : tecnicoAsignado;
+
             // Asegura que los campos numéricos sean tratados correctamente
             const gestionInt = parseInt(gestion, 10);
-            const tecnicoAsignadoInt = parseInt(tecnicoAsignado, 10);
 
             // Crea un nuevo servicio utilizando el servicio 'serviceService'
             const { servicios_id } = await serviceService.store({
@@ -60,7 +64,7 @@ class ServiceController {
                 telefonoResponsableEgreso,
                 gestion: gestionInt,
                 telefonoSolicitante,
-                tecnicoAsignado: tecnicoAsignadoInt,
+                tecnicoAsignado: tecnicoAsignadoValue,
                 observaciones,
                 tipoResponsableEgreso,
                 estado,
@@ -92,7 +96,7 @@ class ServiceController {
                 telefonoResponsableEgreso,
                 gestionInt,
                 telefonoSolicitante,
-                tecnicoAsignadoInt,
+                tecnicoAsignadoValue,
                 observaciones,
                 tipoResponsableEgreso,
                 estado,
@@ -260,6 +264,10 @@ class ServiceController {
 
             console.log("id ", id);
 
+            // Convertir NaN o undefined a null para tecnicoAsignado
+            const tecnicoAsignadoValue = isNaN(tecnicoAsignado) || tecnicoAsignado === undefined ? 
+                null : tecnicoAsignado;
+
             // Actualiza el servicio en la base de datos
             await serviceService.update({
                 servicios_id: id,
@@ -274,7 +282,7 @@ class ServiceController {
                 telefonoResponsableEgreso,
                 gestion: gestionInt,
                 telefonoSolicitante,
-                tecnicoAsignado: tecnicoAsignadoInt,
+                tecnicoAsignado: tecnicoAsignadoValue,
                 observaciones,
                 tipoResponsableEgreso,
                 estado,
@@ -306,7 +314,7 @@ class ServiceController {
                 telefonoResponsableEgreso,
                 gestionInt,
                 telefonoSolicitante,
-                tecnicoAsignadoInt,
+                tecnicoAsignadoValue,
                 observaciones,
                 tipoResponsableEgreso,
                 estado,
@@ -375,27 +383,86 @@ class ServiceController {
         }
     }
     static async paginate(req, res) {
-        const page = parseInt(req.query.page, 10) || 1;
-        const limit = parseInt(req.query.limit, 10) || 10;
-        const search = req.query.search || ''; // Obtiene el término de búsqueda de la consulta
-    
         try {
+            const { 
+                page = 1,
+                limit = 10,
+                search = '',
+                sort = 'servicios_id',
+                order = 'desc'
+            } = req.query;
+
             // Llama al servicio de paginación con los parámetros
-            const { count, rows } = await serviceService.paginate({ page, limit, search });
-    
+            const { count, rows } = await serviceService.paginate({ 
+                page: parseInt(page), 
+                limit: parseInt(limit), 
+                search,
+                sort,
+                order
+            });
+
             // Transforma los resultados en DTOs
             const serviceDTOs = rows.map(service => new ServiceDTO(service));
-    
-            // Retorna la respuesta con paginación y resultados
+
             return jsonResponse.successResponse(res, 200, "Services retrieved successfully", {
                 total: count,
-                perPage: limit,
-                currentPage: page,
+                perPage: parseInt(limit),
+                currentPage: parseInt(page),
                 totalPages: Math.ceil(count / limit),
-                data: serviceDTOs,
+                data: serviceDTOs
             });
         } catch (error) {
+            console.error("Error en controlador de paginación:", error);
             return jsonResponse.errorResponse(res, 500, error.message);
+        }
+    }
+    static async getServicesByTypeAndTechnician(req, res) {
+        try {
+            const { tipo, tecnicoAsignado, page = 1, limit = 100, search = '' } = req.query;
+            
+            // Construir condiciones de búsqueda
+            const whereConditions = { tipo };
+            if (tecnicoAsignado && tecnicoAsignado !== 'null') {
+                whereConditions.tecnicoAsignado = parseInt(tecnicoAsignado, 10);
+            }
+
+            // Agregar condición de búsqueda si existe
+            if (search) {
+                whereConditions[Op.or] = [
+                    { nombreSolicitante: { [Op.iLike]: `%${search}%` } },
+                    { problema: { [Op.iLike]: `%${search}%` } }
+                ];
+            }
+
+            const { count, rows } = await Service.findAndCountAll({
+                where: whereConditions,
+                order: [['fechaRegistro', 'DESC']],
+                limit: parseInt(limit),
+                offset: (parseInt(page) - 1) * parseInt(limit),
+                raw: true
+            });
+
+            return jsonResponse.successResponse(
+                res,
+                200,
+                "Services retrieved successfully",
+                {
+                    total: count,
+                    perPage: parseInt(limit),
+                    currentPage: parseInt(page),
+                    totalPages: Math.ceil(count / limit),
+                    data: rows.map(service => ({
+                        servicios_id: service
+                    }))
+                }
+            );
+        } catch (error) {
+            console.error("Error getting services:", error);
+            return jsonResponse.errorResponse(
+                res,
+                500,
+                error.message
+            );
         }
     }
 }

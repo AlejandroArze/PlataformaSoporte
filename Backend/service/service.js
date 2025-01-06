@@ -14,6 +14,9 @@ class ServiceService {
             // Valida los datos de entrada usando storeDTO (con Joi)
             await storeDTO.validateAsync(data, { abortEarly: false });
 
+            // Convertir equipo vacío a null
+            const equipoValue = data.equipo === "" ? null : data.equipo;
+
             // Crea un nuevo servicio en la base de datos usando los campos correspondientes
             const newService = await Service.create({
                 nombreResponsableEgreso: data.nombreResponsableEgreso, // Se asigna el campo 'nombreResponsableEgreso'
@@ -83,6 +86,9 @@ class ServiceService {
             // Valida los datos de entrada usando updateDTO
             await updateDTO.validateAsync(data, { abortEarly: false });
 
+            // Convertir equipo vacío a null
+            const equipoValue = data.equipo === "" ? null : data.equipo;
+
             // Actualiza los campos del servicio con los datos proporcionados
             const updatedService = await Service.update({
                 nombreResponsableEgreso: data.nombreResponsableEgreso,
@@ -146,41 +152,76 @@ class ServiceService {
     }
 
     static async paginate(queryParams) {
-        const { page, limit, search } = queryParams;
-        const offset = (page - 1) * limit;
-    
-        // Obtener todas las columnas del modelo
-        const columns = Object.keys(Service.rawAttributes);
-    
-        // Construir las condiciones de búsqueda
-        const whereCondition = search
-            ? {
-                [Op.or]: columns.map((field) => {
-                    const columnType = Service.rawAttributes[field].type.key;
-    
-                    if (columnType === "STRING" || columnType === "TEXT") {
-                        // Si la columna es texto, usa unaccent y ILIKE
-                        return Sequelize.literal(`unaccent("${field}") ILIKE unaccent('%${search}%')`);
-                    } else {
-                        // Si no es texto, conviértelo a texto con CAST
-                        return Sequelize.literal(`CAST("${field}" AS TEXT) ILIKE '%${search}%'`);
-                    }
-                }),
-            }
-            : {};
-    
         try {
-            // Realiza la consulta con las condiciones dinámicas
+            const { 
+                page = 1, 
+                limit = 10, 
+                search = '', 
+                sort = 'servicios_id',
+                order = 'desc'
+            } = queryParams;
+
+            const offset = (Math.max(0, page - 1)) * limit;
+
+            // Validar que la columna de ordenamiento existe
+            const validColumns = Object.keys(Service.rawAttributes);
+            const sortColumn = validColumns.includes(sort) ? sort : 'servicios_id';
+
+            // Construir las condiciones de búsqueda
+            const whereCondition = search
+                ? {
+                    [Op.or]: validColumns.map((field) => {
+                        const columnType = Service.rawAttributes[field].type.key;
+                        
+                        switch (columnType) {
+                            case 'STRING':
+                            case 'TEXT':
+                                return {
+                                    [field]: { [Op.iLike]: `%${search}%` }
+                                };
+                            case 'INTEGER':
+                            case 'BIGINT':
+                                // Solo aplicar si el término de búsqueda es un número
+                                return isNaN(search) ? null : {
+                                    [field]: parseInt(search)
+                                };
+                            case 'DATE':
+                            case 'DATEONLY':
+                                // Intentar parsear como fecha
+                                return {
+                                    [field]: Sequelize.where(
+                                        Sequelize.fn('TO_CHAR', Sequelize.col(field), 'YYYY-MM-DD'),
+                                        { [Op.iLike]: `%${search}%` }
+                                    )
+                                };
+                            default:
+                                // Para otros tipos, convertir a texto y buscar
+                                return Sequelize.where(
+                                    Sequelize.cast(Sequelize.col(field), 'TEXT'),
+                                    { [Op.iLike]: `%${search}%` }
+                                );
+                        }
+                    }).filter(condition => condition !== null)
+                }
+                : {};
+
+            // Realizar la consulta
             const { count, rows } = await Service.findAndCountAll({
                 where: whereCondition,
-                limit: limit,
+                limit: parseInt(limit),
                 offset: offset,
-                order: [["servicios_id", "DESC"]], // Ordenar por ID descendente
+                order: [[sortColumn, order.toUpperCase()]],
+                raw: true
             });
-    
-            return { count, rows };
+
+            return { 
+                count, 
+                rows,
+                currentPage: parseInt(page),
+                totalPages: Math.ceil(count / limit)
+            };
         } catch (error) {
-            console.error("Error en paginación de servicios:", error.message);
+            console.error("Error en paginación de servicios:", error);
             throw error;
         }
     }
