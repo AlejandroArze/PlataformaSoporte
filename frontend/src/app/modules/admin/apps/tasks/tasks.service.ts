@@ -237,13 +237,11 @@ export class TasksService
             page: number = 0,
             size: number = 100,
             sort: string = 'name',
-            order: 'asc' | 'desc' | '' = 'asc',
+            order: 'asc' | 'desc' | '' = 'desc',
             search: string = 'SIN ASIGNAR',
             count2: number = 0,
         ): Observable<{ pagination: InventoryPagination; services: Servicio[] }> {
-            return this._httpClient.get<any>(`${this.baseUrl}/service?page=${page}&limit=${size}`, {
-                params: { page: '' + page, size: '' + size, sort, order, search },
-            }).pipe(
+            return this._httpClient.get<any>(`${this.baseUrl}/service?page=${page}&limit=${size}&search=${search}`).pipe(
                 map((response) => {
                     console.log('API Response:', response);
                     console.log('API search:', search);

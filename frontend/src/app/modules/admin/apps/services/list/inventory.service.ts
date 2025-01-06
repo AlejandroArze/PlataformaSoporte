@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { InventoryBrand, InventoryCategory, BienesResponse, InventoryPagination, InventoryProduct, InventoryTag, InventoryVendor,Empleado,Servicio } from 'app/modules/admin/apps/services/list/inventory.types';
 import { BehaviorSubject,  filter, map, Observable, of, switchMap, take, tap, throwError,catchError,} from 'rxjs';
@@ -185,51 +185,33 @@ export class InventoryService
     getServices(
         page: number = 0,
         size: number = 10,
-        sort: string = 'name',
-        order: 'asc' | 'desc' | '' = 'asc',
-        search: string = '',
-        count2: number = 0,
+        sort: string = 'fechaRegistro',
+        order: 'asc' | 'desc' | '' = 'desc',
+        search: string = ''
     ): Observable<{ pagination: InventoryPagination; services: Servicio[] }> {
-        return this._httpClient.get<any>(`${this.baseUrl}/service?page=${page}&limit=${size}`, {
-            params: { page: '' + page, size: '' + size, sort, order, search },
-        }).pipe(
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('limit', size.toString())
+            .set('sort', sort)
+            .set('order', order)
+            .set('search', search);
+
+        return this._httpClient.get<any>(`${this.baseUrl}/service`, { params }).pipe(
             map((response) => {
-                console.log('API Response:', response);
-                console.log('API search:', search);
-    
-                // Crear objeto de paginación
                 const pagination: InventoryPagination = {
                     length: response.data.total,
                     size: response.data.perPage,
                     page: response.data.currentPage,
                     lastPage: response.data.totalPages,
-                    startIndex: ((response.data.currentPage) * response.data.perPage),
-                    endIndex: response.data.currentPage * response.data.perPage,
+                    startIndex: response.data.currentPage * response.data.perPage,
+                    endIndex: response.data.currentPage * response.data.perPage
                 };
-    
-                // Desanidar los datos y convertir 'lector' a booleano
-                const services = response.data.data.map((item: any) => {
-                    // Asegurarse de que 'lector' sea un valor booleano
-                    if (typeof item.lector === 'string') {
-                        if (item.lector === 'true') {
-                            item.lector = true;  // Convertir 'true' a booleano true
-                        } else {
-                            item.lector = false; // Convertir todo lo demás a booleano false
-                        }
-                    }
-                    console.log("lector: get equipmet ",item.servicios_id);
-                   
 
-                    
-                    console.log("lector: get equipmet ",item.servicios_id);
-                    console.log("tipo: get equipmet ",item.servicios_id.tipoDescripcion);
-                    return item.servicios_id;
-                });
-    
-                // Emitir los datos de paginación y equipos
+                const services = response.data.data.map((item: any) => item.servicios_id);
+
                 this._pagination.next(pagination);
                 this._services.next(services);
-    
+
                 return { pagination, services };
             })
         );

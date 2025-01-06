@@ -440,6 +440,8 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             this.form = new FormGroup({
                 funcionarioasignado: new FormControl({ value: 'tecnicoRegistro', disabled: true }, Validators.required), // Agrega 'funcionarioasignado' aquí
               });
+
+        
     }
 
 
@@ -452,14 +454,12 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
      */
     ngAfterViewInit(): void {
         if (this._sort && this._paginator) {
-            // Establecer el orden inicial
-            this._sort.sort({
-                id          : 'name',
-                start       : 'asc',
-                disableClear: true,
+            this._sort.direction = 'desc';
+            this._sort.active = 'fechaRegistro';
+            this._sort.sortChange.emit({
+                active: 'fechaRegistro',
+                direction: 'desc'
             });
-
-            // Marcar para detección de cambios
             this._changeDetectorRef.markForCheck();
 
             // Cuando el usuario cambia el orden de la tabla

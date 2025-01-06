@@ -3,6 +3,8 @@ const storeDTO = require("../http/request/service/storeDTO"); // DTO para valida
 const updateDTO = require("../http/request/service/updateDTO"); // DTO para validar los datos del servicio en la operación de actualización
 const idDTO = require("../http/request/service/idDTO"); // DTO para validar los identificadores de servicios
 const { Op, Sequelize } = require("sequelize");
+const jsonResponse = require('../http/response/jsonResponse'); // Agregar esta línea al inicio del archivo
+
 class ServiceService {
 
     // Método para almacenar un nuevo servicio
@@ -157,60 +159,32 @@ class ServiceService {
                 page = 1, 
                 limit = 10, 
                 search = '', 
-                sort = 'servicios_id',
-                order = 'desc'
+                sort = 'fechaRegistro',
+                order = 'DESC'
             } = queryParams;
 
-            const offset = (Math.max(0, page - 1)) * limit;
-
-            // Validar que la columna de ordenamiento existe
-            const validColumns = Object.keys(Service.rawAttributes);
-            const sortColumn = validColumns.includes(sort) ? sort : 'servicios_id';
-
+            // Asegurar que order sea un string y convertirlo a mayúsculas
+            const orderDirection = (order || 'DESC').toString().toUpperCase();
+            
+            // Decodificar el término de búsqueda y eliminar espacios extra
+            const decodedSearch = decodeURIComponent(search).trim();
+            
             // Construir las condiciones de búsqueda
-            const whereCondition = search
-                ? {
-                    [Op.or]: validColumns.map((field) => {
-                        const columnType = Service.rawAttributes[field].type.key;
-                        
-                        switch (columnType) {
-                            case 'STRING':
-                            case 'TEXT':
-                                return {
-                                    [field]: { [Op.iLike]: `%${search}%` }
-                                };
-                            case 'INTEGER':
-                            case 'BIGINT':
-                                // Solo aplicar si el término de búsqueda es un número
-                                return isNaN(search) ? null : {
-                                    [field]: parseInt(search)
-                                };
-                            case 'DATE':
-                            case 'DATEONLY':
-                                // Intentar parsear como fecha
-                                return {
-                                    [field]: Sequelize.where(
-                                        Sequelize.fn('TO_CHAR', Sequelize.col(field), 'YYYY-MM-DD'),
-                                        { [Op.iLike]: `%${search}%` }
-                                    )
-                                };
-                            default:
-                                // Para otros tipos, convertir a texto y buscar
-                                return Sequelize.where(
-                                    Sequelize.cast(Sequelize.col(field), 'TEXT'),
-                                    { [Op.iLike]: `%${search}%` }
-                                );
-                        }
-                    }).filter(condition => condition !== null)
-                }
-                : {};
+            const whereConditions = {};
+            if (decodedSearch) {
+                whereConditions[Op.or] = [
+                    { nombreSolicitante: { [Op.iLike]: `%${decodedSearch}%` } },
+                    { problema: { [Op.iLike]: `%${decodedSearch}%` } },
+                    { estado: { [Op.iLike]: `%${decodedSearch}%` } }  // Agregamos búsqueda por estado
+                ];
+            }
 
             // Realizar la consulta
             const { count, rows } = await Service.findAndCountAll({
-                where: whereCondition,
+                where: whereConditions,
+                order: [[sort, orderDirection]],
                 limit: parseInt(limit),
-                offset: offset,
-                order: [[sortColumn, order.toUpperCase()]],
+                offset: (parseInt(page)) * parseInt(limit),
                 raw: true
             });
 
@@ -221,12 +195,69 @@ class ServiceService {
                 totalPages: Math.ceil(count / limit)
             };
         } catch (error) {
-            console.error("Error en paginación de servicios:", error);
+            console.error('Error en paginación:', error);
             throw error;
         }
     }
     
-     
+    static async getServicesByTypeAndTechnician(req, res) {
+        console.log('Service: getServicesByTypeAndTechnician called');
+        try {
+            const { 
+                tipo, 
+                tecnicoAsignado, 
+                estado,  
+                page = 1, 
+                limit = 100, 
+                search = '' 
+            } = req.query;
+            
+            console.log('Query params:', { tipo, tecnicoAsignado, estado, page, limit, search });
+            
+            const whereConditions = {};
+            
+            if (tipo) {
+                whereConditions.tipo = decodeURIComponent(tipo).trim();
+            }
+
+            if (tecnicoAsignado && tecnicoAsignado !== 'null') {
+                whereConditions.tecnicoAsignado = parseInt(tecnicoAsignado, 10);
+            }
+
+            // Decodificar y limpiar el estado antes de usarlo en la consulta
+            if (estado && estado !== 'null' && estado !== 'undefined') {
+                whereConditions.estado = {
+                    [Op.iLike]: decodeURIComponent(estado).trim()
+                };
+            }
+
+            console.log('Where conditions:', whereConditions);
+
+            const { count, rows } = await Service.findAndCountAll({
+                where: whereConditions,
+                order: [['fechaRegistro', 'DESC']],
+                limit: parseInt(limit),
+                offset: (parseInt(page) - 1) * parseInt(limit),
+                raw: true
+            });
+
+            return jsonResponse.successResponse(
+                res,
+                200,
+                "Services retrieved successfully",
+                {
+                    total: count,
+                    perPage: parseInt(limit),
+                    currentPage: parseInt(page),
+                    totalPages: Math.ceil(count / limit),
+                    data: rows
+                }
+            );
+        } catch (error) {
+            console.error("Service Error:", error);
+            return jsonResponse.errorResponse(res, 500, error.message);
+        }
+    }
 }
 
-module.exports = ServiceService; // Exporta la clase ServiceService
+module.exports = ServiceService;

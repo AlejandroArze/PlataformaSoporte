@@ -7,6 +7,7 @@ const jsonResponse = require("../http/response/jsonResponse");
 const ServiceDTO = require("../http/request/service/responseDTO");
 // Importa Joi para validación de datos
 const Joi = require("joi");
+const ServiceService = require('../service/service');
 
 class ServiceController {
 
@@ -418,51 +419,13 @@ class ServiceController {
     }
     static async getServicesByTypeAndTechnician(req, res) {
         try {
-            const { tipo, tecnicoAsignado, page = 1, limit = 100, search = '' } = req.query;
-            
-            // Construir condiciones de búsqueda
-            const whereConditions = { tipo };
-            if (tecnicoAsignado && tecnicoAsignado !== 'null') {
-                whereConditions.tecnicoAsignado = parseInt(tecnicoAsignado, 10);
-            }
-
-            // Agregar condición de búsqueda si existe
-            if (search) {
-                whereConditions[Op.or] = [
-                    { nombreSolicitante: { [Op.iLike]: `%${search}%` } },
-                    { problema: { [Op.iLike]: `%${search}%` } }
-                ];
-            }
-
-            const { count, rows } = await Service.findAndCountAll({
-                where: whereConditions,
-                order: [['fechaRegistro', 'DESC']],
-                limit: parseInt(limit),
-                offset: (parseInt(page) - 1) * parseInt(limit),
-                raw: true
-            });
-
-            return jsonResponse.successResponse(
-                res,
-                200,
-                "Services retrieved successfully",
-                {
-                    total: count,
-                    perPage: parseInt(limit),
-                    currentPage: parseInt(page),
-                    totalPages: Math.ceil(count / limit),
-                    data: rows.map(service => ({
-                        servicios_id: service
-                    }))
-                }
-            );
+            console.log('Controller: getServicesByTypeAndTechnician called');
+            return await ServiceService.getServicesByTypeAndTechnician(req, res);
         } catch (error) {
-            console.error("Error getting services:", error);
-            return jsonResponse.errorResponse(
-                res,
-                500,
-                error.message
-            );
+            console.error('Controller Error:', error);
+            return res.status(500).json({
+                message: error.message
+            });
         }
     }
 }
