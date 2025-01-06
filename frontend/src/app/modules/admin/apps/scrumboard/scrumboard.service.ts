@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap, switchMap, catchError } from 'rxjs';
 import { Board, Card, EstadoServicio, TipoServicio } from './scrumboard.models';
 import { environment } from 'environments/environment';
 
@@ -169,9 +169,57 @@ export class ScrumboardService {
      * Actualizar estado del servicio
      */
     updateServiceStatus(serviceId: string, newStatus: EstadoServicio): Observable<Card> {
-        return this._httpClient.patch<Card>(`${this.apiUrl}//service//${serviceId}/estado`, {
-            estado: newStatus
-        });
+        console.log(`Iniciando actualización de estado para servicio ${serviceId} a ${newStatus}`);
+        
+        return this._httpClient.get<any>(`${this.apiUrl}/service/${serviceId}`)
+            .pipe(
+                tap({
+                    next: (response) => console.log('GET response:', response),
+                    error: (error) => console.error('Error en GET inicial:', error)
+                }),
+                switchMap(response => {
+                    // Verificar si tenemos los datos del servicio
+                    if (!response?.data) {
+                        console.error('Respuesta GET inválida:', response);
+                        throw new Error('Respuesta inválida del servidor');
+                    }
+
+                    const currentService = response.data;
+                    console.log('Servicio actual obtenido:', currentService);
+
+                    const updateData = {
+                        ...currentService,
+                        estado: newStatus,
+                        fechaTerminado: newStatus === EstadoServicio.TERMINADO ? new Date().toISOString() : currentService.fechaTerminado,
+                        fechaInicio: newStatus === EstadoServicio.EN_PROGRESO ? new Date().toISOString() : currentService.fechaInicio
+                    };
+                    
+                    console.log('URL de actualización:', `${this.apiUrl}/service/${serviceId}`);
+                    console.log('Datos a actualizar:', updateData);
+                    
+                    return this._httpClient.put<Card>(`${this.apiUrl}/service/${serviceId}`, updateData)
+                        .pipe(
+                            tap({
+                                next: (response) => console.log('Actualización exitosa:', response),
+                                error: (error) => console.error('Error en PUT:', {
+                                    status: error.status,
+                                    message: error.message,
+                                    error: error,
+                                    url: `${this.apiUrl}/service/${serviceId}`,
+                                    data: updateData
+                                })
+                            }),
+                            catchError(error => {
+                                console.error('Error capturado en PUT:', error);
+                                throw error;
+                            })
+                        );
+                }),
+                catchError(error => {
+                    console.error('Error capturado en pipeline principal:', error);
+                    throw error;
+                })
+            );
     }
 
     /**
