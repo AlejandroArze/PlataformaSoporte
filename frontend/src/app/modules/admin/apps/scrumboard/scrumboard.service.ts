@@ -169,7 +169,7 @@ export class ScrumboardService {
      * Actualizar estado del servicio
      */
     updateServiceStatus(serviceId: string, newStatus: EstadoServicio): Observable<Card> {
-        return this._httpClient.patch<Card>(`${this.apiUrl}/servicios/${serviceId}/estado`, {
+        return this._httpClient.patch<Card>(`${this.apiUrl}//service//${serviceId}/estado`, {
             estado: newStatus
         });
     }
