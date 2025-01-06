@@ -1,88 +1,15 @@
-.card-footer {
-    @apply mt-2 flex flex-col gap-2;
+.card-wrapper {
+    @apply p-4 bg-card rounded-lg shadow cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 mb-3;
+    height: auto;
 
-    .date {
-        @apply text-sm text-gray-500;
-    }
-
-    .tech-info {
-        @apply flex items-center justify-between text-sm text-gray-500;
-    }
-}
-
-.estado-badge {
-    @apply inline-flex items-center justify-center;
-    background: rgb(99 102 241);
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    color: white;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
-    }
-
-    &.sin-asignar {
-        background: rgb(75 85 99);
-    }
-
-    &.pendiente {
-        background: rgb(249 115 22);
-    }
-
-    &.en-progreso {
-        background: rgb(59 130 246);
-    }
-
-    &.terminado {
-        background: rgb(34 197 94);
-    }
-}
-
-// Reset estilos de Material
-.mat-flat-button.estado-badge {
-    @apply p-0;
-    line-height: normal;
-
-    &:hover {
-        background: inherit;
-    }
-
-    .mat-button-wrapper {
-        @apply flex items-center justify-center w-full h-full;
-        padding: 2px 8px !important;
-    }
-
-    .mat-button-focus-overlay {
-        display: none;
-    }
-}
-
-// Estilos para la tarjeta
-.card {
-    @apply flex flex-col p-4 mb-4 rounded-lg;
-    @apply bg-white dark:bg-[#2B2B3F];
-    @apply shadow dark:shadow-none;
-
-    .card-header {
-        @apply flex items-center justify-between mb-2;
-        
-        .title {
-            @apply font-medium text-gray-900 dark:text-gray-300;
+    .problema-container {
+        p {
+            @apply text-gray-900 dark:text-gray-100;
+            overflow-wrap: break-word;
         }
     }
 
-    .card-content {
-        @apply flex flex-col;
-        
-        .description {
-            @apply text-gray-600 dark:text-gray-400;
-        }
+    .estado-badge {
+        @apply px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap;
     }
 } 

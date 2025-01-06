@@ -1,22 +1,29 @@
-<div class="card" [ngClass]="{'dark:bg-gray-800': true}" (click)="openCardDetails()">
-    <div class="card-header">
-        <div class="flex items-center">
-            <div class="status-indicator" [ngClass]="card.estado.toLowerCase()"></div>
-            <span class="ml-2 font-medium">{{card.nombreSolicitante}}</span>
-        </div>
+<div class="card-wrapper" (click)="openCardDetails()">
+    <!-- Problema (Principal) -->
+    <div class="problema-container mb-1">
+        <p class="text-base font-medium">{{card.problema}}</p>
     </div>
-    <div class="card-content">
-        <p class="description line-clamp-3">{{card.problema}}</p>
-        <div class="mt-2 flex items-center justify-between text-sm text-gray-500">
-            <span>{{card.fechaRegistro | date:'shortDate'}} • Técnico: {{card.tecnicoAsignado}}</span>
-            <div class="flex items-center gap-3" *ngIf="card.tecnicoAsignado">
-                <span mat-button 
-                        class="estado-badge" 
-                        [ngClass]="card.estado.toLowerCase().replace(' ', '-')"
-                        disableRipple>
-                    {{card.estado}}
-                </span>
+
+    <!-- Información secundaria en línea -->
+    <div class="flex items-center justify-between">
+        <!-- Oficina y Solicitante -->
+        <div class="flex-grow">
+            <div class="flex items-center space-x-2">
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{card.nombreSolicitante}}</span>
             </div>
+            <div class="flex items-center space-x-2 mt-2">
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{card.oficinaSolicitante}}</span>
+            </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="estado-badge" [ngClass]="{
+            'bg-gray-100 text-gray-800': card.estado === EstadoServicio.SIN_ASIGNAR,
+            'bg-yellow-500 text-white': card.estado === EstadoServicio.PENDIENTE,
+            'bg-blue-500 text-white': card.estado === EstadoServicio.EN_PROGRESO,
+            'bg-green-500 text-white': card.estado === EstadoServicio.TERMINADO
+        }">
+            {{card.estado}}
         </div>
     </div>
 </div>
