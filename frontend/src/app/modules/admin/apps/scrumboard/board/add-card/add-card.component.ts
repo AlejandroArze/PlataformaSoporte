@@ -10,6 +10,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { NgIf, NgFor, DatePipe } from '@angular/common';
 import { Card, TipoServicio } from '../../scrumboard.models';
+import { ScrumboardService } from '../../scrumboard.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
     selector: 'scrumboard-add-card',
@@ -38,7 +40,9 @@ export class AddCardComponent implements OnInit {
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: { card: Card; isEdit: boolean },
         private dialogRef: MatDialogRef<AddCardComponent>,
-        private _formBuilder: FormBuilder
+        private _formBuilder: FormBuilder,
+        private _scrumboardService: ScrumboardService,
+        private _snackBar: MatSnackBar
     ) {
         this.isEdit = data.isEdit;
     }
@@ -92,12 +96,33 @@ export class AddCardComponent implements OnInit {
     }
 
     onSubmit(): void {
+        if (this.cardForm.invalid) {
+            return;
+        }
+
         const formData = this.cardForm.getRawValue();
-        // Asegurarse de que las fechas vacías se envíen como null
-        formData.fechaInicio = formData.fechaInicio || null;
-        formData.fechaTerminado = formData.fechaTerminado || null;
         
-        this.dialogRef.close(formData);
+        this._scrumboardService.createService(formData, " ")
+            .subscribe({
+                next: (response) => {
+                    this._snackBar.open('Servicio creado correctamente', 'Cerrar', {
+                        duration: 3000,
+                        horizontalPosition: 'end',
+                        verticalPosition: 'top',
+                        panelClass: ['success-snackbar']
+                    });
+                    this.dialogRef.close(true);
+                },
+                error: (error) => {
+                    console.error('Error al crear servicio:', error);
+                    this._snackBar.open('Error al crear el servicio', 'Cerrar', {
+                        duration: 3000,
+                        horizontalPosition: 'end',
+                        verticalPosition: 'top',
+                        panelClass: ['error-snackbar']
+                    });
+                }
+            });
     }
 
     onCancel(): void {

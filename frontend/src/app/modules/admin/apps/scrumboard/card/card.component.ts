@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Card, EstadoServicio } from '../scrumboard.models';
 import { AddCardComponent } from '../board/add-card/add-card.component';
 import { ScrumboardService } from '../scrumboard.service';
+import { ScrumboardCardDetailsComponent } from './details/details.component';
 
 @Component({
     selector: 'scrumboard-card',
@@ -30,17 +31,29 @@ export class ScrumboardCardComponent {
     ) {}
 
     openCardDetails(): void {
-        this._dialog.open(AddCardComponent, {
+        const dialogRef = this._dialog.open(ScrumboardCardDetailsComponent, {
             data: {
                 card: this.card,
-                isEdit: true
+                isNew: false
             },
             width: '700px',
             height: 'auto',
             maxHeight: '90vh',
-            panelClass: ['service-dialog', 'dark'],
             autoFocus: false,
-            disableClose: true
+            disableClose: false,
+            backdropClass: 'cursor-pointer'
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result === true) {
+                this._scrumboardService.getCardsByStatus(
+                    this.card.tipo,
+                    this.card.estado,
+                    null,
+                    1,
+                    10
+                ).subscribe();
+            }
         });
     }
 }

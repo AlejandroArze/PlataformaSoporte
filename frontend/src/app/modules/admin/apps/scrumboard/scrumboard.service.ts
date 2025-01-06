@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, tap, switchMap, catchError } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap, switchMap, catchError, forkJoin } from 'rxjs';
 import { Board, Card, EstadoServicio, TipoServicio } from './scrumboard.models';
 import { environment } from 'environments/environment';
 
@@ -67,8 +67,12 @@ interface ServiceResponse {
 
 @Injectable({providedIn: 'root'})
 export class ScrumboardService {
-    private readonly apiUrl = environment.baseUrl;
-    private _cards = new BehaviorSubject<Card[]>([]);
+    private readonly _apiUrl = environment.baseUrl;
+    readonly cards$ = new BehaviorSubject<Card[]>([]);
+
+    get apiUrl(): string {
+        return this._apiUrl;
+    }
 
     constructor(private _httpClient: HttpClient) {}
 
@@ -92,53 +96,51 @@ export class ScrumboardService {
             params = params.set('tecnicoAsignado', tecnicoId);
         }
 
-        console.log('Llamando API con params:', {
-            url: `${this.apiUrl}/service/board`,
-            params: params.toString(),
+        console.log('Obteniendo tarjetas:', {
             tipoServicio,
-            estado
+            estado,
+            tecnicoId,
+            page,
+            limit
         });
 
         return this._httpClient.get<ServiceResponse>(`${this.apiUrl}/service/board`, { params }).pipe(
-            tap(response => {
-                console.log('Respuesta de API:', response);
-            }),
             map(response => {
-                const mappedCards = response.data.data.map(item => {
-                    if (typeof item === 'number') {
-                        console.error('Item inesperado:', item);
-                        return null;
-                    }
+                const newCards = response.data.data.map(item => ({
+                    id: item.servicios_id.toString(),
+                    nombreSolicitante: item.nombreSolicitante || '',
+                    solicitante: item.nombreSolicitante || '',
+                    carnet: item.ciSolicitante || '',
+                    cargo: item.cargoSolicitante || '',
+                    tipoSolicitante: item.tipoSolicitante || '',
+                    problema: item.problema || '',
+                    tipo: item.tipo as TipoServicio,
+                    estado: item.estado as EstadoServicio,
+                    tecnicoAsignado: item.tecnicoAsignado || 0,
+                    fechaRegistro: item.fechaRegistro || '',
+                    fechaInicio: item.fechaInicio || '',
+                    fechaTerminado: item.fechaTerminado || '',
+                    informe: item.informe || '',
+                    observacionesProblema: item.observaciones || '',
+                    codigoBienes: item.equipo || '',
+                    oficinaSolicitante: item.oficinaSolicitante || '',
+                    telefonoSolicitante: item.telefonoSolicitante || '',
+                    listId: '',
+                    position: 0
+                } as Card));
 
-                    return {
-                        id: item.servicios_id.toString(),
-                        nombreSolicitante: item.nombreSolicitante || '',
-                        solicitante: item.nombreSolicitante || '',
-                        carnet: item.ciSolicitante || '',
-                        cargo: item.cargoSolicitante || '',
-                        tipoSolicitante: item.tipoSolicitante || '',
-                        problema: item.problema || '',
-                        tipo: item.tipo as TipoServicio,
-                        estado: item.estado as EstadoServicio,
-                        tecnicoAsignado: item.tecnicoAsignado || 0,
-                        fechaRegistro: item.fechaRegistro || '',
-                        fechaInicio: item.fechaInicio || '',
-                        fechaTerminado: item.fechaTerminado || '',
-                        informe: item.informe || '',
-                        observacionesProblema: item.observaciones || '',
-                        codigoBienes: item.equipo || '',
-                        oficinaSolicitante: item.oficinaSolicitante || '',
-                        telefonoSolicitante: item.telefonoSolicitante || '',
-                        listId: '',
-                        position: 0
-                    } as Card;
-                }).filter(card => card !== null);
+                // Mantener las tarjetas existentes de otros estados
+                const currentCards = this.cards$.value;
+                const otherCards = currentCards.filter(c => c.estado !== estado);
+                this.cards$.next([...otherCards, ...newCards]);
 
-                console.log('Tarjetas mapeadas:', mappedCards);
                 return {
-                    cards: mappedCards,
+                    cards: newCards,
                     total: response.data.total
                 };
+            }),
+            tap(result => {
+                console.log('Tarjetas obtenidas para estado', estado, ':', result);
             })
         );
     }
@@ -267,7 +269,7 @@ export class ScrumboardService {
                 } as Card;
             }).filter(card => card !== null)),
             tap(cards => {
-                this._cards.next(cards);
+                this.cards$.next(cards);
             })
         );
     }
@@ -312,27 +314,168 @@ export class ScrumboardService {
     /**
      * Actualizar servicio
      */
-    updateService(card: Card): Observable<Card> {
-        return this._httpClient.put<Card>(`${this.apiUrl}/servicios/${card.id}`, card).pipe(
-            tap(updatedCard => {
-                const cards = this._cards.value;
-                const index = cards.findIndex(c => c.id === updatedCard.id);
-                if (index !== -1) {
-                    cards[index] = updatedCard;
-                    this._cards.next([...cards]);
-                }
-            })
-        );
+    updateService(serviceId: string | Card, updateData?: any): Observable<any> {
+        if (typeof serviceId === 'string') {
+            // Mapear los campos del formulario a los nombres correctos de la API
+            const mappedUpdateData = {
+                ...updateData,
+                ciSolicitante: updateData.carnet || updateData.ciSolicitante || " ",
+                cargoSolicitante: updateData.cargo || updateData.cargoSolicitante || " ",
+                equipo: updateData.equipo || updateData.codigoBienes || null,
+                nombreSolicitante: updateData.solicitante || updateData.nombreSolicitante || " ",
+                oficinaSolicitante: updateData.oficina || updateData.oficinaSolicitante || " ",
+                telefonoSolicitante: updateData.telefono || updateData.telefonoSolicitante || " ",
+                tipo: updateData.tipoServicio || updateData.tipo || "ASISTENCIA",
+                problema: updateData.problema || " ",
+                observaciones: updateData.observaciones || " ",
+                informe: updateData.informe || " ",
+                estado: updateData.estado || "SIN ASIGNAR",
+                tecnicoAsignado: updateData.tecnicoAsignado || 3,
+                fechaRegistro: updateData.fechaRegistro || new Date().toISOString(),
+                fechaInicio: updateData.fechaInicio || null,
+                fechaTerminado: updateData.fechaTerminado || null,
+                nombreResponsableEgreso: updateData.nombreResponsableEgreso || " ",
+                cargoResponsableEgreso: updateData.cargoResponsableEgreso || " ",
+                telefonoResponsableEgreso: updateData.telefonoResponsableEgreso || " ",
+                tipoResponsableEgreso: updateData.tipoResponsableEgreso || " ",
+                oficinaResponsableEgreso: updateData.oficinaResponsableEgreso || " ",
+                gestion: updateData.gestion || 3,
+                numero: updateData.numero || 464,
+                fechaEgreso: updateData.fechaEgreso || " ",
+                tecnicoRegistro: updateData.tecnicoRegistro || 3,
+                tecnicoEgreso: updateData.tecnicoEgreso || " ",
+                ciResponsableEgreso: updateData.ciResponsableEgreso || " "
+            };
+
+            console.log('Datos mapeados para actualización:', mappedUpdateData);
+
+            return this._httpClient.put<any>(`${this._apiUrl}/service/${serviceId}`, mappedUpdateData)
+                .pipe(
+                    tap({
+                        next: (response) => {
+                            console.log('Actualización exitosa:', response);
+                            // Actualizar solo la tarjeta modificada
+                            const currentCards = this.cards$.value;
+                            const updatedCards = currentCards.map(card => {
+                                if (card.id === serviceId) {
+                                    return {
+                                        ...card,
+                                        carnet: mappedUpdateData.ciSolicitante,
+                                        cargo: mappedUpdateData.cargoSolicitante,
+                                        codigoBienes: mappedUpdateData.equipo,
+                                        nombreSolicitante: mappedUpdateData.nombreSolicitante,
+                                        oficinaSolicitante: mappedUpdateData.oficinaSolicitante,
+                                        telefonoSolicitante: mappedUpdateData.telefonoSolicitante,
+                                        tipo: mappedUpdateData.tipo,
+                                        problema: mappedUpdateData.problema,
+                                        observacionesProblema: mappedUpdateData.observaciones,
+                                        informe: mappedUpdateData.informe,
+                                        estado: mappedUpdateData.estado,
+                                        tecnicoAsignado: mappedUpdateData.tecnicoAsignado,
+                                        fechaRegistro: mappedUpdateData.fechaRegistro,
+                                        fechaInicio: mappedUpdateData.fechaInicio,
+                                        fechaTerminado: mappedUpdateData.fechaTerminado
+                                    };
+                                }
+                                return card;
+                            });
+                            this.cards$.next(updatedCards);
+
+                            // Recargar solo el estado nuevo si cambió el estado
+                            const cardToUpdate = currentCards.find(c => c.id === serviceId);
+                            if (cardToUpdate && cardToUpdate.estado !== mappedUpdateData.estado) {
+                                this.getCardsByStatus(
+                                    mappedUpdateData.tipo,
+                                    mappedUpdateData.estado,
+                                    null,
+                                    1,
+                                    100
+                                ).subscribe();
+                            }
+                        }
+                    })
+                );
+        }
+
+        // Si es un objeto Card, usar la implementación antigua
+        const card = serviceId as Card;
+        return this._httpClient.put<Card>(`${this._apiUrl}/servicios/${card.id}`, card);
     }
 
     /**
      * Crear servicio
      */
-    createService(card: Partial<Card>): Observable<Card> {
-        return this._httpClient.post<Card>(`${this.apiUrl}/servicios`, card).pipe(
-            tap(newCard => {
-                const cards = this._cards.value;
-                this._cards.next([...cards, newCard]);
+    createService(formData: any, tipoServicio: string): Observable<any> {
+        const currentDate = "2020-04-16T12:20:58.420Z"; // Usar la misma fecha para mantener consistencia
+        const serviceData = {
+            nombreResponsableEgreso: " ",
+            cargoSolicitante: " ",
+            informe: "SE ACTIVO EL OFFICE",
+            cargoResponsableEgreso: " ",
+            oficinaSolicitante: "SECRETARIA DE DESARROLLO HUMANO",
+            fechaRegistro: currentDate,
+            equipo: null,
+            problema: "ACTIVAR OFFICE",
+            telefonoResponsableEgreso: " ",
+            gestion: 3,
+            telefonoSolicitante: "4460697",
+            tecnicoAsignado: 3,
+            observaciones: " ",
+            tipoResponsableEgreso: " ",
+            estado: "TERMINADO",
+            tipoSolicitante: "INDEFINIDO - ITEM",
+            fechaTerminado: currentDate,
+            oficinaResponsableEgreso: " ",
+            numero: 464,
+            fechaInicio: currentDate,
+            fechaEgreso: " ",
+            ciSolicitante: "5676174",
+            nombreSolicitante: "JASSEL GABRIELA ENCINAS NAVIA",
+            tipo: tipoServicio,
+            tecnicoRegistro: 3,
+            tecnicoEgreso: " ",
+            ciResponsableEgreso: " ",
+            cargo: " "
+        };
+
+        console.log('Enviando datos para crear servicio:', serviceData);
+
+        return this._httpClient.post<any>(`${this._apiUrl}/service`, serviceData).pipe(
+            tap({
+                next: (response) => {
+                    console.log('Servicio creado exitosamente:', response);
+                    // Actualizar el estado local
+                    const currentCards = this.cards$.value;
+                    if (response.data) {
+                        const newCard = {
+                            id: response.data.servicios_id.toString(),
+                            nombreSolicitante: response.data.nombreSolicitante,
+                            solicitante: response.data.nombreSolicitante,
+                            carnet: response.data.ciSolicitante,
+                            cargo: response.data.cargoSolicitante || response.data.cargo,
+                            tipoSolicitante: response.data.tipoSolicitante,
+                            problema: response.data.problema,
+                            tipo: response.data.tipo,
+                            estado: response.data.estado,
+                            tecnicoAsignado: response.data.tecnicoAsignado,
+                            fechaRegistro: response.data.fechaRegistro,
+                            fechaInicio: response.data.fechaInicio,
+                            fechaTerminado: response.data.fechaTerminado,
+                            informe: response.data.informe,
+                            observacionesProblema: response.data.observaciones,
+                            codigoBienes: response.data.equipo,
+                            oficinaSolicitante: response.data.oficinaSolicitante,
+                            telefonoSolicitante: response.data.telefonoSolicitante,
+                            listId: '',
+                            position: 0
+                        } as Card;
+                        this.cards$.next([...currentCards, newCard]);
+                    }
+                },
+                error: (error) => {
+                    console.error('Error al crear servicio:', error);
+                    throw error;
+                }
             })
         );
     }
@@ -342,6 +485,30 @@ export class ScrumboardService {
      */
     getServiceById(id: string): Observable<Card> {
         return this._httpClient.get<Card>(`${this.apiUrl}/servicios/${id}`);
+    }
+
+    /**
+     * Recargar el tablero actual
+     */
+    private reloadCurrentBoard(): void {
+        const currentCards = this.cards$.value;
+        this.cards$.next([...currentCards]);
+    }
+
+    /**
+     * Eliminar servicio
+     */
+    deleteService(serviceId: string): Observable<any> {
+        return this._httpClient.delete<any>(`${this._apiUrl}/service/${serviceId}`).pipe(
+            tap({
+                next: (response) => {
+                    // Actualizar el estado local removiendo la tarjeta eliminada
+                    const currentCards = this.cards$.value;
+                    const updatedCards = currentCards.filter(card => card.id !== serviceId);
+                    this.cards$.next(updatedCards);
+                }
+            })
+        );
     }
 }
 

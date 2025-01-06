@@ -7,7 +7,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from 
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { Board, Card, EstadoServicio, TipoServicio } from '../scrumboard.models';
 import { ScrumboardService } from '../scrumboard.service';
 import { BoardFiltersComponent } from './board-filters/board-filters.component';
@@ -121,10 +121,8 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                 lists: this.lists
             };
 
-            // Cargar las tarjetas para cada lista
-            this.lists.forEach(list => {
-                this.loadCardsForList(list.id, true);
-            });
+            // Cargar todas las tarjetas inicialmente
+            this.loadAllCards();
 
             // Cargar técnicos
             this._scrumboardService.getTecnicos()
@@ -132,6 +130,17 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                 .subscribe(tecnicos => {
                     this.tecnicos = tecnicos;
                     this._changeDetectorRef.markForCheck();
+                });
+
+            // Suscribirse a los cambios en las tarjetas
+            this._scrumboardService.cards$
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe(cards => {
+                    if (cards.length > 0) {
+                        this.filteredCards = cards;
+                        this.distributeCards(cards);
+                        this._changeDetectorRef.markForCheck();
+                    }
                 });
         }
     }
@@ -179,19 +188,25 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
             width: '700px',
             maxHeight: '90vh',
             disableClose: false,
-            autoFocus: false
+            autoFocus: false,
+            data: {
+                card: {
+                    tipo: this.getTipoServicio(this.board.id),
+                    estado: 'SIN ASIGNAR',
+                    fechaRegistro: new Date().toISOString()
+                },
+                isEdit: false
+            },
+            backdropClass: 'cursor-pointer'
         });
 
-        dialogRef.afterClosed().subscribe((result: Partial<Card>) => {
+        dialogRef.backdropClick().subscribe(() => {
+            dialogRef.close();
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this._scrumboardService.createService(result)
-                    .pipe(takeUntil(this._unsubscribeAll))
-                    .subscribe(() => {
-                        const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
-                        if (boardId) {
-                            this.loadCards(boardId);
-                        }
-                    });
+                this.reloadAllLists();
             }
         });
     }
@@ -286,6 +301,7 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
             case 'asistencia-remota':
                 return TipoServicio.ASISTENCIA_REMOTA;
             default:
+                console.error('ID de tablero no válido:', boardId);
                 return null;
         }
     }
@@ -464,7 +480,12 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
             maxHeight: '90vh',
             panelClass: ['service-dialog', 'dark'],
             autoFocus: false,
-            disableClose: true
+            disableClose: false,
+            backdropClass: 'cursor-pointer'
+        });
+
+        dialogRef.backdropClick().subscribe(() => {
+            dialogRef.close();
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -479,5 +500,86 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
      */
     getConnectedLists(): string[] {
         return this.lists.map(list => list.id);
+    }
+
+    /**
+     * Cargar todas las tarjetas
+     */
+    private loadAllCards(): void {
+        const estados = [
+            EstadoServicio.SIN_ASIGNAR,
+            EstadoServicio.PENDIENTE,
+            EstadoServicio.EN_PROGRESO,
+            EstadoServicio.TERMINADO
+        ];
+
+        // Crear un array de observables para cada estado
+        const observables = estados.map(estado =>
+            this._scrumboardService.getCardsByStatus(
+                this.getTipoServicio(this.board.id),
+                estado,
+                this.selectedTecnicoId,
+                1,
+                100 // Aumentar el límite para obtener más tarjetas
+            )
+        );
+
+        // Combinar todos los observables
+        forkJoin(observables)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(results => {
+                // Combinar todas las tarjetas
+                const allCards = results.reduce((acc, curr) => [...acc, ...curr.cards], []);
+                this.filteredCards = allCards;
+                this.distributeCards(allCards);
+                this._changeDetectorRef.markForCheck();
+            });
+    }
+
+    /**
+     * Crear nuevo servicio directamente
+     */
+    createNewService(): void {
+        // Usar board.id en lugar de board.title
+        const tipoServicio = this.getTipoServicio(this.board.id);
+        
+        console.log('Tipo de servicio:', {
+            boardId: this.board.id,
+            boardTitle: this.board.title,
+            tipoServicio: tipoServicio
+        });
+
+        if (!tipoServicio) {
+            this._snackBar.open('Error: Tipo de servicio no válido', 'Cerrar', {
+                duration: 3000,
+                horizontalPosition: 'end',
+                verticalPosition: 'top',
+                panelClass: ['error-snackbar']
+            });
+            return;
+        }
+
+        this._scrumboardService.createService({}, tipoServicio)
+            .subscribe({
+                next: (response) => {
+                    this._snackBar.open('Servicio creado correctamente', 'Cerrar', {
+                        duration: 3000,
+                        horizontalPosition: 'end',
+                        verticalPosition: 'top',
+                        panelClass: ['success-snackbar']
+                    });
+                    // Recargar las listas después de crear
+                    this.reloadAllLists();
+                },
+                error: (error) => {
+                    console.error('Error al crear servicio:', error);
+                    this._snackBar.open('Error al crear el servicio', 'Cerrar', {
+                        duration: 3000,
+                        horizontalPosition: 'end',
+                        verticalPosition: 'top',
+                        panelClass: ['error-snackbar']
+                    });
+                }
+            });
     }
 }
