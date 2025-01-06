@@ -8,4 +8,13 @@
         margin: 0;
         padding: 0;
     }
+}
+
+.error-snackbar {
+    background: #f44336;
+    color: white;
+    
+    .mat-simple-snackbar-action {
+        color: white;
+    }
 } 

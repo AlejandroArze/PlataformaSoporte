@@ -171,16 +171,7 @@ export class ScrumboardService {
     updateServiceStatus(serviceId: string, newStatus: EstadoServicio): Observable<Card> {
         return this._httpClient.patch<Card>(`${this.apiUrl}/servicios/${serviceId}/estado`, {
             estado: newStatus
-        }).pipe(
-            tap(() => {
-                const cards = this._cards.value;
-                const index = cards.findIndex(card => card.id === serviceId);
-                if (index !== -1) {
-                    cards[index].estado = newStatus;
-                    this._cards.next([...cards]);
-                }
-            })
-        );
+        });
     }
 
     /**

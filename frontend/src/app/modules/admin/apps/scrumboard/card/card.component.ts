@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { Card, EstadoServicio } from '../scrumboard.models';
 import { AddCardComponent } from '../board/add-card/add-card.component';
+import { ScrumboardService } from '../scrumboard.service';
 
 @Component({
     selector: 'scrumboard-card',
@@ -23,7 +24,10 @@ export class ScrumboardCardComponent {
     @Input() card: Card;
     protected EstadoServicio = EstadoServicio;
 
-    constructor(private _dialog: MatDialog) {}
+    constructor(
+        private _dialog: MatDialog,
+        private _scrumboardService: ScrumboardService
+    ) {}
 
     openCardDetails(): void {
         this._dialog.open(AddCardComponent, {

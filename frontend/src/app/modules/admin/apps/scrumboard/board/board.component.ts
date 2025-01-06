@@ -15,6 +15,7 @@ import { ScrumboardCardComponent } from '../card/card.component';
 import { AddCardComponent } from './add-card/add-card.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ScrumboardCardDetailsComponent } from '../card/details/details.component';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 
 interface ListState {
     page: number;
@@ -41,7 +42,8 @@ interface ListState {
         DragDropModule,
         BoardFiltersComponent,
         ScrumboardCardComponent,
-        MatTooltipModule
+        MatTooltipModule,
+        MatSnackBarModule
     ]
 })
 export class ScrumboardBoardComponent implements OnInit, OnDestroy {
@@ -99,7 +101,8 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
         private _dialog: MatDialog,
-        private _scrumboardService: ScrumboardService
+        private _scrumboardService: ScrumboardService,
+        private _snackBar: MatSnackBar
     ) {
         // Cargar listas ocultas del localStorage
         this.loadHiddenListsFromStorage();
@@ -200,25 +203,62 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
         if (event.previousContainer === event.container) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
-            transferArrayItem(
-                event.previousContainer.data,
-                event.container.data,
-                event.previousIndex,
-                event.currentIndex
-            );
+            // Obtener la tarjeta y el nuevo estado
+            const card = event.previousContainer.data[event.previousIndex];
+            const newStatus = this.lists.find(list => list.id === event.container.id)?.title;
 
-            const newStatus = this.lists.find(l => l.id === event.container.id)?.title as EstadoServicio;
-            const card = event.container.data[event.currentIndex];
+            if (newStatus) {
+                // Actualizar inmediatamente en la UI
+                card.estado = newStatus as EstadoServicio;
+                
+                // Mover la tarjeta a la nueva lista
+                transferArrayItem(
+                    event.previousContainer.data,
+                    event.container.data,
+                    event.previousIndex,
+                    event.currentIndex
+                );
 
-            this._scrumboardService.updateServiceStatus(card.id, newStatus)
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe(() => {
-                    const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
-                    if (boardId) {
-                        this.loadCards(boardId);
-                    }
-                });
+                // Luego actualizar en el backend
+                this._scrumboardService.updateServiceStatus(card.id, newStatus as EstadoServicio)
+                    .subscribe({
+                        error: (error) => {
+                            // Mostrar notificación de error
+                            this._snackBar.open(
+                                'Error al actualizar el estado. El sistema seguirá intentando sincronizar...', 
+                                'Cerrar', 
+                                {
+                                    duration: 5000,
+                                    horizontalPosition: 'end',
+                                    verticalPosition: 'top',
+                                    panelClass: ['error-snackbar']
+                                }
+                            );
+
+                            // Intentar actualizar nuevamente en segundo plano
+                            this.retryUpdateStatus(card.id, newStatus as EstadoServicio);
+                        },
+                        complete: () => {
+                            // Recargar las listas después de la actualización exitosa
+                            this.reloadAllLists();
+                        }
+                    });
+            }
         }
+    }
+
+    /**
+     * Reintentar actualización de estado
+     */
+    private retryUpdateStatus(cardId: string, newStatus: EstadoServicio): void {
+        // Esperar 3 segundos antes de reintentar
+        setTimeout(() => {
+            this._scrumboardService.updateServiceStatus(cardId, newStatus)
+                .subscribe({
+                    error: () => this.retryUpdateStatus(cardId, newStatus), // Reintentar indefinidamente
+                    complete: () => this.reloadAllLists()
+                });
+        }, 3000);
     }
 
     /**
@@ -432,5 +472,12 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                 this.reloadAllLists();
             }
         });
+    }
+
+    /**
+     * Obtener IDs de listas conectadas para drag&drop
+     */
+    getConnectedLists(): string[] {
+        return this.lists.map(list => list.id);
     }
 }

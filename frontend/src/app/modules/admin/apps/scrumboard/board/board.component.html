@@ -55,11 +55,13 @@
                      cdkDropList 
                      [id]="list.id"
                      [cdkDropListData]="list.cards"
-                     (cdkDropListDropped)="cardDropped($event)">
+                     (cdkDropListDropped)="cardDropped($event)"
+                     [cdkDropListConnectedTo]="getConnectedLists()">
                     
                     <scrumboard-card *ngFor="let card of list.cards"
                         [card]="card"
-                        cdkDrag>
+                        cdkDrag
+                        [cdkDragData]="card">
                     </scrumboard-card>
 
                     <!-- Paginación -->
