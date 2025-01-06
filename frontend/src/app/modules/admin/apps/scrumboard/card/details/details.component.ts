@@ -1,5 +1,5 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, Inject, OnInit, OnDestroy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,13 +9,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { NgIf, NgFor, DatePipe } from '@angular/common';
-import { Card, TipoServicio } from '../../scrumboard.models';
+import { Card, TipoServicio, Equipo } from '../../scrumboard.models';
 import { ScrumboardService } from '../../scrumboard.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmationDialogComponent } from '../../dialogs/confirmation-dialog.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatCardModule } from '@angular/material/card';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
     selector: 'scrumboard-card-details',
@@ -35,7 +38,9 @@ import { ConfirmationDialogComponent } from '../../dialogs/confirmation-dialog.c
         MatNativeDateModule,
         ReactiveFormsModule,
         MatSnackBarModule,
-        MatTooltipModule
+        MatTooltipModule,
+        MatAutocompleteModule,
+        MatCardModule
     ]
 })
 export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
@@ -43,6 +48,14 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
     tiposServicio = Object.values(TipoServicio);
     actualizando = false;
     private _unsubscribeAll: Subject<void> = new Subject<void>();
+    searchEquipoCtrl = new FormControl('');
+    filteredEquipos: Equipo[] = [];
+    bienes: any = null;
+    isOptionSelected = false;
+    filtredEquipos: { equipos_id: number; codigo: string }[] = [];
+    showDropdown = false;
+
+    @ViewChild('searchInput') searchInput: ElementRef;
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: { card: Card; isNew: boolean },
@@ -50,7 +63,8 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
         private _formBuilder: FormBuilder,
         private _scrumboardService: ScrumboardService,
         private _snackBar: MatSnackBar,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _changeDetectorRef: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
@@ -89,6 +103,8 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
         // Si no es nuevo, cargar los datos de la tarjeta
         if (!this.data.isNew && this.data.card) {
             console.log('Cargando datos de la tarjeta:', this.data.card);
+            
+            // Primero cargar los datos básicos
             this.cardForm.patchValue({
                 solicitante: this.data.card.nombreSolicitante || '',
                 carnet: this.data.card.carnet || '',
@@ -107,33 +123,61 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
                 informe: this.data.card.informe || '',
                 equipo: this.data.card.codigoBienes || ''
             });
+
+            // Si hay un equipo_id, buscar su código
+            if (this.data.card.codigoBienes) {
+                this._scrumboardService.buscarEquipos(1, 100, '')
+                    .subscribe({
+                        next: (equipos) => {
+                            const equipo = equipos.find(e => e.equipos_id === parseInt(this.data.card.codigoBienes));
+                            if (equipo) {
+                                this.searchEquipoCtrl.setValue(equipo.codigo);
+                                // También obtener la información del bien
+                                this._scrumboardService.getBienes(equipo.codigo)
+                                    .subscribe({
+                                        next: (response) => {
+                                            this.bienes = response;
+                                            console.log('Bienes encontrados:', this.bienes);
+                                        },
+                                        error: (err) => {
+                                            console.error('Error al obtener bienes:', err);
+                                            this.bienes = null;
+                                        }
+                                    });
+                            }
+                        },
+                        error: (err) => {
+                            console.error('Error al buscar equipo:', err);
+                        }
+                    });
+            }
         }
-
-        // Suscribirse a cambios en el formulario para actualización automática
-        this.cardForm.valueChanges
-            .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(2000)
-            )
-            .subscribe(formValue => {
-                console.log('Detectado cambio en el formulario:', {
-                    formValue,
-                    isDirty: this.cardForm.dirty,
-                    isValid: this.cardForm.valid,
-                    actualizando: this.actualizando
-                });
-
-                if (!this.actualizando && this.cardForm.dirty) {
-                    console.log('Iniciando actualización automática...');
-                    this.onSubmit();
-                }
-            });
 
         // Marcar todos los campos como touched para activar la validación
         Object.keys(this.cardForm.controls).forEach(key => {
             const control = this.cardForm.get(key);
             control.markAsTouched();
         });
+
+        // Modificar la suscripción a los cambios del input
+        this.searchEquipoCtrl.valueChanges
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                debounceTime(300)
+            )
+            .subscribe(value => {
+                console.log('Valor del input cambiado:', value);
+                // Si es string, buscar
+                if (typeof value === 'string') {
+                    console.log('Buscando equipos con:', value);
+                    this.buscarEquipos(value);
+                }
+            });
+
+        // Cargar datos iniciales si hay un equipo en la tarjeta
+        if (this.data.card?.codigoBienes) {
+            this.buscarEquipos(this.data.card.codigoBienes);
+        }
     }
 
     ngOnDestroy(): void {
@@ -257,6 +301,130 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
                     });
             }
         });
+    }
+
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent): void {
+        const target = event.target as HTMLElement;
+        
+        // Verificar si el clic fue en el input o en el dropdown
+        const isInputClick = target.closest('input') !== null;
+        const isDropdownClick = target.closest('.dropdown-container') !== null;
+        
+        // Solo cerrar si el clic fue fuera de ambos
+        if (!isInputClick && !isDropdownClick) {
+            this.showDropdown = false;
+            this._changeDetectorRef.detectChanges();
+        }
+    }
+
+    onSearchEquipos(query: string): void {
+        if (query.length >= 0) {
+            this._scrumboardService.buscarEquipos(1, 100, query)
+                .pipe(debounceTime(100))
+                .subscribe({
+                    next: (equipos: { equipos_id: number; codigo: string }[]) => {
+                        // Filtrar equipos con código vacío o solo espacios
+                        this.filtredEquipos = equipos.filter(equipo => 
+                            equipo.codigo && equipo.codigo.trim() !== ''
+                        );
+                        this._changeDetectorRef.detectChanges();
+                    },
+                    error: (err) => {
+                        console.error('Error al buscar equipos:', err);
+                        this.filtredEquipos = [];
+                    },
+                });
+        } else {
+            this.filtredEquipos = [];
+        }
+    }
+
+    onEquipoSelected(event: MatAutocompleteSelectedEvent): void {
+        const equipo = event.option.value as Equipo;
+        console.log('Equipo seleccionado:', equipo);
+        this.selectEquipo(equipo);
+    }
+
+    selectEquipo(equipo: { equipos_id: number; codigo: string }): void {
+        this.cardForm.controls['equipo'].setValue(equipo.equipos_id); // Guarda el ID del equipo
+        this.searchEquipoCtrl.setValue(equipo.codigo); // Guarda el código del equipo
+        this.showDropdown = false;
+        
+        // Obtener información del bien después de seleccionar
+        if (equipo.codigo) {
+            this._scrumboardService.getBienes(equipo.codigo)
+                .subscribe({
+                    next: (response) => {
+                        this.bienes = response;
+                        console.log('Bienes encontrados:', this.bienes);
+                    },
+                    error: (err) => {
+                        console.error('Error al obtener bienes:', err);
+                        this.bienes = null;
+                    }
+                });
+        }
+        
+        this._changeDetectorRef.detectChanges();
+    }
+
+    displayFn = (equipo: Equipo): string => {
+        return equipo ? equipo.codigo : '';
+    }
+
+    getBienes(): void {
+        const codigoBienes = this.searchEquipoCtrl.value;
+        if (codigoBienes) {
+            this._scrumboardService.getBienes(codigoBienes)
+                .subscribe({
+                    next: (response) => {
+                        this.bienes = response;
+                        console.log('Bienes encontrados:', this.bienes);
+                    },
+                    error: (err) => {
+                        console.error('Error al obtener bienes:', err);
+                        this.bienes = null;
+                    }
+            });
+        }
+    }
+
+    onFocus(): void {
+        console.log('Input focused');
+        this.showDropdown = true;
+        // Cargar equipos iniciales, excluyendo los vacíos
+        this._scrumboardService.buscarEquipos(1, 100, '')
+            .subscribe({
+                next: (equipos: { equipos_id: number; codigo: string }[]) => {
+                    this.filtredEquipos = equipos.filter(equipo => 
+                        equipo.codigo && equipo.codigo.trim() !== ''
+                    );
+                    this._changeDetectorRef.detectChanges();
+                },
+                error: (err) => {
+                    console.error('Error al buscar equipos:', err);
+                    this.filtredEquipos = [];
+                }
+            });
+    }
+
+    // Nuevo método separado para buscar equipos
+    private buscarEquipos(query: string): void {
+        console.log('Iniciando búsqueda de equipos con query:', query);
+        this._scrumboardService.buscarEquipos(1, 100, query)
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe({
+                next: (equipos) => {
+                    console.log('Equipos recibidos:', equipos);
+                    this.filteredEquipos = equipos;
+                    this._changeDetectorRef.markForCheck(); // Forzar detección de cambios
+                },
+                error: (err) => {
+                    console.error('Error al buscar equipos:', err);
+                    this.filteredEquipos = [];
+                }
+            });
     }
 }
 

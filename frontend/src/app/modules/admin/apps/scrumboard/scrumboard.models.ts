@@ -50,3 +50,8 @@ export enum TipoServicio {
     SERVICIO_LABORATORIO = 'EN LABORATORIO',
     ASISTENCIA_REMOTA = 'REMOTA'
 }
+
+export interface Equipo {
+    equipos_id: number;
+    codigo: string;
+}

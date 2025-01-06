@@ -111,22 +111,70 @@
 
         <!-- Información del Equipo -->
         <div class="grid grid-cols-1 gap-6 mt-8">
-            <!-- Código de Bienes con lupa -->
-            <div class="flex gap-2 w-full">
-                <mat-form-field class="flex-grow">
+            <!-- Código de Bienes con autocompletado -->
+            <div class="relative w-full">
+                <mat-form-field class="w-full">
                     <mat-label>Código de Bienes</mat-label>
-                    <input matInput formControlName="equipo">
-                    <button matSuffix mat-icon-button (click)="buscarBien()">
-                        <mat-icon>search</mat-icon>
+                    <input matInput
+                           #searchInput
+                           [formControl]="searchEquipoCtrl"
+                           (input)="onSearchEquipos($event.target.value)"
+                           (focus)="onFocus()"
+                           placeholder="Buscar por código">
+                    <button matSuffix
+                            mat-icon-button
+                            type="button"
+                            (click)="getBienes()"
+                            matTooltip="Buscar por código"
+                            class="!w-8 !h-8 !min-w-0"
+                            tabindex="-1">
+                        <mat-icon class="icon-size-4">search</mat-icon>
                     </button>
                 </mat-form-field>
+
+                <!-- Dropdown para resultados -->
+                <div *ngIf="showDropdown && filtredEquipos.length > 0"
+                     class="dropdown-container absolute left-0 right-0 z-[9999] mt-1 shadow-lg overflow-hidden border rounded-md bg-white dark:bg-gray-800"
+                     style="backdrop-filter: none; -webkit-backdrop-filter: none;">
+                    <div class="max-h-64 overflow-y-auto">
+                        <div *ngFor="let equipo of filtredEquipos"
+                             class="px-4 py-2 cursor-pointer transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-700"
+                             [ngClass]="{
+                                 'text-gray-900 dark:text-gray-100': true,
+                                 'bg-white dark:bg-gray-800': true
+                             }"
+                             (click)="selectEquipo(equipo)">
+                            {{ equipo.codigo }}
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Tipo de Hardware (solo lectura, se llena automáticamente) -->
-            <mat-form-field class="w-full">
-                <mat-label>Tipo de Hardware</mat-label>
-                <input matInput formControlName="tipoHardware" readonly>
-            </mat-form-field>
+            <!-- Información de Bienes -->
+            <div *ngIf="bienes" class="mt-4">
+                <mat-card appearance="outlined">
+                    <mat-card-content>
+                        <!-- Tipo de hardware -->
+                        <p *ngIf="bienes.data?.tipo; else noData"><b>Tipo hardware:</b> {{ bienes.data.tipo }}</p>
+                        <ng-template #noData><p><b>Tipo hardware:</b> No hay datos</p></ng-template>
+                        
+                        <!-- Descripción -->
+                        <p *ngIf="bienes.data?.observacion; else noDescription"><b>Descripción:</b> {{ bienes.data.observacion }}</p>
+                        <ng-template #noDescription><p><b>Descripción:</b> No hay datos</p></ng-template>
+                        
+                        <!-- Características -->
+                        <p><b>Características:</b></p>
+                        <ul *ngIf="bienes.data?.caracteristicas; else noCharacteristics">
+                            <li><b>Marca:</b> {{ bienes.data.caracteristicas.MARCA }}</li>
+                            <li><b>Modelo:</b> {{ bienes.data.caracteristicas.MODELO }}</li>
+                            <li><b>Serie:</b> {{ bienes.data.caracteristicas.SERIE }}</li>
+                        </ul>
+                        <ng-template #noCharacteristics>
+                            <p>No hay datos de características</p>
+                        </ng-template>
+                    </mat-card-content>
+                </mat-card>
+            </div>
         </div>
     </form>
 

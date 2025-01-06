@@ -1,7 +1,7 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, tap, switchMap, catchError, forkJoin } from 'rxjs';
-import { Board, Card, EstadoServicio, TipoServicio } from './scrumboard.models';
+import { BehaviorSubject, Observable, map, tap, switchMap, catchError, forkJoin, of } from 'rxjs';
+import { Board, Card, EstadoServicio, TipoServicio, Equipo } from './scrumboard.models';
 import { environment } from 'environments/environment';
 
 interface UserResponse {
@@ -107,26 +107,26 @@ export class ScrumboardService {
         return this._httpClient.get<ServiceResponse>(`${this.apiUrl}/service/board`, { params }).pipe(
             map(response => {
                 const newCards = response.data.data.map(item => ({
-                    id: item.servicios_id.toString(),
-                    nombreSolicitante: item.nombreSolicitante || '',
-                    solicitante: item.nombreSolicitante || '',
-                    carnet: item.ciSolicitante || '',
-                    cargo: item.cargoSolicitante || '',
-                    tipoSolicitante: item.tipoSolicitante || '',
-                    problema: item.problema || '',
-                    tipo: item.tipo as TipoServicio,
-                    estado: item.estado as EstadoServicio,
-                    tecnicoAsignado: item.tecnicoAsignado || 0,
-                    fechaRegistro: item.fechaRegistro || '',
-                    fechaInicio: item.fechaInicio || '',
-                    fechaTerminado: item.fechaTerminado || '',
-                    informe: item.informe || '',
-                    observacionesProblema: item.observaciones || '',
-                    codigoBienes: item.equipo || '',
-                    oficinaSolicitante: item.oficinaSolicitante || '',
-                    telefonoSolicitante: item.telefonoSolicitante || '',
-                    listId: '',
-                    position: 0
+                        id: item.servicios_id.toString(),
+                        nombreSolicitante: item.nombreSolicitante || '',
+                        solicitante: item.nombreSolicitante || '',
+                        carnet: item.ciSolicitante || '',
+                        cargo: item.cargoSolicitante || '',
+                        tipoSolicitante: item.tipoSolicitante || '',
+                        problema: item.problema || '',
+                        tipo: item.tipo as TipoServicio,
+                        estado: item.estado as EstadoServicio,
+                        tecnicoAsignado: item.tecnicoAsignado || 0,
+                        fechaRegistro: item.fechaRegistro || '',
+                        fechaInicio: item.fechaInicio || '',
+                        fechaTerminado: item.fechaTerminado || '',
+                        informe: item.informe || '',
+                        observacionesProblema: item.observaciones || '',
+                        codigoBienes: item.equipo || '',
+                        oficinaSolicitante: item.oficinaSolicitante || '',
+                        telefonoSolicitante: item.telefonoSolicitante || '',
+                        listId: '',
+                        position: 0
                 } as Card));
 
                 // Mantener las tarjetas existentes de otros estados
@@ -392,9 +392,9 @@ export class ScrumboardService {
                                     100
                                 ).subscribe();
                             }
-                        }
-                    })
-                );
+                }
+            })
+        );
         }
 
         // Si es un objeto Card, usar la implementación antigua
@@ -506,6 +506,49 @@ export class ScrumboardService {
                     const currentCards = this.cards$.value;
                     const updatedCards = currentCards.filter(card => card.id !== serviceId);
                     this.cards$.next(updatedCards);
+                }
+            })
+        );
+    }
+
+    /**
+     * Buscar equipos
+     */
+    buscarEquipos(page: number, limit: number, search: string): Observable<{ equipos_id: number; codigo: string }[]> {
+        const url = `${this._apiUrl}/equipment?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+
+        return this._httpClient.get<any>(url).pipe(
+            map((response) => {
+                if (response?.data?.data) {
+                    return response.data.data
+                        .map((equipment: any) => ({
+                            equipos_id: equipment.equipos_id.equipos_id || 0,
+                            codigo: equipment.equipos_id.codigo?.trim() || '',
+                        }))
+                        .filter(equipo => equipo.codigo !== ''); // Filtrar equipos con código vacío
+                } else {
+                    console.warn('Respuesta inesperada de la API:', response);
+                    return [];
+                }
+            }),
+            catchError((err) => {
+                console.error('Error al buscar equipos:', err);
+                return of([]); // Devuelve un array vacío en caso de error
+            })
+        );
+    }
+
+    /**
+     * Obtener bienes
+     */
+    getBienes(codBienes: string): Observable<any> {
+        const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+        const body = `cod_bienes=${encodeURIComponent(codBienes)}`;
+
+        return this._httpClient.post<any>('http://localhost:3001/api/proxy', body, { headers }).pipe(
+            tap((response) => {
+                if (response && response.data) {
+                    console.log('Bienes encontrados:', response.data);
                 }
             })
         );
