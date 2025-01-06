@@ -14,14 +14,14 @@
                 <!-- Nombre Solicitante -->
                 <mat-form-field class="w-full">
                     <mat-label>Nombre Solicitante</mat-label>
-                    <input matInput formControlName="solicitante" required>
+                    <input matInput formControlName="solicitante">
                 </mat-form-field>
 
                 <!-- Carnet, Cargo y Tipo Solicitante -->
                 <div class="grid grid-cols-3 gap-6 mt-4">
                     <mat-form-field class="w-full">
                         <mat-label>Carnet Solicitante</mat-label>
-                        <input matInput formControlName="carnet" required>
+                        <input matInput formControlName="carnet">
                         <mat-icon matSuffix>search</mat-icon>
                     </mat-form-field>
 
@@ -53,7 +53,7 @@
                 <div class="grid grid-cols-2 gap-6 mt-4">
                     <mat-form-field class="w-full">
                         <mat-label>Tipo de servicio</mat-label>
-                        <mat-select formControlName="tipoServicio" required>
+                        <mat-select formControlName="tipoServicio">
                             <mat-option *ngFor="let tipo of tiposServicio" [value]="tipo">
                                 {{tipo}}
                             </mat-option>
@@ -62,7 +62,7 @@
 
                     <mat-form-field class="w-full">
                         <mat-label>Estado</mat-label>
-                        <input matInput value="SIN ASIGNAR" disabled>
+                        <input matInput formControlName="estado">
                     </mat-form-field>
                 </div>
 
@@ -100,7 +100,7 @@
                 <div class="mt-4">
                     <mat-form-field class="w-full">
                         <mat-label>Problema</mat-label>
-                        <textarea matInput formControlName="problema" rows="4" required></textarea>
+                        <textarea matInput formControlName="problema" rows="4"></textarea>
                     </mat-form-field>
                 </div>
 

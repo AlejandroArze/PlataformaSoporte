@@ -1,24 +1,21 @@
-// Importación de componentes y módulos necesarios de Angular
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'; // Módulos para manejo de formularios
-import { MatButtonModule } from '@angular/material/button'; // Módulo para botones de Material
-import { MatFormFieldModule } from '@angular/material/form-field'; // Módulo para campos de formulario Material
-import { MatInputModule } from '@angular/material/input'; // Módulo para inputs de Material
-import { MatSelectModule } from '@angular/material/select'; // Módulo para selects de Material
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog'; // Módulos para diálogos
-import { MatIconModule } from '@angular/material/icon'; // Módulo para iconos de Material
-import { MatDatepickerModule } from '@angular/material/datepicker'; // Módulo para selector de fechas
-import { MatNativeDateModule } from '@angular/material/core'; // Módulo para manejo de fechas nativas
-import { NgIf, NgFor, DatePipe } from '@angular/common'; // Directivas comunes y pipe de fecha
-import { Card, EstadoServicio, TipoServicio } from '../../scrumboard.models'; // Modelos personalizados
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { Card, TipoServicio } from '../../scrumboard.models';
 
-// Decorador del componente con sus metadatos
 @Component({
-    selector: 'scrumboard-board-add-card', // Selector para usar el componente
-    templateUrl: './add-card.component.html', // Plantilla HTML asociada
-    styleUrls: ['./add-card.component.scss'], // Estilos asociados
-    standalone: true, // Indica que es un componente independiente
-    imports: [ // Array de módulos importados para usar en el componente
+    selector: 'scrumboard-add-card',
+    templateUrl: './add-card.component.html',
+    standalone: true,
+    imports: [
         NgIf,
         NgFor,
         DatePipe,
@@ -33,49 +30,77 @@ import { Card, EstadoServicio, TipoServicio } from '../../scrumboard.models'; //
         ReactiveFormsModule
     ]
 })
-export class AddCardComponent {
-    cardForm: FormGroup; // Formulario reactivo para la tarjeta
-    tiposServicio = Object.values(TipoServicio); // Array con los tipos de servicio disponibles
+export class AddCardComponent implements OnInit {
+    cardForm: FormGroup;
+    tiposServicio = Object.values(TipoServicio);
+    isEdit: boolean;
 
-    // Constructor del componente
     constructor(
-        private _formBuilder: FormBuilder, // Servicio para crear formularios
-        private _dialogRef: MatDialogRef<AddCardComponent> // Referencia al diálogo actual
+        @Inject(MAT_DIALOG_DATA) public data: { card: Card; isEdit: boolean },
+        private dialogRef: MatDialogRef<AddCardComponent>,
+        private _formBuilder: FormBuilder
     ) {
-        // Inicialización del formulario con sus campos
+        this.isEdit = data.isEdit;
+    }
+
+    ngOnInit(): void {
+        // Inicializar el formulario
         this.cardForm = this._formBuilder.group({
-            solicitante: [''], // Campo para el nombre del solicitante
-            carnet: [''], // Campo para el número de carnet
-            cargo: [''], // Campo para el cargo del solicitante
-            tipoSolicitante: [''], // Campo para el tipo de solicitante
-            oficina: [''], // Campo para la oficina
-            telefono: [''], // Campo para el teléfono
-            tipoServicio: [''], // Campo para el tipo de servicio
-            estado: [EstadoServicio.SIN_ASIGNAR], // Estado inicial del servicio
-            tecnicoRegistro: [''], // Campo para el técnico que registra
-            fechaRegistro: [new Date()], // Fecha actual como fecha de registro
-            fechaInicio: [null], // Fecha de inicio del servicio
-            fechaTerminado: [null], // Fecha de finalización del servicio
-            problema: [''], // Descripción del problema
-            observaciones: [''], // Campo para observaciones
-            informe: [''], // Campo para el informe
-            equipo: [''], // Campo para el equipo
-            tipoHardware: [''], // Tipo de hardware
-            descripcion: [''] // Descripción general
+            solicitante: [''],
+            carnet: [''],
+            cargo: [''],
+            tipoSolicitante: [''],
+            oficina: [''],
+            telefono: [''],
+            tipoServicio: [''],
+            estado: ['SIN ASIGNAR'],
+            tecnicoRegistro: [''],
+            fechaRegistro: [new Date()],
+            fechaInicio: [null],
+            fechaTerminado: [null],
+            problema: [''],
+            observaciones: [''],
+            informe: [''],
+            equipo: [''],
+            tipoHardware: [''],
+            descripcion: ['']
         });
+
+        // Si estamos en modo edición, cargar los datos de la tarjeta
+        if (this.isEdit && this.data.card) {
+            this.cardForm.patchValue({
+                solicitante: this.data.card.nombreSolicitante,
+                carnet: this.data.card.carnet,
+                cargo: this.data.card.cargo,
+                tipoSolicitante: this.data.card.tipoSolicitante,
+                oficina: this.data.card.oficinaSolicitante,
+                telefono: this.data.card.telefonoSolicitante,
+                tipoServicio: this.data.card.tipo,
+                estado: this.data.card.estado,
+                tecnicoRegistro: this.data.card.tecnicoAsignado,
+                fechaRegistro: this.data.card.fechaRegistro,
+                fechaInicio: this.data.card.fechaInicio || null,
+                fechaTerminado: this.data.card.fechaTerminado || null,
+                problema: this.data.card.problema,
+                observaciones: this.data.card.observacionesProblema,
+                informe: this.data.card.informe,
+                equipo: this.data.card.codigoBienes,
+                tipoHardware: this.data.card.tipoHardware,
+                descripcion: this.data.card.descripcion
+            });
+        }
     }
 
-    // Método que se ejecuta al enviar el formulario
     onSubmit(): void {
-        const newCard: Partial<Card> = {
-            ...this.cardForm.value, // Copia todos los valores del formulario
-            estado: EstadoServicio.SIN_ASIGNAR // Establece el estado inicial
-        };
-        this._dialogRef.close(newCard); // Cierra el diálogo y envía la nueva tarjeta
+        const formData = this.cardForm.getRawValue();
+        // Asegurarse de que las fechas vacías se envíen como null
+        formData.fechaInicio = formData.fechaInicio || null;
+        formData.fechaTerminado = formData.fechaTerminado || null;
+        
+        this.dialogRef.close(formData);
     }
 
-    // Método para cancelar la operación
     onCancel(): void {
-        this._dialogRef.close(); // Cierra el diálogo sin enviar datos
+        this.dialogRef.close();
     }
 }

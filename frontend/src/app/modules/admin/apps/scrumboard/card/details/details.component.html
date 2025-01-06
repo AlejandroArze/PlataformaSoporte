@@ -1,128 +1,106 @@
-<div class="flex flex-col flex-auto md:w-160 md:min-w-160 max-h-160 -m-6 overflow-y-auto">
-
+<div class="flex flex-col max-h-screen bg-card">
     <!-- Header -->
-    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary">
-        <div class="text-lg font-medium">Tarjeta</div>
-        <button
-            mat-icon-button
-            (click)="matDialogRef.close()"
-            [tabIndex]="-1">
-            <mat-icon
-                class="text-current"
-                [svgIcon]="'heroicons_outline:x-mark'"></mat-icon>
+    <div class="flex items-center justify-between p-8 border-b">
+        <div class="flex items-center">
+            <mat-icon class="icon-size-7 mr-3 text-primary">{{data.isNew ? 'add_circle' : 'edit'}}</mat-icon>
+            <div class="text-2xl font-semibold">{{data.isNew ? 'Nuevo Servicio' : 'Editar Servicio'}}</div>
+        </div>
+        <button mat-icon-button (click)="closeDialog()">
+            <mat-icon>close</mat-icon>
         </button>
     </div>
 
-    <!-- Card form -->
-    <form
-        class="flex flex-col flex-0 items-start w-full p-6 sm:p-8 space-y-6 overflow-y-auto"
-        [formGroup]="cardForm">
+    <!-- Content -->
+    <div class="flex-auto p-8 overflow-y-auto" [formGroup]="form">
+        <div class="grid grid-cols-2 gap-6">
+            <!-- Primera columna -->
+            <div class="flex flex-col gap-6">
+                <mat-form-field class="w-full">
+                    <mat-label>Nombre del Solicitante</mat-label>
+                    <input matInput formControlName="nombreSolicitante">
+                </mat-form-field>
 
-        <!-- Title -->
-        <mat-form-field
-            class="w-full"
-            [subscriptSizing]="'dynamic'">
-            <mat-label>Titulo</mat-label>
-            <textarea
-                matInput
-                [formControlName]="'title'"
-                [rows]="1"
-                cdkTextareaAutosize
-                [cdkAutosizeMinRows]="1">
-            </textarea>
-        </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Carnet</mat-label>
+                    <input matInput formControlName="carnet">
+                </mat-form-field>
 
-        <!-- Description -->
-        <mat-form-field
-            class="w-full"
-            [subscriptSizing]="'dynamic'">
-            <mat-label>Descripción</mat-label>
-            <textarea
-                matInput
-                [formControlName]="'description'"
-                [rows]="1"
-                cdkTextareaAutosize
-                [cdkAutosizeMinRows]="1">
-            </textarea>
-        </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Cargo</mat-label>
+                    <input matInput formControlName="cargo">
+                </mat-form-field>
 
-        <!-- Due date -->
-        <div>
-            <div class="font-medium">Fecha de Vencimiento</div>
-            <div
-                class="relative flex items-center mt-1.5 px-4 leading-9 rounded-full cursor-pointer"
-                [ngClass]="{'text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700': !card.dueDate,
-                            'text-green-800 bg-green-200 dark:text-green-100 dark:bg-green-500': card.dueDate && !isOverdue(card.dueDate),
-                            'text-red-800 bg-red-200 dark:text-red-100 dark:bg-red-500': card.dueDate && isOverdue(card.dueDate)}"
-                (click)="dueDatePicker.open()">
-                <mat-icon
-                    class="icon-size-5 text-current"
-                    [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
-                <span class="ml-2 text-md font-medium">
-                    <ng-container *ngIf="card.dueDate">{{card.dueDate | date:'longDate'}}</ng-container>
-                    <ng-container *ngIf="!card.dueDate">No establecido</ng-container>
-                </span>
-                <mat-form-field
-                    class="fuse-mat-dense invisible absolute inset-0 -mt-2.5 opacity-0 pointer-events-none"
-                    [subscriptSizing]="'dynamic'">
-                    <input
-                        matInput
-                        [formControlName]="'dueDate'"
-                        [matDatepicker]="dueDatePicker">
-                    <mat-datepicker #dueDatePicker>
-                        <mat-datepicker-actions>
-                            <button
-                                mat-button
-                                (click)="cardForm.get('dueDate').setValue(null)"
-                                matDatepickerCancel>
-                                Limpiar
-                            </button>
-                            <button
-                                mat-flat-button
-                                [color]="'primary'"
-                                matDatepickerApply>
-                                Seleccionar
-                            </button>
-                        </mat-datepicker-actions>
-                    </mat-datepicker>
+                <mat-form-field>
+                    <mat-label>Tipo de Solicitante</mat-label>
+                    <input matInput formControlName="tipoSolicitante">
+                </mat-form-field>
+            </div>
+
+            <!-- Segunda columna -->
+            <div class="flex flex-col gap-6">
+                <mat-form-field>
+                    <mat-label>Oficina Solicitante</mat-label>
+                    <input matInput formControlName="oficinaSolicitante">
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Teléfono</mat-label>
+                    <input matInput formControlName="telefonoSolicitante">
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Código de Bienes</mat-label>
+                    <input matInput formControlName="codigoBienes">
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Estado</mat-label>
+                    <mat-select formControlName="estado">
+                        <mat-option value="SIN ASIGNAR">Sin Asignar</mat-option>
+                        <mat-option value="PENDIENTE">Pendiente</mat-option>
+                        <mat-option value="EN PROGRESO">En Progreso</mat-option>
+                        <mat-option value="TERMINADO">Terminado</mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
         </div>
 
-        <!-- Labels -->
-        <div class="w-full">
-            <div class="font-medium">Etiquetas</div>
-            <div class="mt-1 rounded-md border border-gray-300 shadow-sm overflow-hidden">
-                <!-- Header -->
-                <div class="flex items-center my-2 mx-3">
-                    <div class="flex items-center flex-auto min-w-0">
-                        <mat-icon
-                            class="icon-size-5"
-                            [svgIcon]="'heroicons_solid:magnifying-glass'"></mat-icon>
-                        <input
-                            class="min-w-0 ml-2 py-1 border-0"
-                            type="text"
-                            placeholder="Enter label name"
-                            (input)="filterLabels($event)"
-                            (keydown)="filterLabelsInputKeyDown($event)"
-                            [maxLength]="50">
-                    </div>
-                </div>
-                <!-- Available labels -->
-                <div class="max-h-40 leading-none overflow-y-auto border-t">
-                    <!-- Labels -->
-                    <ng-container *ngFor="let label of filteredLabels; trackBy: trackByFn">
-                        <mat-checkbox
-                            class="flex items-center h-10 min-h-10 pl-1 pr-4"
-                            [color]="'primary'"
-                            [checked]="hasLabel(label)"
-                            (change)="toggleProductTag(label, $event)">
-                            {{label.title}}
-                        </mat-checkbox>
-                    </ng-container>
-                </div>
-            </div>
-        </div>
+        <!-- Campos de ancho completo -->
+        <div class="mt-6">
+            <mat-form-field class="w-full">
+                <mat-label>Problema</mat-label>
+                <textarea matInput
+                          formControlName="problema"
+                          [rows]="3"
+                          cdkTextareaAutosize
+                          #autosize="cdkTextareaAutosize"
+                          cdkAutosizeMinRows="3"
+                          cdkAutosizeMaxRows="10"></textarea>
+            </mat-form-field>
 
-    </form>
+            <mat-form-field class="w-full mt-6">
+                <mat-label>Observaciones</mat-label>
+                <textarea matInput
+                          formControlName="observacionesProblema"
+                          [rows]="3"
+                          cdkTextareaAutosize
+                          #autosize="cdkTextareaAutosize"
+                          cdkAutosizeMinRows="3"
+                          cdkAutosizeMaxRows="10"></textarea>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end p-6 px-8 border-t">
+        <button mat-button (click)="closeDialog()">
+            Cancelar
+        </button>
+        <button class="ml-3"
+                mat-flat-button
+                [color]="'primary'"
+                (click)="save()">
+            {{data.isNew ? 'Crear' : 'Guardar'}}
+        </button>
+    </div>
 </div>

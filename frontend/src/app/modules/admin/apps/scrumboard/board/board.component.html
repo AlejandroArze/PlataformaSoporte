@@ -1,19 +1,16 @@
 <div class="absolute inset-0 flex flex-col min-w-0 overflow-hidden">
-
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between p-6 sm:py-8 sm:px-10 border-b bg-card dark:bg-transparent">
-        <!-- Título y Filtros -->
-        <div class="flex flex-col sm:flex-row w-full items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
-            <div class="flex-1">
-                <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-7 sm:leading-10 truncate">
-                    {{board?.title}}
-                </h2>
+    <div class="board-header">
+        <div class="header-content">
+            <div class="title-section">
+                <h2 class="board-title">{{board?.title}}</h2>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="actions-section">
                 <button
                     mat-flat-button
                     [color]="'primary'"
-                    (click)="openNewCardDialog()">
+                    (click)="openNewServiceDialog()"
+                    class="ml-4">
                     <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                     <span class="ml-2">Nuevo Servicio</span>
                 </button>
@@ -25,26 +22,23 @@
     </div>
 
     <!-- Board -->
-    <div class="flex flex-col flex-auto h-full min-h-0">
-        <!-- Main -->
-        <div class="flex flex-auto min-h-0 w-full overflow-x-auto">
-            <div class="flex flex-row gap-4 p-4">
-                <!-- Lists -->
-                <div *ngFor="let list of lists"
-                     [class.hidden]="isListHidden(list.id)"
-                     class="flex flex-col w-80 min-w-80 max-w-80 bg-card dark:bg-[#1e1e2d] rounded-lg">
-
-                    <!-- List header -->
-                    <div class="flex items-center justify-between p-4 border-b dark:border-gray-700">
-                        <div class="flex items-center">
-                            <div class="font-medium text-secondary dark:text-gray-400">{{list.title}}</div>
-                            <div class="ml-2 px-2 py-0.5 rounded text-sm bg-gray-100 dark:bg-[#2B2B3F] dark:text-gray-400">
-                                {{list.cards?.length || 0}}
-                            </div>
-                        </div>
-
-                        <!-- Menu -->
-                        <button mat-icon-button [matMenuTriggerFor]="listMenu" class="dark:text-gray-400">
+    <div class="board-container">
+        <div class="lists-container">
+            <!-- Lists -->
+            <div *ngFor="let list of lists" 
+                 [id]="list.id" 
+                 class="list-wrapper"
+                 [class.hidden]="isListHidden(list.id)">
+                
+                <!-- List header -->
+                <div class="list-header">
+                    <div class="list-title">
+                        <span class="title">{{list.title}}</span>
+                    </div>
+                    
+                    <div class="list-header-actions">
+                        <span class="counter">{{listStates[list.id].total || 0}}</span>
+                        <button mat-icon-button [matMenuTriggerFor]="listMenu" class="list-menu">
                             <mat-icon>more_vert</mat-icon>
                         </button>
                         <mat-menu #listMenu="matMenu">
@@ -54,41 +48,71 @@
                             </button>
                         </mat-menu>
                     </div>
+                </div>
+                
+                <!-- List content -->
+                <div class="list-cards" 
+                     cdkDropList 
+                     [id]="list.id"
+                     [cdkDropListData]="list.cards"
+                     (cdkDropListDropped)="cardDropped($event)">
+                    
+                    <scrumboard-card *ngFor="let card of list.cards"
+                        [card]="card"
+                        cdkDrag>
+                    </scrumboard-card>
 
-                    <!-- List content -->
-                    <div class="flex flex-col flex-auto p-2 overflow-y-auto">
-                        <!-- Cards -->
-                        <div class="flex flex-col gap-2">
-                            <ng-container *ngFor="let card of list.cards">
-                                <scrumboard-card
-                                    [card]="card"
-                                    [boardId]="board.id">
-                                </scrumboard-card>
-                            </ng-container>
+                    <!-- Paginación -->
+                    <div *ngIf="listStates[list.id].total > listStates[list.id].limit" 
+                         class="pagination-controls">
+                        <div class="pagination-info">
+                            <div class="items-info">
+                                {{getStartIndex(list.id)}} - {{getEndIndex(list.id)}} de {{listStates[list.id].total}} 
+                            
+                               - Página {{listStates[list.id].page}} de {{getTotalPages(list.id)}}
+                            </div>
                         </div>
-                        
-                        <!-- Add card button -->
-                        <button 
-                            class="mt-2 p-2 text-left text-secondary dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#2B2B3F] rounded-lg"
-                            (click)="openNewCardDialog()">
-                            <span class="inline-flex items-center">
-                                <mat-icon class="icon-size-5 mr-2">add</mat-icon>
-                                Add another card
-                            </span>
-                        </button>
+                        <div class="pagination-buttons">
+                            <button mat-icon-button 
+                                    [disabled]="listStates[list.id].page === 1"
+                                    (click)="goToPage(list.id, 1)"
+                                    matTooltip="Primera página">
+                                <mat-icon>first_page</mat-icon>
+                            </button>
+                            <button mat-icon-button 
+                                    [disabled]="listStates[list.id].page === 1"
+                                    (click)="goToPage(list.id, listStates[list.id].page - 1)"
+                                    matTooltip="Página anterior">
+                                <mat-icon>chevron_left</mat-icon>
+                            </button>
+                            <button mat-icon-button 
+                                    [disabled]="listStates[list.id].page >= getTotalPages(list.id)"
+                                    (click)="goToPage(list.id, listStates[list.id].page + 1)"
+                                    matTooltip="Página siguiente">
+                                <mat-icon>chevron_right</mat-icon>
+                            </button>
+                            <button mat-icon-button 
+                                    [disabled]="listStates[list.id].page >= getTotalPages(list.id)"
+                                    (click)="goToPage(list.id, getTotalPages(list.id))"
+                                    matTooltip="Última página">
+                                <mat-icon>last_page</mat-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Hidden Lists Menu -->
-                <div *ngIf="hiddenLists.length > 0"
-                     class="flex flex-col w-80 min-w-80 max-w-80 bg-card dark:bg-[#1e1e2d] rounded-lg p-4">
-                    <div class="font-medium mb-4 dark:text-gray-400">Listas Ocultas</div>
-                    <div *ngFor="let listId of hiddenLists" class="mb-2">
-                        <button mat-button class="w-full justify-start dark:text-gray-400" (click)="showList(listId)">
-                            <mat-icon class="mr-2">visibility</mat-icon>
-                            <span>Mostrar {{ getListTitle(listId) }}</span>
-                        </button>
-                    </div>
+            <!-- Hidden Lists Menu -->
+            <div *ngIf="hiddenLists.length > 0"
+                 class="hidden-lists-menu">
+                <div class="title">Listas Ocultas</div>
+                <div *ngFor="let listId of hiddenLists">
+                    <button mat-button 
+                            class="hidden-list-item"
+                            (click)="showList(listId)">
+                        <mat-icon class="mr-2">visibility</mat-icon>
+                        <span>Mostrar {{ getListTitle(listId) }}</span>
+                    </button>
                 </div>
             </div>
         </div>

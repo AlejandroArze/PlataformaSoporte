@@ -1,51 +1,42 @@
 import { Component, Input } from '@angular/core';
-import { NgClass, NgIf } from '@angular/common';
+import { NgClass, NgIf, DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { Card, EstadoServicio } from '../scrumboard.models';
+import { AddCardComponent } from '../board/add-card/add-card.component';
 
 @Component({
     selector: 'scrumboard-card',
     templateUrl: './card.component.html',
+    styleUrls: ['./card.component.scss'],
     standalone: true,
     imports: [
         NgIf,
         NgClass,
-        MatIconModule
+        DatePipe,
+        MatIconModule,
+        MatButtonModule
     ]
 })
 export class ScrumboardCardComponent {
     @Input() card: Card;
-    @Input() boardId: string;
-
-    // Hacer el enum disponible en el template
     protected EstadoServicio = EstadoServicio;
 
-    /**
-     * Devuelve el color de estado para la tarjeta
-     */
-    getStatusColor(): string {
-        switch (this.card.estado) {
-            case EstadoServicio.SIN_ASIGNAR:
-                return 'bg-gray-500';
-            case EstadoServicio.PENDIENTE:
-                return 'bg-orange-500';
-            case EstadoServicio.EN_PROGRESO:
-                return 'bg-blue-500';
-            case EstadoServicio.TERMINADO:
-                return 'bg-green-500';
-            default:
-                return 'bg-gray-500';
-        }
-    }
+    constructor(private _dialog: MatDialog) {}
 
-    /**
-     * Formatea la fecha en formato relativo
-     */
-    getRelativeDate(date: Date): string {
-        if (!date) {
-            return '';
-        }
-        // Aquí podrías usar una librería como date-fns o moment para formatear la fecha
-        return new Date(date).toLocaleDateString();
+    openCardDetails(): void {
+        this._dialog.open(AddCardComponent, {
+            data: {
+                card: this.card,
+                isEdit: true
+            },
+            width: '700px',
+            height: 'auto',
+            maxHeight: '90vh',
+            panelClass: ['service-dialog', 'dark'],
+            autoFocus: false,
+            disableClose: true
+        });
     }
 }

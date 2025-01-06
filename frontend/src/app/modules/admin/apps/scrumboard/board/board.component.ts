@@ -13,6 +13,15 @@ import { ScrumboardService } from '../scrumboard.service';
 import { BoardFiltersComponent } from './board-filters/board-filters.component';
 import { ScrumboardCardComponent } from '../card/card.component';
 import { AddCardComponent } from './add-card/add-card.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ScrumboardCardDetailsComponent } from '../card/details/details.component';
+
+interface ListState {
+    page: number;
+    limit: number;
+    total: number;
+    loading: boolean;
+}
 
 @Component({
     selector: 'scrumboard-board',
@@ -31,7 +40,8 @@ import { AddCardComponent } from './add-card/add-card.component';
         MatMenuModule,
         DragDropModule,
         BoardFiltersComponent,
-        ScrumboardCardComponent
+        ScrumboardCardComponent,
+        MatTooltipModule
     ]
 })
 export class ScrumboardBoardComponent implements OnInit, OnDestroy {
@@ -47,6 +57,7 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
     tecnicos: any[] = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     hiddenLists: string[] = [];
+    selectedTecnicoId: string | null = null;
 
     private readonly HIDDEN_LISTS_KEY = 'scrumboard_hidden_lists';
 
@@ -77,6 +88,13 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
         }
     ];
 
+    listStates: { [key: string]: ListState } = {
+        'sin-asignar': { page: 1, limit: 10, total: 0, loading: false },
+        'pendiente': { page: 1, limit: 10, total: 0, loading: false },
+        'en-progreso': { page: 1, limit: 10, total: 0, loading: false },
+        'terminado': { page: 1, limit: 10, total: 0, loading: false }
+    };
+
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
@@ -100,15 +118,12 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                 lists: this.lists
             };
 
-            // Obtener los servicios
-            this._scrumboardService.getServices(this.getTipoServicio(boardId))
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe(cards => {
-                    this.distributeCards(cards);
-                    this._changeDetectorRef.markForCheck();
-                });
+            // Cargar las tarjetas para cada lista
+            this.lists.forEach(list => {
+                this.loadCardsForList(list.id, true);
+            });
 
-            // Cargar técnicos usando el método unificado
+            // Cargar técnicos
             this._scrumboardService.getTecnicos()
                 .pipe(takeUntil(this._unsubscribeAll))
                 .subscribe(tecnicos => {
@@ -140,19 +155,8 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
      * Manejar cambio de filtro de técnico
      */
     onTecnicoFilterChange(tecnicoId: number): void {
-        const boardId = this._activatedRoute.snapshot.paramMap.get('boardId');
-        if (boardId) {
-            this._scrumboardService.getServices(
-                this.getTipoServicio(boardId), 
-                tecnicoId ? tecnicoId.toString() : undefined
-            )
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(cards => {
-                this.filteredCards = cards;
-                this.distributeCards(cards);
-                this._changeDetectorRef.markForCheck();
-            });
-        }
+        this.selectedTecnicoId = tecnicoId ? tecnicoId.toString() : null;
+        this.reloadAllLists();
     }
 
     /**
@@ -276,26 +280,157 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
      * Ocultar lista
      */
     hideList(listId: string): void {
-        this.hiddenLists.push(listId);
-        this.saveHiddenListsToStorage();
-        this._changeDetectorRef.markForCheck();
+        if (!this.hiddenLists.includes(listId)) {
+            this.hiddenLists.push(listId);
+            this.saveHiddenListsToStorage();
+            this._changeDetectorRef.markForCheck();
+        }
     }
 
     /**
      * Mostrar lista
      */
     showList(listId: string): void {
-        this.hiddenLists = this.hiddenLists.filter(id => id !== listId);
-        this.saveHiddenListsToStorage();
-        this._changeDetectorRef.markForCheck();
+        const index = this.hiddenLists.indexOf(listId);
+        if (index !== -1) {
+            this.hiddenLists.splice(index, 1);
+            this.saveHiddenListsToStorage();
+            this._changeDetectorRef.markForCheck();
+        }
     }
 
+    /**
+     * Verificar si una lista está oculta
+     */
     isListHidden(listId: string): boolean {
         return this.hiddenLists.includes(listId);
     }
 
+    /**
+     * Obtener título de una lista
+     */
     getListTitle(listId: string): string {
         const list = this.lists.find(l => l.id === listId);
         return list ? list.title : '';
+    }
+
+    /**
+     * Obtener total de páginas para una lista
+     */
+    getTotalPages(listId: string): number {
+        const state = this.listStates[listId];
+        return Math.ceil(state.total / state.limit);
+    }
+
+    /**
+     * Ir a una página específica
+     */
+    goToPage(listId: string, page: number): void {
+        const state = this.listStates[listId];
+        const totalPages = this.getTotalPages(listId);
+
+        if (page < 1 || page > totalPages || state.loading) {
+            return;
+        }
+
+        state.page = page;
+        this.loadCardsForList(listId, true);
+    }
+
+    /**
+     * Cargar tarjetas para una lista específica
+     */
+    loadCardsForList(listId: string, reset: boolean = false): void {
+        const state = this.listStates[listId];
+        if (state.loading) return;
+
+        state.loading = true;
+        const list = this.lists.find(l => l.id === listId);
+        
+        console.log('Cargando tarjetas para lista:', {
+            listId,
+            estado: list.title,
+            tipoServicio: this.getTipoServicio(this.board.id),
+            tecnicoId: this.selectedTecnicoId,
+            page: state.page,
+            limit: state.limit
+        });
+
+        this._scrumboardService.getCardsByStatus(
+            this.getTipoServicio(this.board.id),
+            list.title as EstadoServicio,
+            this.selectedTecnicoId,
+            state.page,
+            state.limit
+        ).pipe(
+            takeUntil(this._unsubscribeAll)
+        ).subscribe({
+            next: (response) => {
+                list.cards = response.cards;
+                state.total = response.total;
+                state.loading = false;
+                this._changeDetectorRef.markForCheck();
+            },
+            error: (error) => {
+                console.error('Error al cargar tarjetas:', error);
+                state.loading = false;
+                this._changeDetectorRef.markForCheck();
+            }
+        });
+    }
+
+    /**
+     * Recargar todas las listas
+     */
+    reloadAllLists(): void {
+        Object.keys(this.listStates).forEach(listId => {
+            this.listStates[listId].page = 1;
+            this.loadCardsForList(listId, true);
+        });
+    }
+
+    /**
+     * Obtener índice inicial de los items mostrados
+     */
+    getStartIndex(listId: string): number {
+        const state = this.listStates[listId];
+        return ((state.page - 1) * state.limit) + 1;
+    }
+
+    /**
+     * Obtener índice final de los items mostrados
+     */
+    getEndIndex(listId: string): number {
+        const state = this.listStates[listId];
+        const endIndex = state.page * state.limit;
+        return Math.min(endIndex, state.total);
+    }
+
+    /**
+     * Abrir diálogo de nuevo servicio
+     */
+    openNewServiceDialog(): void {
+        const dialogRef = this._dialog.open(AddCardComponent, {
+            data: {
+                card: {
+                    tipo: this.getTipoServicio(this.board.id),
+                    estado: 'SIN ASIGNAR',
+                    fechaRegistro: new Date().toISOString()
+                },
+                isEdit: false
+            },
+            width: '700px',
+            height: 'auto',
+            maxHeight: '90vh',
+            panelClass: ['service-dialog', 'dark'],
+            autoFocus: false,
+            disableClose: true
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.reloadAllLists();
+            }
+        });
     }
 }

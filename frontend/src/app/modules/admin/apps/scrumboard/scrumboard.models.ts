@@ -32,19 +32,21 @@ export interface Card {
     codigoBienes: string;
     oficinaSolicitante: string;
     telefonoSolicitante: string;
-    listId?: string;
-    position?: number;
+    listId: string;
+    position: number;
+    tipoHardware?: string;
+    descripcion?: string;
 }
 
 export enum EstadoServicio {
-    SIN_ASIGNAR = 'Sin asignar',
-    PENDIENTE = 'Pendiente',
-    EN_PROGRESO = 'En progreso',
-    TERMINADO = 'Terminado'
+    SIN_ASIGNAR = 'SIN ASIGNAR',
+    PENDIENTE = 'PENDIENTE',
+    EN_PROGRESO = 'EN PROGRESO',
+    TERMINADO = 'TERMINADO'
 }
 
 export enum TipoServicio {
-    ASISTENCIA_SITIO = 'Asistencia en sitio',
-    SERVICIO_LABORATORIO = 'Servicio en laboratorio',
-    ASISTENCIA_REMOTA = 'Asistencia remota'
+    ASISTENCIA_SITIO = 'ASISTENCIA',
+    SERVICIO_LABORATORIO = 'EN LABORATORIO',
+    ASISTENCIA_REMOTA = 'REMOTA'
 }

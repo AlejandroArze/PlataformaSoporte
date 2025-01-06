@@ -1,37 +1,22 @@
-SCRUMBOARD -> BOARDS -> LIST -> CARD
-
-<div class="flex flex-col p-4 shadow rounded-lg bg-card">
-    <!-- Título y estado -->
-    <div class="flex items-center justify-between mb-2">
-        <span class="font-medium">{{card.nombreSolicitante}}</span>
-        <span class="px-2 py-1 rounded text-xs" 
-              [ngClass]="{
-                'bg-green-100 text-green-800': card.estado === EstadoServicio.TERMINADO,
-                'bg-yellow-100 text-yellow-800': card.estado === EstadoServicio.EN_PROGRESO,
-                'bg-red-100 text-red-800': card.estado === EstadoServicio.PENDIENTE,
-                'bg-gray-100 text-gray-800': card.estado === EstadoServicio.SIN_ASIGNAR
-              }">
-            {{card.estado}}
-        </span>
+<div class="card" [ngClass]="{'dark:bg-gray-800': true}" (click)="openCardDetails()">
+    <div class="card-header">
+        <div class="flex items-center">
+            <div class="status-indicator" [ngClass]="card.estado.toLowerCase()"></div>
+            <span class="ml-2 font-medium">{{card.nombreSolicitante}}</span>
+        </div>
     </div>
-
-    <!-- Detalles -->
-    <div class="space-y-2">
-        <!-- Problema -->
-        <div class="text-sm" *ngIf="card.problema">
-            {{card.problema}}
-        </div>
-
-        <!-- Oficina Solicitante -->
-        <div class="flex items-center text-sm" *ngIf="card.oficinaSolicitante">
-            <mat-icon class="icon-size-4 mr-1">business</mat-icon>
-            <span>{{card.oficinaSolicitante}}</span>
-        </div>
-
-        <!-- Teléfono Solicitante -->
-        <div class="flex items-center text-sm" *ngIf="card.telefonoSolicitante">
-            <mat-icon class="icon-size-4 mr-1">phone</mat-icon>
-            <span>{{card.telefonoSolicitante}}</span>
+    <div class="card-content">
+        <p class="description line-clamp-3">{{card.problema}}</p>
+        <div class="mt-2 flex items-center justify-between text-sm text-gray-500">
+            <span>{{card.fechaRegistro | date:'shortDate'}} • Técnico: {{card.tecnicoAsignado}}</span>
+            <div class="flex items-center gap-3" *ngIf="card.tecnicoAsignado">
+                <span mat-button 
+                        class="estado-badge" 
+                        [ngClass]="card.estado.toLowerCase().replace(' ', '-')"
+                        disableRipple>
+                    {{card.estado}}
+                </span>
+            </div>
         </div>
     </div>
 </div>
