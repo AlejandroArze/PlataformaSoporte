@@ -112,9 +112,12 @@ export class FinanceComponent implements OnInit, OnDestroy {
     }
 
     ngAfterViewInit() {
+        // Suscribirse a los cambios de página
         this.paginator.page
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(() => {
+                // Actualizar el tamaño de página
+                this.pageSize = this.paginator.pageSize;
                 this.loadPage();
             });
     }
@@ -128,6 +131,8 @@ export class FinanceComponent implements OnInit, OnDestroy {
         this.currentPage = 0;
         if (this.paginator) {
             this.paginator.pageIndex = 0;
+            // Asegurarse de que pageSize esté sincronizado
+            this.pageSize = this.paginator.pageSize;
         }
         this.loadPage();
     }
@@ -381,3 +386,4 @@ export class FinanceComponent implements OnInit, OnDestroy {
         return `${date.getDate()} de ${meses[date.getMonth()]} de ${date.getFullYear()}`;
     }
 }
+

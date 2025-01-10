@@ -439,6 +439,20 @@ class ServiceController {
             });
         }
     }
+    static async getMetrics(req, res) {
+        try {
+            const metrics = await ServiceService.getServiceMetrics(req.query);
+            return jsonResponse.successResponse(
+                res,
+                200,
+                "Métricas de servicios obtenidas exitosamente",
+                metrics
+            );
+        } catch (error) {
+            console.error('Controller Error:', error);
+            return jsonResponse.errorResponse(res, 500, error.message);
+        }
+    }
 }
 
 

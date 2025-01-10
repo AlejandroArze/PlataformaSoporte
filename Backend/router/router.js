@@ -63,19 +63,21 @@ router.delete("/equipment/:equipos_id", equipment.destroy);
 const service = require("../controller/service");
 
 // Rutas de servicio
-// Primero las rutas específicas
+// 1. Primero TODAS las rutas específicas
 router.get("/service/board", service.getServicesByTypeAndTechnician);
 router.get("/service/date-range", service.getServicesByDateRange);
+router.get("/service/metrics", service.getMetrics);
 
-// Luego las rutas con parámetros
+// 2. Luego la ruta de paginación
+router.get('/service', service.paginate);
+
+// 3. Después las rutas con parámetros
 router.get("/service/:servicios_id", service.show);
 router.put("/service/:servicios_id", service.update);
 router.delete("/service/:servicios_id", service.destroy);
 
-// Y finalmente las rutas genéricas
+// 4. Finalmente la ruta POST
 router.post("/service", service.store);
-router.get('/service', service.paginate);
-
 
 
 //-----------------------------------------------------------------------------------------------------------

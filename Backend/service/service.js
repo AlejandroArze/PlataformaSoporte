@@ -339,6 +339,169 @@ class ServiceService {
             return jsonResponse.errorResponse(res, 500, error.message);
         }
     }
+
+    static async getServiceMetrics(params) {
+        try {
+            const { fechaInicio, fechaFin, tipo, tecnicoAsignado, estado } = params;
+            const whereConditions = {};
+
+            // Agregar filtros según los parámetros recibidos
+            if (fechaInicio && fechaFin) {
+                whereConditions.fechaRegistro = {
+                    [Op.between]: [
+                        decodeURIComponent(fechaInicio).trim(),
+                        decodeURIComponent(fechaFin).trim()
+                    ]
+                };
+            }
+
+            if (tipo && tipo !== 'null' && tipo !== 'undefined') {
+                whereConditions.tipo = {
+                    [Op.iLike]: `%${decodeURIComponent(tipo).trim()}%`
+                };
+            }
+
+            if (tecnicoAsignado && tecnicoAsignado !== 'null') {
+                whereConditions.tecnicoAsignado = parseInt(tecnicoAsignado, 10);
+            }
+
+            if (estado && estado !== 'null' && estado !== 'undefined') {
+                whereConditions.estado = {
+                    [Op.iLike]: `%${decodeURIComponent(estado).trim()}%`
+                };
+            }
+
+            // 1. Distribución por tipo de servicio
+            const serviciosPorTipo = await Service.findAll({
+                attributes: [
+                    'tipo',
+                    [sequelize.fn('COUNT', sequelize.col('servicios_id')), 'cantidad'],
+                    [
+                        sequelize.literal('ROUND(CAST(COUNT(*) AS DECIMAL) * 100 / NULLIF((SELECT COUNT(*) FROM servicios), 0), 2)'),
+                        'porcentaje'
+                    ]
+                ],
+                where: whereConditions,
+                group: ['tipo'],
+                order: [[sequelize.fn('COUNT', sequelize.col('servicios_id')), 'DESC']]
+            });
+
+            // 2. Métricas por técnico
+            const metricasPorTecnico = await Service.findAll({
+                attributes: [
+                    'tecnicoAsignado',
+                    [sequelize.fn('COUNT', sequelize.col('servicios_id')), 'total_servicios'],
+                    [
+                        sequelize.literal(`SUM(CASE WHEN estado = 'TERMINADO' THEN 1 ELSE 0 END)`),
+                        'servicios_completados'
+                    ],
+                    [
+                        sequelize.literal(`
+                            EXTRACT(EPOCH FROM AVG(
+                                CASE 
+                                    WHEN "fechaTerminado" IS NOT NULL AND "fechaInicio" IS NOT NULL 
+                                    THEN GREATEST("fechaTerminado"::timestamp, "fechaInicio"::timestamp) - 
+                                         LEAST("fechaTerminado"::timestamp, "fechaInicio"::timestamp)
+                                END
+                            ))
+                        `),
+                        'tiempo_promedio_resolucion'
+                    ]
+                ],
+                where: {
+                    ...whereConditions,
+                    tecnicoAsignado: { [Op.not]: null }
+                },
+                group: ['tecnicoAsignado']
+            });
+
+            // 3. Tiempo promedio de resolución por tipo
+            const tiempoResolucionPorTipo = await Service.findAll({
+                attributes: [
+                    'tipo',
+                    [
+                        sequelize.literal(`
+                            EXTRACT(EPOCH FROM AVG(
+                                CASE 
+                                    WHEN "fechaTerminado" IS NOT NULL AND "fechaInicio" IS NOT NULL 
+                                    THEN GREATEST("fechaTerminado"::timestamp, "fechaInicio"::timestamp) - 
+                                         LEAST("fechaTerminado"::timestamp, "fechaInicio"::timestamp)
+                                END
+                            ))
+                        `),
+                        'tiempo_promedio'
+                    ],
+                    [sequelize.fn('COUNT', sequelize.col('servicios_id')), 'total_servicios']
+                ],
+                where: {
+                    ...whereConditions,
+                    fechaTerminado: { [Op.not]: null },
+                    fechaInicio: { [Op.not]: null }
+                },
+                group: ['tipo']
+            });
+
+            // 4. Resumen general
+            const resumenGeneral = await Service.findAll({
+                attributes: [
+                    [sequelize.fn('COUNT', sequelize.col('servicios_id')), 'total_servicios'],
+                    [
+                        sequelize.literal(`SUM(CASE WHEN estado = 'TERMINADO' THEN 1 ELSE 0 END)`),
+                        'servicios_terminados'
+                    ],
+                    [
+                        sequelize.literal(`
+                            EXTRACT(EPOCH FROM AVG(
+                                CASE 
+                                    WHEN "fechaTerminado" IS NOT NULL AND "fechaInicio" IS NOT NULL 
+                                    THEN GREATEST("fechaTerminado"::timestamp, "fechaInicio"::timestamp) - 
+                                         LEAST("fechaTerminado"::timestamp, "fechaInicio"::timestamp)
+                                END
+                            ))
+                        `),
+                        'tiempo_promedio_general'
+                    ]
+                ],
+                where: whereConditions
+            });
+
+            // Procesar y formatear los datos para los gráficos
+            const chartData = {
+                resumen: {
+                    total_servicios: parseInt(resumenGeneral[0].dataValues.total_servicios) || 0,
+                    servicios_terminados: parseInt(resumenGeneral[0].dataValues.servicios_terminados) || 0,
+                    tiempo_promedio_general: parseFloat(resumenGeneral[0].dataValues.tiempo_promedio_general) / 3600 || 0
+                },
+                distribucionTipos: {
+                    labels: serviciosPorTipo.map(item => item.tipo || 'Sin tipo'),
+                    data: serviciosPorTipo.map(item => ({
+                        tipo: item.tipo || 'Sin tipo',
+                        cantidad: parseInt(item.get('cantidad')) || 0,
+                        porcentaje: parseFloat(item.get('porcentaje')) || 0
+                    }))
+                },
+                rendimientoTecnicos: await Promise.all(metricasPorTecnico.map(async item => {
+                    const tecnico = await sequelize.models.User.findByPk(item.tecnicoAsignado);
+                    return {
+                        tecnico: tecnico ? `${tecnico.nombres} ${tecnico.apellidos}` : `Técnico ${item.tecnicoAsignado}`,
+                        total_servicios: parseInt(item.get('total_servicios')) || 0,
+                        completados: parseInt(item.get('servicios_completados')) || 0,
+                        tiempo_promedio: parseFloat(item.get('tiempo_promedio_resolucion')) / 3600 || 0
+                    };
+                })),
+                tiemposResolucion: tiempoResolucionPorTipo.map(item => ({
+                    tipo: item.tipo || 'Sin tipo',
+                    tiempo_promedio_horas: parseFloat(item.get('tiempo_promedio')) / 3600 || 0,
+                    total_servicios: parseInt(item.get('total_servicios')) || 0
+                }))
+            };
+
+            return chartData;
+        } catch (error) {
+            console.error("Error al obtener métricas de servicios:", error);
+            throw error;
+        }
+    }
 }
 
 module.exports = ServiceService;
