@@ -6,20 +6,26 @@
             <!-- Fecha Inicio -->
             <div class="flex flex-col">
                 <label class="text-sm mb-2">Fecha Inicio</label>
-                <input 
-                    type="date" 
-                    class="form-input px-4 py-2 rounded-lg border"
-                    [(ngModel)]="fechaInicio">
+                <mat-form-field class="w-full">
+                    <input matInput [matDatepicker]="pickerInicio" 
+                           [(ngModel)]="fechaInicioDisplay"
+                           (dateChange)="onFechaInicioChange($event)">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerInicio></mat-datepicker>
+                </mat-form-field>
             </div>
 
             <!-- Fecha Fin -->
             <div class="flex flex-col">
                 <label class="text-sm mb-2">Fecha Fin</label>
-                <input 
-                    type="date" 
-                    class="form-input px-4 py-2 rounded-lg border"
-                    [(ngModel)]="fechaFin">
-        </div>
+                <mat-form-field class="w-full">
+                    <input matInput [matDatepicker]="pickerFin" 
+                           [(ngModel)]="fechaFinDisplay"
+                           (dateChange)="onFechaFinChange($event)">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerFin></mat-datepicker>
+                </mat-form-field>
+            </div>
 
             <!-- Tipo de servicio -->
             <div class="flex flex-col">
@@ -49,8 +55,8 @@
             </div>
         </div>
 
-        <!-- Botón Consultar -->
-        <div class="w-full flex justify-start mb-8">
+        <!-- Botones -->
+        <div class="w-full flex justify-start gap-4 mb-8">
             <button 
                 mat-raised-button 
                 color="primary"
@@ -58,12 +64,30 @@
                 (click)="consultar()">
                 CONSULTAR
             </button>
-                </div>
+
+            <button 
+                mat-raised-button 
+                color="accent"
+                class="px-8"
+                (click)="generarPDF()"
+                [disabled]="!dataSource.data.length">
+                <mat-icon class="mr-2">print</mat-icon>
+                IMPRIMIR
+            </button>
+        </div>
 
         <!-- Tabla de resultados -->
         <div class="w-full bg-card shadow rounded-2xl overflow-hidden">
             <table mat-table [dataSource]="dataSource" class="w-full">
                 
+                <!-- Index Column -->
+                <ng-container matColumnDef="index">
+                    <th mat-header-cell *matHeaderCellDef> # </th>
+                    <td mat-cell *matCellDef="let row; let i = index"> 
+                        {{paginator.pageIndex * paginator.pageSize + i + 1}} 
+                    </td>
+                </ng-container>
+
                 <!-- Número Column -->
                 <ng-container matColumnDef="numero">
                     <th mat-header-cell *matHeaderCellDef> Número </th>
@@ -73,13 +97,13 @@
                 <!-- Tipo Servicio Column -->
                 <ng-container matColumnDef="tipoServicio">
                     <th mat-header-cell *matHeaderCellDef> Tipo de Servicio </th>
-                    <td mat-cell *matCellDef="let row"> {{row.tipoServicio}} </td>
+                    <td mat-cell *matCellDef="let row"> {{row.tipo}} </td>
                 </ng-container>
 
                 <!-- Técnico Asignado Column -->
                 <ng-container matColumnDef="tecnicoAsignado">
                     <th mat-header-cell *matHeaderCellDef> Técnico Asignado </th>
-                    <td mat-cell *matCellDef="let row"> {{row.tecnicoAsignado}} </td>
+                    <td mat-cell *matCellDef="let row"> {{getTecnicoNombre(row.tecnicoAsignado)}} </td>
                 </ng-container>
 
                 <!-- Fecha Inicio Column -->
@@ -97,13 +121,22 @@
                 <!-- Solicitante Column -->
                 <ng-container matColumnDef="solicitante">
                     <th mat-header-cell *matHeaderCellDef> Solicitante </th>
-                    <td mat-cell *matCellDef="let row"> {{row.solicitante}} </td>
+                    <td mat-cell *matCellDef="let row"> {{row.nombreSolicitante}} </td>
                 </ng-container>
 
                 <!-- Header and Row Definitions -->
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
+            
+            <!-- Paginador -->
+            <mat-paginator
+                [length]="totalItems"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                [showFirstLastButtons]="true"
+                aria-label="Seleccionar página">
+            </mat-paginator>
         </div>
 
     </div>

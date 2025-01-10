@@ -258,6 +258,87 @@ class ServiceService {
             return jsonResponse.errorResponse(res, 500, error.message);
         }
     }
+
+    static async getServicesByDateRangeAndFilters(req, res) {
+        try {
+            const {
+                fechaInicio,
+                fechaFin,
+                tipo,
+                tecnicoAsignado,
+                estado,
+                page = 1,
+                limit = 10
+            } = req.query;
+
+            console.log('Query params:', { fechaInicio, fechaFin, tipo, tecnicoAsignado, estado, page, limit });
+
+            const whereConditions = {};
+
+            // Agregar filtro de rango de fechas si se proporcionan
+            if (fechaInicio && fechaFin) {
+                whereConditions.fechaRegistro = {
+                    [Op.between]: [
+                        decodeURIComponent(fechaInicio).trim(),
+                        decodeURIComponent(fechaFin).trim()
+                    ]
+                };
+            }
+
+            // Agregar filtro de tipo si se proporciona
+            if (tipo && tipo !== 'null' && tipo !== 'undefined') {
+                whereConditions.tipo = {
+                    [Op.iLike]: `%${decodeURIComponent(tipo).trim()}%`
+                };
+            }
+
+            // Agregar filtro de técnico si se proporciona
+            if (tecnicoAsignado && tecnicoAsignado !== 'null') {
+                whereConditions.tecnicoAsignado = parseInt(tecnicoAsignado, 10);
+            }
+
+            // Agregar filtro de estado si se proporciona
+            if (estado && estado !== 'null' && estado !== 'undefined') {
+                whereConditions.estado = {
+                    [Op.iLike]: `%${decodeURIComponent(estado).trim()}%`
+                };
+            }
+
+            console.log('Where conditions:', whereConditions);
+
+            const { count, rows } = await Service.findAndCountAll({
+                where: whereConditions,
+                order: [['fechaRegistro', 'DESC']],
+                limit: parseInt(limit),
+                offset: (parseInt(page) - 1) * parseInt(limit),
+                raw: true
+            });
+
+            return jsonResponse.successResponse(
+                res,
+                200,
+                "Services filtered successfully",
+                {
+                    total: count,
+                    perPage: parseInt(limit),
+                    currentPage: parseInt(page),
+                    totalPages: Math.ceil(count / limit),
+                    data: rows
+                }
+            );
+        } catch (error) {
+            console.error("Service Error:", error);
+            if (error.isJoi) {
+                return jsonResponse.validationResponse(
+                    res,
+                    409,
+                    "Validation error",
+                    error.details.map(err => err.message)
+                );
+            }
+            return jsonResponse.errorResponse(res, 500, error.message);
+        }
+    }
 }
 
 module.exports = ServiceService;

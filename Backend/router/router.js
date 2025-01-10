@@ -64,7 +64,8 @@ const service = require("../controller/service");
 
 // Rutas de servicio
 // Primero las rutas específicas
-router.get("/service/board", service.getServicesByTypeAndTechnician);  // Esta debe ir primero
+router.get("/service/board", service.getServicesByTypeAndTechnician);
+router.get("/service/date-range", service.getServicesByDateRange);
 
 // Luego las rutas con parámetros
 router.get("/service/:servicios_id", service.show);

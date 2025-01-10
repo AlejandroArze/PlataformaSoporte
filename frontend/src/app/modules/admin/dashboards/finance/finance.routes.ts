@@ -8,7 +8,6 @@ export default [
         path     : '',
         component: FinanceComponent,
         resolve  : {
-            data: () => inject(FinanceService).getData(),
         },
     },
 ] as Routes;

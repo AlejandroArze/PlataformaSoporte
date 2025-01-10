@@ -428,6 +428,17 @@ class ServiceController {
             });
         }
     }
+    static async getServicesByDateRange(req, res) {
+        try {
+            console.log('Controller: getServicesByDateRange called');
+            return await ServiceService.getServicesByDateRangeAndFilters(req, res);
+        } catch (error) {
+            console.error('Controller Error:', error);
+            return res.status(500).json({
+                message: error.message
+            });
+        }
+    }
 }
 
 

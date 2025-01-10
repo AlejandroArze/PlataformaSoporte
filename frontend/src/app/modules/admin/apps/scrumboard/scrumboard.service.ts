@@ -155,15 +155,14 @@ export class ScrumboardService {
             .set('search', search);
 
         return this._httpClient.get<UserResponse>(`${this.apiUrl}/user`, { params }).pipe(
-            map(response => [
-                { id: null, nombre: 'Todos' },
-                ...response.data.data
+            map(response => 
+                response.data.data
                     .filter(item => item.usuarios_id.role === 'TECNICO')
                     .map(item => ({
                         id: item.usuarios_id.usuarios_id,
                         nombre: `${item.usuarios_id.nombres} ${item.usuarios_id.apellidos}`
                     }))
-            ])
+            )
         );
     }
 
