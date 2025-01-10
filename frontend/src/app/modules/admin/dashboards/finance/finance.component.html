@@ -3,28 +3,71 @@
 
         <!-- Filtros -->
         <div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <!-- Fecha Inicio -->
-            <div class="flex flex-col">
-                <label class="text-sm mb-2">Fecha Inicio</label>
-                <mat-form-field class="w-full">
-                    <input matInput [matDatepicker]="pickerInicio" 
-                           [(ngModel)]="fechaInicioDisplay"
-                           (dateChange)="onFechaInicioChange($event)">
-                    <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerInicio></mat-datepicker>
-                </mat-form-field>
-            </div>
+            <!-- Fecha Inicio y Fin con botones -->
+            <div class="md:col-span-2 grid grid-cols-1 gap-4">
+                <div class="flex flex-col">
+                    <!-- Campos de fecha -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Fecha Inicio -->
+                        <div class="flex flex-col">
+                            <label class="text-sm mb-2">Fecha Inicio</label>
+                            <mat-form-field class="w-full">
+                                <input matInput [matDatepicker]="pickerInicio" 
+                                       [(ngModel)]="fechaInicioDisplay"
+                                       (dateChange)="onFechaInicioChange($event)"
+                                       [value]="fechaInicioDisplay"
+                                       [placeholder]="formatDisplayDate(fechaInicioDisplay)">
+                                <mat-datepicker-toggle matIconSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                                <mat-datepicker #pickerInicio></mat-datepicker>
+                            </mat-form-field>
+                        </div>
 
-            <!-- Fecha Fin -->
-            <div class="flex flex-col">
-                <label class="text-sm mb-2">Fecha Fin</label>
-                <mat-form-field class="w-full">
-                    <input matInput [matDatepicker]="pickerFin" 
-                           [(ngModel)]="fechaFinDisplay"
-                           (dateChange)="onFechaFinChange($event)">
-                    <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerFin></mat-datepicker>
-                </mat-form-field>
+                        <!-- Fecha Fin -->
+                        <div class="flex flex-col">
+                            <label class="text-sm mb-2">Fecha Fin</label>
+                            <mat-form-field class="w-full">
+                                <input matInput [matDatepicker]="pickerFin" 
+                                       [(ngModel)]="fechaFinDisplay"
+                                       (dateChange)="onFechaFinChange($event)"
+                                       [value]="fechaFinDisplay"
+                                       [placeholder]="formatDisplayDate(fechaFinDisplay)">
+                                <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                                <mat-datepicker #pickerFin></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <!-- Botones de filtro rápido -->
+                    <div class="flex gap-1 -mt-3">
+                        <button 
+                            mat-stroked-button
+                            [color]="selectedDateFilter === 'day' ? 'accent' : 'primary'"
+                            (click)="setUltimoDia()">
+                            Último día
+                        </button>
+                        
+                        <button 
+                            mat-stroked-button
+                            [color]="selectedDateFilter === 'week' ? 'accent' : 'primary'"
+                            (click)="setUltimos7Dias()">
+                            Últimos 7 días
+                        </button>
+                        
+                        <button 
+                            mat-stroked-button
+                            [color]="selectedDateFilter === 'month' ? 'accent' : 'primary'"
+                            (click)="setUltimoMes()">
+                            Último mes
+                        </button>
+                        
+                        <button 
+                            mat-stroked-button
+                            [color]="selectedDateFilter === 'year' ? 'accent' : 'primary'"
+                            (click)="setUltimoAnio()">
+                            Último año
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Tipo de servicio -->
@@ -56,7 +99,7 @@
         </div>
 
         <!-- Botones -->
-        <div class="w-full flex justify-start gap-4 mb-8">
+        <div class="w-full flex justify-end gap-4 mb-8">
             <button 
                 mat-raised-button 
                 color="primary"
@@ -70,6 +113,16 @@
                 color="accent"
                 class="px-8"
                 (click)="generarPDF()"
+                [disabled]="!dataSource.data.length">
+                <mat-icon class="mr-2">picture_as_pdf</mat-icon>
+                GENERAR REPORTE PDF
+            </button>
+
+            <button 
+                mat-raised-button 
+                color="accent"
+                class="px-8"
+                (click)="imprimirPDF()"
                 [disabled]="!dataSource.data.length">
                 <mat-icon class="mr-2">print</mat-icon>
                 IMPRIMIR

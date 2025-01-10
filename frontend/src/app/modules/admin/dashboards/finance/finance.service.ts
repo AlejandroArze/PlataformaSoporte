@@ -23,9 +23,19 @@ export interface ServiceResponse {
     };
 }
 
+interface TipoServicioMapping {
+    [key: string]: string;
+    'ASISTENCIA EN SITIO': 'ASISTENCIA';
+    'ASISTENCIA REMOTA': 'REMOTA';
+}
+
 @Injectable({providedIn: 'root'})
 export class FinanceService {
     private readonly _apiUrl = environment.baseUrl;
+    private readonly tipoServicioMapping: TipoServicioMapping = {
+        'ASISTENCIA EN SITIO': 'ASISTENCIA',
+        'ASISTENCIA REMOTA': 'REMOTA'
+    };
 
     constructor(private _httpClient: HttpClient) {}
 
@@ -52,6 +62,10 @@ export class FinanceService {
         return `${year}-${month}-${day}`;
     }
 
+    private mapTipoServicio(tipo: string): string {
+        return this.tipoServicioMapping[tipo] || tipo;
+    }
+
     consultarServicios(params: {
         fechaInicio: string;
         fechaFin: string;
@@ -64,10 +78,35 @@ export class FinanceService {
             .set('fechaInicio', params.fechaInicio)
             .set('fechaFin', params.fechaFin)
             .set('page', params.page.toString())
-            .set('limit', params.limit.toString());
+            .set('limit', params.limit.toString())
+            .set('estado', 'TERMINADO');
 
         if (params.tipoServicio !== 'TODOS') {
-            httpParams = httpParams.set('tipo', params.tipoServicio);
+            httpParams = httpParams.set('tipo', this.mapTipoServicio(params.tipoServicio));
+        }
+
+        if (params.tecnico !== 'TODOS') {
+            httpParams = httpParams.set('tecnicoAsignado', params.tecnico);
+        }
+
+        return this._httpClient.get<ServiceResponse>(`${this._apiUrl}/service/date-range`, { params: httpParams });
+    }
+
+    consultarTodosServicios(params: {
+        fechaInicio: string;
+        fechaFin: string;
+        tipoServicio: string;
+        tecnico: string;
+    }): Observable<ServiceResponse> {
+        let httpParams = new HttpParams()
+            .set('fechaInicio', params.fechaInicio)
+            .set('fechaFin', params.fechaFin)
+            .set('page', '1')
+            .set('limit', '1000')
+            .set('estado', 'TERMINADO');
+
+        if (params.tipoServicio !== 'TODOS') {
+            httpParams = httpParams.set('tipo', this.mapTipoServicio(params.tipoServicio));
         }
 
         if (params.tecnico !== 'TODOS') {
