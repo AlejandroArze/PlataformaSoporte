@@ -42,6 +42,7 @@
                         <button 
                             mat-stroked-button
                             [color]="selectedDateFilter === 'day' ? 'accent' : 'primary'"
+                            [ngClass]="{'dark:text-white': selectedDateFilter === 'day'}"
                             (click)="setUltimoDia()">
                             Último día
                         </button>
@@ -49,6 +50,7 @@
                         <button 
                             mat-stroked-button
                             [color]="selectedDateFilter === 'week' ? 'accent' : 'primary'"
+                            [ngClass]="{'dark:text-white': selectedDateFilter === 'week'}"
                             (click)="setUltimos7Dias()">
                             Últimos 7 días
                         </button>
@@ -56,6 +58,7 @@
                         <button 
                             mat-stroked-button
                             [color]="selectedDateFilter === 'month' ? 'accent' : 'primary'"
+                            [ngClass]="{'dark:text-white': selectedDateFilter === 'month'}"
                             (click)="setUltimoMes()">
                             Último mes
                         </button>
@@ -63,6 +66,7 @@
                         <button 
                             mat-stroked-button
                             [color]="selectedDateFilter === 'year' ? 'accent' : 'primary'"
+                            [ngClass]="{'dark:text-white': selectedDateFilter === 'year'}"
                             (click)="setUltimoAnio()">
                             Último año
                         </button>
