@@ -1,153 +1,78 @@
-import { CurrencyPipe, DatePipe, NgClass } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { FinanceService } from 'app/modules/admin/dashboards/finance/finance.service';
-import { ApexOptions, NgApexchartsModule } from 'ng-apexcharts';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-    selector       : 'finance',
-    templateUrl    : './finance.component.html',
-    encapsulation  : ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone     : true,
-    imports        : [MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule, NgApexchartsModule, MatTableModule, MatSortModule, NgClass, MatProgressBarModule, CurrencyPipe, DatePipe],
+    selector: 'finance',
+    templateUrl: './finance.component.html',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatTableModule,
+        MatFormFieldModule
+    ],
 })
-export class FinanceComponent implements OnInit, AfterViewInit, OnDestroy
-{
-    @ViewChild('recentTransactionsTable', {read: MatSort}) recentTransactionsTableMatSort: MatSort;
+export class FinanceComponent implements OnInit {
+    fechaInicio: string;
+    fechaFin: string;
+    tipoServicio: string = 'TODOS';
+    tecnico: string = 'TODOS';
+    
+    tecnicos = [
+        { id: '1', nombre: 'Mauricio Gabriel Sandoval Thames' },
+        // Agregar más técnicos según necesites
+    ];
 
-    data: any;
-    accountBalanceOptions: ApexOptions;
-    recentTransactionsDataSource: MatTableDataSource<any> = new MatTableDataSource();
-    recentTransactionsTableColumns: string[] = ['transactionId', 'date', 'name', 'amount', 'status'];
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    // Definición de columnas para la tabla
+    displayedColumns: string[] = [
+        'numero',
+        'tipoServicio',
+        'tecnicoAsignado',
+        'fechaInicio',
+        'fechaTerminado',
+        'solicitante'
+    ];
+    
+    dataSource = new MatTableDataSource([]);
 
-    /**
-     * Constructor
-     */
-    constructor(private _financeService: FinanceService)
-    {
+    constructor(private _financeService: FinanceService) {
+        // Inicializar fechas con el mes actual
+        const hoy = new Date();
+        const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+        
+        this.fechaInicio = this.formatDate(primerDia);
+        this.fechaFin = this.formatDate(ultimoDia);
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * On init
-     */
-    ngOnInit(): void
-    {
-        // Get the data
-        this._financeService.data$
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe((data) =>
-            {
-                // Store the data
-                this.data = data;
-
-                // Store the table data
-                this.recentTransactionsDataSource.data = data.recentTransactions;
-
-                // Prepare the chart data
-                this._prepareChartData();
-            });
+    ngOnInit(): void {
+        this.consultar();
     }
 
-    /**
-     * After view init
-     */
-    ngAfterViewInit(): void
-    {
-        // Make the data source sortable
-        this.recentTransactionsDataSource.sort = this.recentTransactionsTableMatSort;
+    consultar(): void {
+        // Implementar la lógica de consulta aquí
+        this._financeService.consultarServicios({
+            fechaInicio: this.fechaInicio,
+            fechaFin: this.fechaFin,
+            tipoServicio: this.tipoServicio,
+            tecnico: this.tecnico
+        }).subscribe(data => {
+            this.dataSource.data = data;
+        });
     }
 
-    /**
-     * On destroy
-     */
-    ngOnDestroy(): void
-    {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next(null);
-        this._unsubscribeAll.complete();
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Track by function for ngFor loops
-     *
-     * @param index
-     * @param item
-     */
-    trackByFn(index: number, item: any): any
-    {
-        return item.id || index;
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Private methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Prepare the chart data from the data
-     *
-     * @private
-     */
-    private _prepareChartData(): void
-    {
-        // Account balance
-        this.accountBalanceOptions = {
-            chart  : {
-                animations: {
-                    speed           : 400,
-                    animateGradually: {
-                        enabled: false,
-                    },
-                },
-                fontFamily: 'inherit',
-                foreColor : 'inherit',
-                width     : '100%',
-                height    : '100%',
-                type      : 'area',
-                sparkline : {
-                    enabled: true,
-                },
-            },
-            colors : ['#A3BFFA', '#667EEA'],
-            fill   : {
-                colors : ['#CED9FB', '#AECDFD'],
-                opacity: 0.5,
-                type   : 'solid',
-            },
-            series : this.data.accountBalance.series,
-            stroke : {
-                curve: 'straight',
-                width: 2,
-            },
-            tooltip: {
-                followCursor: true,
-                theme       : 'dark',
-                x           : {
-                    format: 'MMM dd, yyyy',
-                },
-                y           : {
-                    formatter: (value): string => value + '%',
-                },
-            },
-            xaxis  : {
-                type: 'datetime',
-            },
-        };
+    private formatDate(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     }
 }

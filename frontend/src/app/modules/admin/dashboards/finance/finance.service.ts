@@ -42,4 +42,8 @@ export class FinanceService
             }),
         );
     }
+
+    consultarServicios(filtros: any): Observable<any> {
+        return this._httpClient.post('api/servicios/consultar', filtros);
+    }
 }

@@ -118,7 +118,7 @@
                     <input matInput
                            #searchInput
                            [formControl]="searchEquipoCtrl"
-                           (input)="onSearchEquipos($event.target.value)"
+                           (input)="onSearchEquipos($event)"
                            (focus)="onFocus()"
                            placeholder="Buscar por código">
                     <button matSuffix

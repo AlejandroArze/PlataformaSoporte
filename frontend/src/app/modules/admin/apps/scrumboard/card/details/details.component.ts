@@ -131,13 +131,13 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
                         next: (equipos) => {
                             const equipo = equipos.find(e => e.equipos_id === parseInt(this.data.card.codigoBienes));
                             if (equipo) {
-                                this.searchEquipoCtrl.setValue(equipo.codigo);
+                                this.searchEquipoCtrl.setValue(equipo.codigo, { emitEvent: false });
+                                this.cardForm.controls['equipo'].setValue(equipo.equipos_id);
                                 // También obtener la información del bien
                                 this._scrumboardService.getBienes(equipo.codigo)
                                     .subscribe({
                                         next: (response) => {
                                             this.bienes = response;
-                                            console.log('Bienes encontrados:', this.bienes);
                                         },
                                         error: (err) => {
                                             console.error('Error al obtener bienes:', err);
@@ -159,25 +159,86 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
             control.markAsTouched();
         });
 
-        // Modificar la suscripción a los cambios del input
+        // Suscribirse a los cambios del input
         this.searchEquipoCtrl.valueChanges
             .pipe(
-                takeUntil(this._unsubscribeAll),
-                debounceTime(300)
+                takeUntil(this._unsubscribeAll)
             )
             .subscribe(value => {
-                console.log('Valor del input cambiado:', value);
-                // Si es string, buscar
                 if (typeof value === 'string') {
-                    console.log('Buscando equipos con:', value);
-                    this.buscarEquipos(value);
+                    this.onSearchEquipos(value);
                 }
             });
 
-        // Cargar datos iniciales si hay un equipo en la tarjeta
-        if (this.data.card?.codigoBienes) {
-            this.buscarEquipos(this.data.card.codigoBienes);
+        // Si no es nuevo y hay un equipo_id, buscar y cargar su información
+        if (!this.data.isNew && this.data.card?.codigoBienes) {
+            console.log('Buscando equipo con ID:', this.data.card.codigoBienes);
+            
+            // Primero buscar el equipo por su ID
+            this._scrumboardService.buscarEquipos(1, 100, '')
+                .subscribe({
+                    next: (equipos) => {
+                        // Encontrar el equipo que coincida con el ID
+                        const equipo = equipos.find(e => e.equipos_id === parseInt(this.data.card.codigoBienes));
+                        if (equipo) {
+                            console.log('Equipo encontrado:', equipo);
+                            
+                            // Establecer el código en el input y el ID en el formulario
+                            this.searchEquipoCtrl.setValue(equipo.codigo, { emitEvent: false });
+                            this.cardForm.controls['equipo'].setValue(equipo.equipos_id);
+
+                            // Cargar la información de bienes
+                            this._scrumboardService.getBienes(equipo.codigo)
+                                .subscribe({
+                                    next: (response) => {
+                                        this.bienes = response;
+                                        console.log('Información de bienes cargada:', this.bienes);
+                                    },
+                                    error: (err) => {
+                                        console.error('Error al obtener bienes:', err);
+                                        this.bienes = null;
+                                    }
+                                });
+
+                            // También cargar los equipos filtrados para el dropdown
+                            this.filtredEquipos = equipos
+                                .filter(e => e.codigo && e.codigo.trim() !== '')
+                                .reduce((acc, current) => {
+                                    const exists = acc.find(item => item.codigo === current.codigo);
+                                    if (!exists) {
+                                        return [...acc, current];
+                                    }
+                                    return acc;
+                                }, []);
+                        } else {
+                            console.warn('No se encontró el equipo con ID:', this.data.card.codigoBienes);
+                        }
+                    },
+                    error: (err) => {
+                        console.error('Error al buscar equipo:', err);
+                    }
+                });
         }
+
+        // Suscribirse a cambios en el formulario para actualización automática
+        this.cardForm.valueChanges
+            .pipe(
+                takeUntil(this._unsubscribeAll),
+                debounceTime(2000)  // Esperar 2 segundos después del último cambio
+            )
+            .subscribe(formValue => {
+                console.log('Detectado cambio en el formulario:', {
+                    formValue,
+                    isDirty: this.cardForm.dirty,
+                    isValid: this.cardForm.valid,
+                    actualizando: this.actualizando
+                });
+
+                if (!this.actualizando && this.cardForm.dirty) {
+                    console.log('Iniciando actualización automática...');
+                    this.onSubmit();
+                }
+            });
     }
 
     ngOnDestroy(): void {
@@ -318,25 +379,54 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
-    onSearchEquipos(query: string): void {
-        if (query.length >= 0) {
+    onSearchEquipos(event: any): void {
+        let query = '';
+        
+        // Manejar tanto el caso cuando recibimos el evento como cuando recibimos el string directamente
+        if (typeof event === 'string') {
+            query = event;
+        } else if (event?.target?.value !== undefined) {
+            query = event.target.value;
+        }
+
+        // Solo mostrar el dropdown y buscar si hay un query
+        if (query.trim() !== '') {
+            this.showDropdown = true;
+            
             this._scrumboardService.buscarEquipos(1, 100, query)
-                .pipe(debounceTime(100))
                 .subscribe({
                     next: (equipos: { equipos_id: number; codigo: string }[]) => {
-                        // Filtrar equipos con código vacío o solo espacios
-                        this.filtredEquipos = equipos.filter(equipo => 
-                            equipo.codigo && equipo.codigo.trim() !== ''
-                        );
+                        // Filtrar equipos que coincidan con la búsqueda
+                        this.filtredEquipos = equipos
+                            .filter(equipo => 
+                                equipo.codigo && 
+                                equipo.codigo.trim() !== '' &&
+                                equipo.codigo.toLowerCase().includes(query.toLowerCase())
+                            )
+                            .reduce((acc, current) => {
+                                // Eliminar duplicados
+                                const exists = acc.find(item => item.codigo === current.codigo);
+                                if (!exists) {
+                                    return [...acc, current];
+                                }
+                                return acc;
+                            }, []);
+
+                        this.showDropdown = this.filtredEquipos.length > 0;
                         this._changeDetectorRef.detectChanges();
                     },
                     error: (err) => {
                         console.error('Error al buscar equipos:', err);
                         this.filtredEquipos = [];
+                        this.showDropdown = false;
+                        this._changeDetectorRef.detectChanges();
                     },
                 });
         } else {
+            // Si no hay query, limpiar resultados
             this.filtredEquipos = [];
+            this.showDropdown = false;
+            this._changeDetectorRef.detectChanges();
         }
     }
 
@@ -348,7 +438,7 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
 
     selectEquipo(equipo: { equipos_id: number; codigo: string }): void {
         this.cardForm.controls['equipo'].setValue(equipo.equipos_id); // Guarda el ID del equipo
-        this.searchEquipoCtrl.setValue(equipo.codigo); // Guarda el código del equipo
+        this.searchEquipoCtrl.setValue(equipo.codigo, { emitEvent: false }); // Evitar que se dispare la búsqueda
         this.showDropdown = false;
         
         // Obtener información del bien después de seleccionar
@@ -357,7 +447,8 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
                 .subscribe({
                     next: (response) => {
                         this.bienes = response;
-                        console.log('Bienes encontrados:', this.bienes);
+                        // Forzar la actualización después de obtener los bienes
+                        this.onSubmit();
                     },
                     error: (err) => {
                         console.error('Error al obtener bienes:', err);
@@ -390,39 +481,23 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
+    // Agregar método para manejar el focus
     onFocus(): void {
-        console.log('Input focused');
-        this.showDropdown = true;
-        // Cargar equipos iniciales, excluyendo los vacíos
+        // Mostrar todos los equipos al hacer focus
         this._scrumboardService.buscarEquipos(1, 100, '')
             .subscribe({
                 next: (equipos: { equipos_id: number; codigo: string }[]) => {
                     this.filtredEquipos = equipos.filter(equipo => 
                         equipo.codigo && equipo.codigo.trim() !== ''
                     );
+                    this.showDropdown = this.filtredEquipos.length > 0;
                     this._changeDetectorRef.detectChanges();
                 },
                 error: (err) => {
                     console.error('Error al buscar equipos:', err);
                     this.filtredEquipos = [];
-                }
-            });
-    }
-
-    // Nuevo método separado para buscar equipos
-    private buscarEquipos(query: string): void {
-        console.log('Iniciando búsqueda de equipos con query:', query);
-        this._scrumboardService.buscarEquipos(1, 100, query)
-            .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe({
-                next: (equipos) => {
-                    console.log('Equipos recibidos:', equipos);
-                    this.filteredEquipos = equipos;
-                    this._changeDetectorRef.markForCheck(); // Forzar detección de cambios
-                },
-                error: (err) => {
-                    console.error('Error al buscar equipos:', err);
-                    this.filteredEquipos = [];
+                    this.showDropdown = false;
+                    this._changeDetectorRef.detectChanges();
                 }
             });
     }
