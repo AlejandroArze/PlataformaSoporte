@@ -16,6 +16,9 @@ import { AddCardComponent } from './add-card/add-card.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ScrumboardCardDetailsComponent } from '../card/details/details.component';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
 interface ListState {
     page: number;
@@ -35,6 +38,9 @@ interface ListState {
         RouterLink,
         NgFor,
         NgIf,
+        FormsModule,
+        MatFormFieldModule,
+        MatSelectModule,
         MatIconModule,
         MatButtonModule,
         MatDialogModule,
@@ -59,7 +65,7 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
     tecnicos: any[] = [];
     private _unsubscribeAll: Subject<any> = new Subject<any>();
     hiddenLists: string[] = [];
-    selectedTecnicoId: string | null = null;
+    selectedTecnicoId: string = 'TODOS';
 
     private readonly HIDDEN_LISTS_KEY = 'scrumboard_hidden_lists';
 
@@ -104,7 +110,7 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
         private _scrumboardService: ScrumboardService,
         private _snackBar: MatSnackBar
     ) {
-        // Cargar listas ocultas del localStorage
+        this.selectedTecnicoId = 'TODOS';
         this.loadHiddenListsFromStorage();
     }
 
@@ -121,25 +127,37 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                 lists: this.lists
             };
 
-            // Cargar todas las tarjetas inicialmente
-            this.loadAllCards();
+            // Inicializar las listas con arrays vacíos
+            this.lists.forEach(list => {
+                list.cards = [];
+            });
+
+            // Forzar detección de cambios inicial
+            this._changeDetectorRef.detectChanges();
+
+            // Cargar datos
+            this.reloadAllLists();
 
             // Cargar técnicos
             this._scrumboardService.getTecnicos()
                 .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe(tecnicos => {
-                    this.tecnicos = tecnicos;
-                    this._changeDetectorRef.markForCheck();
-                });
-
-            // Suscribirse a los cambios en las tarjetas
-            this._scrumboardService.cards$
-                .pipe(takeUntil(this._unsubscribeAll))
-                .subscribe(cards => {
-                    if (cards.length > 0) {
-                        this.filteredCards = cards;
-                        this.distributeCards(cards);
-                        this._changeDetectorRef.markForCheck();
+                .subscribe({
+                    next: (response) => {
+                        // Asegurarnos de que los técnicos tengan el formato correcto
+                        this.tecnicos = response.map(tecnico => ({
+                            id: tecnico.id,
+                            nombre: tecnico.nombre || 'Sin nombre'
+                        }));
+                        
+                        // Mantener 'TODOS' como valor seleccionado
+                        this.selectedTecnicoId = 'TODOS';
+                        this._changeDetectorRef.detectChanges();
+                    },
+                    error: (error) => {
+                        console.error('Error al cargar técnicos:', error);
+                        this.tecnicos = [];
+                        this.selectedTecnicoId = 'TODOS';
+                        this._changeDetectorRef.detectChanges();
                     }
                 });
         }
@@ -166,8 +184,13 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
     /**
      * Manejar cambio de filtro de técnico
      */
-    onTecnicoFilterChange(tecnicoId: number): void {
-        this.selectedTecnicoId = tecnicoId ? tecnicoId.toString() : null;
+    onTecnicoFilterChange(tecnicoId: string): void {
+        this.selectedTecnicoId = tecnicoId;
+        // Pasar null al servicio cuando se selecciona 'TODOS'
+        const filterId = tecnicoId === 'TODOS' ? null : tecnicoId;
+        
+        // Recargar todas las listas con el nuevo filtro
+        this._changeDetectorRef.detectChanges();
         this.reloadAllLists();
     }
 
@@ -218,15 +241,15 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
         if (event.previousContainer === event.container) {
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         } else {
-            // Obtener la tarjeta y el nuevo estado
             const card = event.previousContainer.data[event.previousIndex];
             const newStatus = this.lists.find(list => list.id === event.container.id)?.title;
 
             if (newStatus) {
-                // Actualizar inmediatamente en la UI
-                card.estado = newStatus as EstadoServicio;
-                
-                // Mover la tarjeta a la nueva lista
+                // Mantener copias de las listas originales
+                const sourceList = [...event.previousContainer.data];
+                const targetList = [...event.container.data];
+
+                // Realizar el movimiento en la UI
                 transferArrayItem(
                     event.previousContainer.data,
                     event.container.data,
@@ -234,28 +257,46 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                     event.currentIndex
                 );
 
-                // Luego actualizar en el backend
+                // Actualizar contadores inmediatamente
+                this.listStates[event.previousContainer.id].total -= 1;
+                this.listStates[event.container.id].total += 1;
+
+                // Actualizar el estado de la tarjeta movida
+                const movedCard = event.container.data[event.currentIndex];
+                movedCard.estado = newStatus as EstadoServicio;
+
+                // Forzar actualización de la UI
+                this._changeDetectorRef.detectChanges();
+
+                // Actualizar en el backend
                 this._scrumboardService.updateServiceStatus(card.id, newStatus as EstadoServicio)
                     .subscribe({
+                        next: () => {
+                            this._changeDetectorRef.detectChanges();
+                        },
                         error: (error) => {
-                            // Mostrar notificación de error
+                            console.error('Error al actualizar el estado:', error);
+                            
+                            // Revertir contadores en caso de error
+                            this.listStates[event.previousContainer.id].total += 1;
+                            this.listStates[event.container.id].total -= 1;
+                            
+                            // Revertir cambios en caso de error
+                            event.previousContainer.data = sourceList;
+                            event.container.data = targetList;
+                            
                             this._snackBar.open(
-                                'Error al actualizar el estado. El sistema seguirá intentando sincronizar...', 
-                                'Cerrar', 
+                                'Error al actualizar el estado. Intente nuevamente.',
+                                'Cerrar',
                                 {
-                                    duration: 5000,
+                                    duration: 3000,
                                     horizontalPosition: 'end',
                                     verticalPosition: 'top',
                                     panelClass: ['error-snackbar']
                                 }
                             );
-
-                            // Intentar actualizar nuevamente en segundo plano
-                            this.retryUpdateStatus(card.id, newStatus as EstadoServicio);
-                        },
-                        complete: () => {
-                            // Recargar las listas después de la actualización exitosa
-                            this.reloadAllLists();
+                            
+                            this._changeDetectorRef.detectChanges();
                         }
                     });
             }
@@ -403,34 +444,40 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
         state.loading = true;
         const list = this.lists.find(l => l.id === listId);
         
-        console.log('Cargando tarjetas para lista:', {
-            listId,
-            estado: list.title,
-            tipoServicio: this.getTipoServicio(this.board.id),
-            tecnicoId: this.selectedTecnicoId,
-            page: state.page,
-            limit: state.limit
-        });
+        // Mantener las tarjetas existentes
+        const existingCards = list.cards ? [...list.cards] : [];
+
+        // Convertir 'TODOS' a null para la consulta al backend
+        const tecnicoId = this.selectedTecnicoId === 'TODOS' ? null : this.selectedTecnicoId;
 
         this._scrumboardService.getCardsByStatus(
             this.getTipoServicio(this.board.id),
             list.title as EstadoServicio,
-            this.selectedTecnicoId,
+            tecnicoId,  // Usar el ID convertido
             state.page,
             state.limit
         ).pipe(
             takeUntil(this._unsubscribeAll)
         ).subscribe({
             next: (response) => {
-                list.cards = response.cards;
+                if (reset) {
+                    list.cards = response.cards;
+                } else {
+                    const newCards = response.cards.filter(newCard => 
+                        !existingCards.some(existingCard => existingCard.id === newCard.id)
+                    );
+                    list.cards = [...existingCards, ...newCards];
+                }
+                
                 state.total = response.total;
                 state.loading = false;
-                this._changeDetectorRef.markForCheck();
+                this._changeDetectorRef.detectChanges();
             },
             error: (error) => {
                 console.error('Error al cargar tarjetas:', error);
                 state.loading = false;
-                this._changeDetectorRef.markForCheck();
+                list.cards = existingCards;
+                this._changeDetectorRef.detectChanges();
             }
         });
     }
@@ -439,9 +486,24 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
      * Recargar todas las listas
      */
     reloadAllLists(): void {
+        // Guardar el estado actual de todas las listas
+        const currentLists = this.lists.map(list => ({
+            ...list,
+            cards: [...(list.cards || [])]
+        }));
+
+        // Resetear los estados de paginación
         Object.keys(this.listStates).forEach(listId => {
             this.listStates[listId].page = 1;
-            this.loadCardsForList(listId, true);
+        });
+
+        // Cargar las nuevas tarjetas manteniendo las existentes mientras se cargan
+        Object.keys(this.listStates).forEach(listId => {
+            const list = this.lists.find(l => l.id === listId);
+            if (list) {
+                list.cards = currentLists.find(l => l.id === listId)?.cards || [];
+                this.loadCardsForList(listId, true);
+            }
         });
     }
 
@@ -490,7 +552,21 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.reloadAllLists();
+                // Mantener las tarjetas existentes mientras se cargan las nuevas
+                const currentCards = this.lists.map(list => ({
+                    id: list.id,
+                    cards: [...(list.cards || [])]
+                }));
+
+                // Resetear solo la lista "SIN ASIGNAR" ya que el nuevo servicio irá allí
+                const sinAsignarList = this.lists.find(l => l.id === 'sin-asignar');
+                if (sinAsignarList) {
+                    this.listStates['sin-asignar'].page = 1;
+                    this.loadCardsForList('sin-asignar', true);
+                }
+
+                // Forzar la detección de cambios
+                this._changeDetectorRef.detectChanges();
             }
         });
     }
@@ -540,15 +616,8 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
      * Crear nuevo servicio directamente
      */
     createNewService(): void {
-        // Usar board.id en lugar de board.title
         const tipoServicio = this.getTipoServicio(this.board.id);
         
-        console.log('Tipo de servicio:', {
-            boardId: this.board.id,
-            boardTitle: this.board.title,
-            tipoServicio: tipoServicio
-        });
-
         if (!tipoServicio) {
             this._snackBar.open('Error: Tipo de servicio no válido', 'Cerrar', {
                 duration: 3000,
@@ -559,7 +628,29 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this._scrumboardService.createService({}, tipoServicio)
+        // Crear el servicio solo con los datos mínimos necesarios
+        const serviceData = {
+            tipo: tipoServicio,
+            estado: EstadoServicio.SIN_ASIGNAR,
+            fechaRegistro: new Date().toISOString(),
+            // Campos requeridos con valores por defecto
+            nombreResponsableEgreso: ' ',
+            cargoResponsableEgreso: ' ',
+            oficinaResponsableEgreso: ' ',
+            telefonoResponsableEgreso: ' ',
+            tipoResponsableEgreso: ' ',
+            ciResponsableEgreso: ' ',
+            tecnicoEgreso: ' ',
+            fechaEgreso: ' ',
+            observaciones: ' ',
+            gestion: 3,
+            tecnicoRegistro: 3,
+            tecnicoAsignado: 3,
+            numero: 0, // Se asignará automáticamente en el backend
+            equipo: null
+        };
+
+        this._scrumboardService.createService(serviceData, tipoServicio)
             .subscribe({
                 next: (response) => {
                     this._snackBar.open('Servicio creado correctamente', 'Cerrar', {
@@ -568,8 +659,50 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                         verticalPosition: 'top',
                         panelClass: ['success-snackbar']
                     });
-                    // Recargar las listas después de crear
-                    this.reloadAllLists();
+
+                    // Actualizar solo la lista "SIN ASIGNAR"
+                    const sinAsignarList = this.lists.find(l => l.id === 'sin-asignar');
+                    if (sinAsignarList) {
+                        // Crear una nueva tarjeta con los datos de respuesta
+                        const newCard: Card = {
+                            id: response.data.servicios_id,
+                            tipo: tipoServicio,
+                            estado: EstadoServicio.SIN_ASIGNAR,
+                            fechaRegistro: new Date().toISOString(),
+                            nombreSolicitante: '',
+                            solicitante: '',
+                            carnet: '',
+                            cargo: '',
+                            tipoSolicitante: '',
+                            oficinaSolicitante: '',
+                            telefonoSolicitante: '',
+                            tecnicoAsignado: null,
+                            fechaInicio: null,
+                            fechaTerminado: null,
+                            problema: '',
+                            observacionesProblema: '',
+                            informe: '',
+                            codigoBienes: '',
+                            tipoHardware: '',
+                            descripcion: '',
+                            listId: 'sin-asignar',
+                            position: 0
+                        };
+
+                        // Agregar la nueva tarjeta al principio de la lista
+                        sinAsignarList.cards = [newCard, ...(sinAsignarList.cards || [])];
+                        
+                        // Actualizar el total inmediatamente
+                        this.listStates['sin-asignar'].total += 1;
+                        
+                        // Forzar actualización de la vista
+                        this._changeDetectorRef.detectChanges();
+                        
+                        // Recargar la lista después de asegurarnos que se guardó
+                        setTimeout(() => {
+                            this.reloadAllLists();
+                        }, 500);
+                    }
                 },
                 error: (error) => {
                     console.error('Error al crear servicio:', error);
@@ -581,5 +714,10 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                     });
                 }
             });
+    }
+
+    getSelectedTecnicoDisplay(): string {
+        return this.selectedTecnicoId === 'TODOS' ? 'TODOS' : 
+            (this.tecnicos.find(t => t.id === this.selectedTecnicoId)?.nombre || 'TODOS');
     }
 }

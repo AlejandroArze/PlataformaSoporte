@@ -12,7 +12,7 @@ import { NgIf, NgFor, DatePipe } from '@angular/common';
 import { Card, TipoServicio, Equipo } from '../../scrumboard.models';
 import { ScrumboardService } from '../../scrumboard.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { debounceTime, Subject, takeUntil } from 'rxjs';
+import { debounceTime, Subject, takeUntil, delay } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ConfirmationDialogComponent } from '../../dialogs/confirmation-dialog.component';
@@ -289,6 +289,9 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
         };
 
         this._scrumboardService.updateService(this.data.card.id, updateData)
+            .pipe(
+                delay(700)
+            )
             .subscribe({
                 next: (response) => {
                     console.log('Actualización exitosa:', response);
@@ -299,7 +302,7 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
                         panelClass: ['success-snackbar']
                     });
                     this.actualizando = false;
-                    this.cardForm.markAsPristine(); // Marcar el formulario como no modificado
+                    this.cardForm.markAsPristine();
                 },
                 error: (error) => {
                     console.error('Error en actualización:', error);

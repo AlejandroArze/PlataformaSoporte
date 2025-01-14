@@ -520,8 +520,8 @@ export class FinanceComponent implements OnInit, OnDestroy, AfterViewInit {
                 plugins: {
                     legend: {
                         display: false
-                    },
-                    tooltip: {
+            },
+            tooltip: {
                         enabled: true,
                         callbacks: {
                             label: (context) => {

@@ -14,9 +14,18 @@
                     <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
                     <span class="ml-2">Nuevo Servicio</span>
                 </button>
-                <board-filters
-                    (filterChange)="onTecnicoFilterChange($event)">
-                </board-filters>
+                <!-- Selector de técnico -->
+                <mat-form-field class="tecnico-select">
+                    <mat-label>Técnico asignado</mat-label>
+                    <mat-select 
+                        [(ngModel)]="selectedTecnicoId"
+                        (selectionChange)="onTecnicoFilterChange($event.value)">
+                        <mat-option [value]="'TODOS'">TODOS</mat-option>
+                        <mat-option *ngFor="let tecnico of tecnicos" [value]="tecnico.id">
+                            {{ tecnico.nombre }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
             </div>
         </div>
     </div>

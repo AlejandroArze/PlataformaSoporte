@@ -205,6 +205,50 @@
 
         .actions-section {
             @apply flex items-center space-x-4;
+
+            .tecnico-select {
+                min-width: 200px;
+                margin-bottom: 0;
+
+                ::ng-deep {
+                    .mat-mdc-select-value {
+                        color: inherit;
+                    }
+
+                    .mat-mdc-select-trigger {
+                        color: inherit;
+                    }
+                }
+            }
         }
     }
+}
+
+// Estilo para la opción "TODOS" en el desplegable
+::ng-deep .todos-option {
+    font-weight: 500;  // Semi-negrita para destacar
+}
+
+.tecnico-select {
+    min-width: 200px;
+    margin-bottom: 0;
+
+    ::ng-deep {
+        .mat-mdc-select-value {
+            color: inherit !important;
+        }
+
+        .mat-mdc-select-trigger {
+            color: inherit !important;
+        }
+
+        .mat-mdc-select-value-text {
+            color: inherit !important;
+        }
+    }
+}
+
+.todos-option {
+    font-weight: 500;
+    color: inherit !important;
 }
