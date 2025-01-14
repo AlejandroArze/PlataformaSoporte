@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -16,6 +16,12 @@ import { Subject, takeUntil } from 'rxjs';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
+import { Chart, ChartConfiguration } from 'chart.js/auto';
+import { MetricsResponse } from './finance.service';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+// Registrar el plugin
+Chart.register(ChartDataLabels);
 
 // Extender el tipo jsPDF para incluir autoTable
 interface jsPDFWithPlugin extends jsPDF {
@@ -41,11 +47,14 @@ interface jsPDFWithPlugin extends jsPDF {
         MatIconModule
     ],
 })
-export class FinanceComponent implements OnInit, OnDestroy {
+export class FinanceComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild(MatPaginator) paginator: MatPaginator;
-
-    private _unsubscribeAll: Subject<any> = new Subject<any>();
+    @ViewChild('distribucionChart') distribucionChart: ElementRef;
+    @ViewChild('rendimientoChart') rendimientoChart: ElementRef;
+    @ViewChild('tiemposChart') tiemposChart: ElementRef;
     
+    private _unsubscribeAll: Subject<any> = new Subject<any>();
+
     // Variables para mostrar en el datepicker
     fechaInicioDisplay: Date;
     fechaFinDisplay: Date;
@@ -78,6 +87,15 @@ export class FinanceComponent implements OnInit, OnDestroy {
     // Agregar variable para tracking del filtro activo
     selectedDateFilter: 'day' | 'week' | 'month' | 'year' = 'week'; // Por defecto semana
 
+    // Agregar variable para las métricas
+    metrics: MetricsResponse['data'] | null = null;
+    
+    // Referencias a los gráficos
+    private charts: { [key: string]: Chart } = {};
+
+    // Agregar observer para cambios en el tema
+    private observer: MutationObserver | null = null;
+
     constructor(
         private _financeService: FinanceService,
         private _scrumboardService: ScrumboardService
@@ -94,6 +112,21 @@ export class FinanceComponent implements OnInit, OnDestroy {
         // Inicializar las fechas para la API
         this.fechaInicio = this.formatDateForApi(hace7Dias);
         this.fechaFin = this.formatDateForApi(hoy);
+
+        // Agregar observer para cambios en el tema
+        this.observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    this.updateCharts();
+                }
+            });
+        });
+
+        // Observar cambios en la clase del elemento html
+        this.observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
     }
 
     ngOnInit(): void {
@@ -120,11 +153,21 @@ export class FinanceComponent implements OnInit, OnDestroy {
                 this.pageSize = this.paginator.pageSize;
                 this.loadPage();
             });
+
+        // Cargar métricas iniciales
+        this.loadMetrics();
     }
 
     ngOnDestroy(): void {
+        // Destruir gráficos al salir
+        Object.values(this.charts).forEach(chart => chart.destroy());
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
+
+        // Desconectar el observer
+        if (this.observer) {
+            this.observer.disconnect();
+        }
     }
 
     consultar(): void {
@@ -135,6 +178,9 @@ export class FinanceComponent implements OnInit, OnDestroy {
             this.pageSize = this.paginator.pageSize;
         }
         this.loadPage();
+        
+        // Cargar métricas
+        this.loadMetrics();
     }
 
     loadPage(): void {
@@ -384,6 +430,145 @@ export class FinanceComponent implements OnInit, OnDestroy {
             'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
         ];
         return `${date.getDate()} de ${meses[date.getMonth()]} de ${date.getFullYear()}`;
+    }
+
+    private loadMetrics(): void {
+        this._financeService.obtenerMetricas({
+            fechaInicio: this.fechaInicio,
+            fechaFin: this.fechaFin,
+            tipoServicio: this.tipoServicio,
+            tecnico: this.tecnico
+        }).subscribe(response => {
+            this.metrics = response.data;
+            this.updateCharts();
+        });
+    }
+
+    private isDarkMode(): boolean {
+        return document.documentElement.classList.contains('dark');
+    }
+
+    private updateCharts(): void {
+        if (!this.metrics) return;
+
+        // Destruir gráficos existentes
+        Object.values(this.charts).forEach(chart => chart.destroy());
+
+        // Gráfico de distribución de tipos
+        this.charts['distribucion'] = new Chart(this.distribucionChart.nativeElement, {
+            type: 'pie',
+            plugins: [ChartDataLabels],
+            data: {
+                labels: this.metrics.distribucionTipos.data.map(item => item.tipo),
+                datasets: [{
+                    data: this.metrics.distribucionTipos.data.map(item => item.cantidad),
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.8)',    // Rojo para el primero
+                        'rgba(75, 192, 192, 0.8)',    // Verde claro para REMOTA
+                        'rgba(255, 206, 86, 0.8)',    // Amarillo
+                        'rgba(25, 118, 210, 0.8)'     // Azul más fuerte
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#64748B',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#3B82F6',
+                        formatter: (value, context) => {
+                            const percentage = this.metrics?.distribucionTipos.data[context.dataIndex].porcentaje;
+                            return percentage ? `${percentage}%` : '';
+                        },
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de rendimiento de técnicos
+        const tecnicos = [...this.metrics.rendimientoTecnicos]
+            .sort((a, b) => b.total_servicios - a.total_servicios);
+
+        this.charts['rendimiento'] = new Chart(this.rendimientoChart.nativeElement, {
+            type: 'bar',
+            plugins: [ChartDataLabels],
+            data: {
+                labels: tecnicos.map(tec => 
+                    tec.tecnico.length > 20 ? tec.tecnico.substring(0, 20) + '...' : tec.tecnico
+                ),
+                datasets: [{
+                    label: 'Total Servicios',
+                    data: tecnicos.map(tec => tec.total_servicios),
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: (context) => {
+                                const tecnico = tecnicos[context.dataIndex];
+                                return `${tecnico.tecnico}: ${tecnico.total_servicios} servicios`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#3B82F6',
+                        anchor: 'end',
+                        align: 'right',
+                        formatter: (value) => value.toString(),
+                        font: {
+                            weight: 'bold'
+                        },
+                        padding: 6
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Cantidad de Servicios'
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            callback: function(value: string | number) {
+                                // Asegurarnos de que value sea un número
+                                const index = typeof value === 'string' ? parseInt(value) : value;
+                                if (typeof index !== 'number') return '';
+                                
+                                const label = this.getLabelForValue(index);
+                                if (typeof label !== 'string') return '';
+                                
+                                return label.length > 20 ? label.substring(0, 20) + '...' : label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    getMetricByTipo(tipo: string): { tiempo_promedio_horas: number; total_servicios: number } | undefined {
+        return this.metrics?.tiemposResolucion.find(item => item.tipo === tipo);
     }
 }
 

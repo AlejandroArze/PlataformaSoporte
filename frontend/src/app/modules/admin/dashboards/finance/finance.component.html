@@ -1,10 +1,10 @@
 <div class="flex flex-col flex-auto w-full">
     <div class="flex flex-wrap w-full max-w-screen-xl mx-auto p-6 md:p-8">
 
-        <!-- Filtros -->
-        <div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <!-- Fecha Inicio y Fin con botones -->
-            <div class="md:col-span-2 grid grid-cols-1 gap-4">
+        <!-- Filtros y Botones -->
+        <div class="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Fecha Inicio y Fin con botones rápidos -->
+            <div class="md:col-span-2">
                 <div class="flex flex-col">
                     <!-- Campos de fecha -->
                     <div class="grid grid-cols-2 gap-4">
@@ -74,7 +74,7 @@
                 </div>
             </div>
 
-            <!-- Tipo de servicio -->
+            <!-- Tipo de servicio y Técnico con botones de acción -->
             <div class="flex flex-col">
                 <label class="text-sm mb-2">Tipo de servicio</label>
                 <mat-form-field class="w-full">
@@ -88,7 +88,6 @@
                 </mat-form-field>
             </div>
 
-            <!-- Técnico -->
             <div class="flex flex-col">
                 <label class="text-sm mb-2">Técnico</label>
                 <mat-form-field class="w-full">
@@ -102,35 +101,102 @@
             </div>
         </div>
 
-        <!-- Botones -->
-        <div class="w-full flex justify-end gap-4 mb-8">
-            <button 
-                mat-raised-button 
-                color="primary"
-                class="px-8"
-                (click)="consultar()">
+        <!-- Botones de acción -->
+        <div class="w-full flex justify-end gap-4 mt-2 mb-8">
+            <button mat-raised-button color="primary" (click)="consultar()">
                 CONSULTAR
             </button>
-
-            <button 
-                mat-raised-button 
-                color="accent"
-                class="px-8"
-                (click)="generarPDF()"
-                [disabled]="!dataSource.data.length">
+            <button mat-raised-button color="accent" (click)="generarPDF()" [disabled]="!dataSource.data.length">
                 <mat-icon class="mr-2">picture_as_pdf</mat-icon>
                 GENERAR REPORTE PDF
             </button>
-
-            <button 
-                mat-raised-button 
-                color="accent"
-                class="px-8"
-                (click)="imprimirPDF()"
-                [disabled]="!dataSource.data.length">
+            <button mat-raised-button color="accent" (click)="imprimirPDF()" [disabled]="!dataSource.data.length">
                 <mat-icon class="mr-2">print</mat-icon>
                 IMPRIMIR
             </button>
+        </div>
+
+        <!-- Métricas -->
+        <div class="w-full grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <!-- Resumen -->
+            <div class="flex flex-col bg-card shadow rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div class="text-lg font-medium">Resumen</div>
+                    <mat-icon class="text-hint">more_vert</mat-icon>
+                </div>
+                <div class="flex flex-col mt-4">
+                    <div class="text-7xl font-bold text-blue-500">{{metrics?.resumen.total_servicios || 0}}</div>
+                    <div class="text-lg text-secondary">Total Servicios</div>
+                    <div class="mt-4 text-secondary">
+                        Completados: {{metrics?.resumen.servicios_terminados || 0}}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distribución de Tipos -->
+            <div class="flex flex-col bg-card shadow rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div class="text-lg font-medium">Distribución de Servicios</div>
+                    <mat-icon class="text-hint">more_vert</mat-icon>
+                </div>
+                <div class="flex-auto">
+                    <canvas #distribucionChart></canvas>
+                </div>
+            </div>
+
+            <!-- Rendimiento Técnicos -->
+            <div class="flex flex-col bg-card shadow rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div class="text-lg font-medium">Rendimiento Técnicos</div>
+                    <mat-icon class="text-hint">more_vert</mat-icon>
+                </div>
+                <div class="flex-auto overflow-y-auto max-h-[300px]">
+                    <canvas #rendimientoChart></canvas>
+                </div>
+            </div>
+
+            <!-- Tiempos de Resolución -->
+            <div class="flex flex-col bg-card shadow rounded-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div class="text-lg font-medium">Tiempos de Resolución</div>
+                    <mat-icon class="text-hint">more_vert</mat-icon>
+                </div>
+                <div class="grid grid-cols-1 gap-4 mt-4">
+                    <!-- EN LABORATORIO - Principal y centrado -->
+                    <div class="flex flex-col bg-card dark:bg-[#1E2837] shadow rounded-lg p-4">
+                        <div class="text-5xl font-bold text-green-500 text-center">
+                            {{getMetricByTipo('EN LABORATORIO')?.tiempo_promedio_horas.toFixed(2) || '0.00'}} <span class="text-2xl">hrs</span>
+                        </div>
+                        <div class="text-lg text-secondary mt-2 text-center">EN LABORATORIO</div>
+                        <div class="mt-2 text-secondary text-center">
+                            Total: {{getMetricByTipo('EN LABORATORIO')?.total_servicios || 0}}
+                        </div>
+                    </div>
+                    <!-- REMOTA y otros - Más pequeños abajo -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex flex-col bg-card dark:bg-[#1E2837] shadow rounded-lg p-4">
+                            <div class="text-4xl font-bold text-gray-400 flex items-baseline">
+                                <span>{{getMetricByTipo('REMOTA')?.tiempo_promedio_horas.toFixed(2) || '0.00'}}</span>
+                                <span class="text-xl ml-1">hrs</span>
+                            </div>
+                            <div class="text-lg text-secondary mt-2">REMOTA</div>
+                            <div class="mt-2 text-secondary">
+                                Total: {{getMetricByTipo('REMOTA')?.total_servicios || 0}}
+                            </div>
+                        </div>
+                        <div class="flex flex-col bg-card dark:bg-[#1E2837] shadow rounded-lg p-4">
+                            <div class="text-4xl font-bold text-gray-400 flex items-baseline">
+                                <span>{{getMetricByTipo('ASISTENCIA')?.tiempo_promedio_horas.toFixed(2) || '0.00'}}</span>
+                                <span class="text-xl ml-1">hrs</span>
+                            </div>
+                            <div class="text-lg text-secondary mt-2">ASISTENCIA</div>
+                            <div class="mt-2 text-secondary">
+                                Total: {{getMetricByTipo('ASISTENCIA')?.total_servicios || 0}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Tabla de resultados -->

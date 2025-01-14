@@ -23,6 +23,36 @@ export interface ServiceResponse {
     };
 }
 
+export interface MetricsResponse {
+    message: string;
+    data: {
+        resumen: {
+            total_servicios: number;
+            servicios_terminados: number;
+            tiempo_promedio_general: number;
+        };
+        distribucionTipos: {
+            labels: string[];
+            data: Array<{
+                tipo: string;
+                cantidad: number;
+                porcentaje: number;
+            }>;
+        };
+        rendimientoTecnicos: Array<{
+            tecnico: string;
+            total_servicios: number;
+            completados: number;
+            tiempo_promedio: number;
+        }>;
+        tiemposResolucion: Array<{
+            tipo: string;
+            tiempo_promedio_horas: number;
+            total_servicios: number;
+        }>;
+    };
+}
+
 interface TipoServicioMapping {
     [key: string]: string;
     'ASISTENCIA EN SITIO': 'ASISTENCIA';
@@ -114,5 +144,27 @@ export class FinanceService {
         }
 
         return this._httpClient.get<ServiceResponse>(`${this._apiUrl}/service/date-range`, { params: httpParams });
+    }
+
+    obtenerMetricas(params: {
+        fechaInicio: string;
+        fechaFin: string;
+        tipoServicio: string;
+        tecnico: string;
+    }): Observable<MetricsResponse> {
+        let httpParams = new HttpParams()
+            .set('fechaInicio', params.fechaInicio)
+            .set('fechaFin', params.fechaFin)
+            .set('estado', 'TERMINADO');
+
+        if (params.tipoServicio !== 'TODOS') {
+            httpParams = httpParams.set('tipo', this.mapTipoServicio(params.tipoServicio));
+        }
+
+        if (params.tecnico !== 'TODOS') {
+            httpParams = httpParams.set('tecnicoAsignado', params.tecnico);
+        }
+
+        return this._httpClient.get<MetricsResponse>(`${this._apiUrl}/service/metrics`, { params: httpParams });
     }
 }
