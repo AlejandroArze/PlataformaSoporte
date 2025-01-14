@@ -301,9 +301,25 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                 this.listStates[event.previousContainer.id].total -= 1;
                 this.listStates[event.container.id].total += 1;
 
-                // Actualizar el estado de la tarjeta movida
+                // Actualizar el estado y fechas de la tarjeta movida
                 const movedCard = event.container.data[event.currentIndex];
                 movedCard.estado = newStatus as EstadoServicio;
+
+                // Actualizar fechas según el estado
+                switch (newStatus) {
+                    case EstadoServicio.SIN_ASIGNAR:
+                    case EstadoServicio.PENDIENTE:
+                        movedCard.fechaInicio = " ";
+                        movedCard.fechaTerminado = " ";
+                        break;
+                    case EstadoServicio.EN_PROGRESO:
+                        movedCard.fechaInicio = new Date().toISOString();
+                        movedCard.fechaTerminado = " ";
+                        break;
+                    case EstadoServicio.TERMINADO:
+                        movedCard.fechaTerminado = new Date().toISOString();
+                        break;
+                }
 
                 // Forzar actualización de la UI
                 this._changeDetectorRef.detectChanges();
@@ -311,17 +327,17 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                 // Actualizar en el backend
                 this._scrumboardService.updateServiceStatus(card.id, newStatus as EstadoServicio)
                     .subscribe({
-                        next: () => {
+                        next: (updatedCard) => {
+                            // Actualizar la tarjeta con los datos del servidor
+                            Object.assign(movedCard, updatedCard);
                             this._changeDetectorRef.detectChanges();
                         },
                         error: (error) => {
                             console.error('Error al actualizar el estado:', error);
                             
-                            // Revertir contadores en caso de error
+                            // Revertir contadores y cambios en caso de error
                             this.listStates[event.previousContainer.id].total += 1;
                             this.listStates[event.container.id].total -= 1;
-                            
-                            // Revertir cambios en caso de error
                             event.previousContainer.data = sourceList;
                             event.container.data = targetList;
                             

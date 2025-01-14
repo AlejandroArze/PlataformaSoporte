@@ -188,7 +188,6 @@ export class ScrumboardService {
                     error: (error) => console.error('Error en GET inicial:', error)
                 }),
                 switchMap(response => {
-                    // Verificar si tenemos los datos del servicio
                     if (!response?.data) {
                         console.error('Respuesta GET inválida:', response);
                         throw new Error('Respuesta inválida del servidor');
@@ -197,11 +196,34 @@ export class ScrumboardService {
                     const currentService = response.data;
                     console.log('Servicio actual obtenido:', currentService);
 
+                    // Determinar las fechas según el estado
+                    let fechaInicio = " ";
+                    let fechaTerminado = " ";
+
+                    switch (newStatus) {
+                        case EstadoServicio.SIN_ASIGNAR:
+                        case EstadoServicio.PENDIENTE:
+                            // Ambas fechas en blanco
+                            fechaInicio = " ";
+                            fechaTerminado = " ";
+                            break;
+                        case EstadoServicio.EN_PROGRESO:
+                            // Fecha de inicio = fecha actual, término en blanco
+                            fechaInicio = new Date().toISOString();
+                            fechaTerminado = " ";
+                            break;
+                        case EstadoServicio.TERMINADO:
+                            // Mantener fecha de inicio, actualizar término
+                            fechaInicio = currentService.fechaInicio || " ";
+                            fechaTerminado = new Date().toISOString();
+                            break;
+                    }
+
                     const updateData = {
                         ...currentService,
                         estado: newStatus,
-                        fechaTerminado: newStatus === EstadoServicio.TERMINADO ? new Date().toISOString() : currentService.fechaTerminado,
-                        fechaInicio: newStatus === EstadoServicio.EN_PROGRESO ? new Date().toISOString() : currentService.fechaInicio
+                        fechaInicio: fechaInicio,
+                        fechaTerminado: fechaTerminado
                     };
                     
                     console.log('URL de actualización:', `${this.apiUrl}/service/${serviceId}`);
