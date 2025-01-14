@@ -247,15 +247,11 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
     }
 
     onSubmit(): void {
-        console.log('onSubmit llamado');
         if (this.actualizando) {
-            console.log('Ya actualizando, ignorando submit');
             return;
         }
 
         this.actualizando = true;
-        console.log('Iniciando actualización');
-
         const formData = this.cardForm.getRawValue();
         const updateData = {
             servicios_id: parseInt(this.data.card.id),
@@ -289,18 +285,19 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
         };
 
         this._scrumboardService.updateService(this.data.card.id, updateData)
-            .pipe(
-                delay(700)
-            )
+            .pipe(delay(700))
             .subscribe({
                 next: (response) => {
-                    console.log('Actualización exitosa:', response);
+                    // Notificar la actualización
+                    this._scrumboardService.notifyCardUpdate('update', Number(this.data.card.id), this.data.card.listId);
+                    
                     this._snackBar.open('Servicio actualizado correctamente', 'Cerrar', {
                         duration: 3000,
                         horizontalPosition: 'end',
                         verticalPosition: 'top',
                         panelClass: ['success-snackbar']
                     });
+                    
                     this.actualizando = false;
                     this.cardForm.markAsPristine();
                 },
@@ -329,14 +326,10 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
     }
 
     onDelete(): void {
-        // Mostrar diálogo de confirmación
         const dialogRef = this._dialog.open(ConfirmationDialogComponent, {
-            width: '400px',
             data: {
-                title: 'Confirmar eliminación',
-                message: '¿Está seguro que desea eliminar este servicio?',
-                confirmButton: 'Eliminar',
-                cancelButton: 'Cancelar'
+                title: 'Eliminar servicio',
+                message: '¿Está seguro de eliminar este servicio?'
             }
         });
 
@@ -345,16 +338,20 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
                 this._scrumboardService.deleteService(this.data.card.id)
                     .subscribe({
                         next: () => {
+                            // Notificar la eliminación con el listId
+                            this._scrumboardService.notifyCardUpdate('delete', Number(this.data.card.id), this.data.card.listId);
+                            
                             this._snackBar.open('Servicio eliminado correctamente', 'Cerrar', {
                                 duration: 3000,
                                 horizontalPosition: 'end',
                                 verticalPosition: 'top',
                                 panelClass: ['success-snackbar']
                             });
-                            this.dialogRef.close(true);
+                            
+                            this.dialogRef.close('deleted');
                         },
                         error: (error) => {
-                            console.error('Error al eliminar:', error);
+                            console.error('Error al eliminar servicio:', error);
                             this._snackBar.open('Error al eliminar el servicio', 'Cerrar', {
                                 duration: 3000,
                                 horizontalPosition: 'end',

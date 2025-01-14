@@ -160,6 +160,46 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
                         this._changeDetectorRef.detectChanges();
                     }
                 });
+
+            // Suscribirse a las actualizaciones de tarjetas
+            this._scrumboardService.cardUpdates$
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe(update => {
+                    if (update.type === 'update') {
+                        // Recargar solo la lista afectada
+                        if (update.listId) {
+                            const list = this.lists.find(l => l.id === update.listId);
+                            if (list) {
+                                const currentCards = [...list.cards];
+                                this.loadCardsForList(list.id, true, currentCards);
+                            }
+                        } else {
+                            // Si no hay listId, recargar todas las listas
+                            this.reloadAllLists();
+                        }
+                    } else if (update.type === 'delete') {
+                        // Recargar la lista específica donde estaba la tarjeta
+                        if (update.listId) {
+                            const list = this.lists.find(l => l.id === update.listId);
+                            if (list) {
+                                // Eliminar la tarjeta de la lista actual
+                                list.cards = list.cards.filter(card => card.id !== update.cardId);
+                                this.listStates[list.id].total--;
+                                
+                                // Recargar la lista para asegurar sincronización
+                                const currentCards = [...list.cards];
+                                this.loadCardsForList(list.id, true, currentCards);
+                            }
+                        } else {
+                            // Si no hay listId, recargar todas las listas
+                            this.reloadAllLists();
+                        }
+                        
+                        // Forzar actualización de la vista
+                        this._changeDetectorRef.markForCheck();
+                        this._changeDetectorRef.detectChanges();
+                    }
+                });
         }
     }
 
@@ -437,23 +477,20 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
     /**
      * Cargar tarjetas para una lista específica
      */
-    loadCardsForList(listId: string, reset: boolean = false): void {
+    loadCardsForList(listId: string, reset: boolean = false, currentCards: Card[] = []): void {
         const state = this.listStates[listId];
         if (state.loading) return;
 
         state.loading = true;
         const list = this.lists.find(l => l.id === listId);
         
-        // Mantener las tarjetas existentes
-        const existingCards = list.cards ? [...list.cards] : [];
-
         // Convertir 'TODOS' a null para la consulta al backend
         const tecnicoId = this.selectedTecnicoId === 'TODOS' ? null : this.selectedTecnicoId;
 
         this._scrumboardService.getCardsByStatus(
             this.getTipoServicio(this.board.id),
             list.title as EstadoServicio,
-            tecnicoId,  // Usar el ID convertido
+            tecnicoId,
             state.page,
             state.limit
         ).pipe(
@@ -461,12 +498,24 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
         ).subscribe({
             next: (response) => {
                 if (reset) {
-                    list.cards = response.cards;
+                    // Mantener el orden actual de las tarjetas
+                    const updatedCards = response.cards.map(newCard => {
+                        const existingCard = currentCards.find(card => card.id === newCard.id);
+                        return existingCard || newCard;
+                    });
+                    
+                    // Mantener el orden original
+                    list.cards = updatedCards.sort((a, b) => {
+                        const indexA = currentCards.findIndex(card => card.id === a.id);
+                        const indexB = currentCards.findIndex(card => card.id === b.id);
+                        return indexA - indexB;
+                    });
                 } else {
+                    // Para paginación, agregar solo las nuevas tarjetas al final
                     const newCards = response.cards.filter(newCard => 
-                        !existingCards.some(existingCard => existingCard.id === newCard.id)
+                        !list.cards.some(existingCard => existingCard.id === newCard.id)
                     );
-                    list.cards = [...existingCards, ...newCards];
+                    list.cards = [...list.cards, ...newCards];
                 }
                 
                 state.total = response.total;
@@ -476,7 +525,7 @@ export class ScrumboardBoardComponent implements OnInit, OnDestroy {
             error: (error) => {
                 console.error('Error al cargar tarjetas:', error);
                 state.loading = false;
-                list.cards = existingCards;
+                list.cards = currentCards;
                 this._changeDetectorRef.detectChanges();
             }
         });

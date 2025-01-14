@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, tap, switchMap, catchError, forkJoin, of } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap, switchMap, catchError, forkJoin, of, Subject } from 'rxjs';
 import { Board, Card, EstadoServicio, TipoServicio, Equipo } from './scrumboard.models';
 import { environment } from 'environments/environment';
 
@@ -69,6 +69,15 @@ interface ServiceResponse {
 export class ScrumboardService {
     private readonly _apiUrl = environment.baseUrl;
     readonly cards$ = new BehaviorSubject<Card[]>([]);
+    private _cardUpdates = new Subject<{type: 'update' | 'delete' | 'create', cardId?: number, listId?: string}>();
+    
+    // Observable que otros componentes pueden suscribirse
+    cardUpdates$ = this._cardUpdates.asObservable();
+
+    // Método para emitir actualizaciones
+    notifyCardUpdate(type: 'update' | 'delete' | 'create', cardId?: number, listId?: string): void {
+        this._cardUpdates.next({ type, cardId, listId });
+    }
 
     get apiUrl(): string {
         return this._apiUrl;
