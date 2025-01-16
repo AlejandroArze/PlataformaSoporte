@@ -1,7 +1,7 @@
 <div class="w-full max-w-3xl">
 
     <!-- Form -->
-    <form [formGroup]="editAccountForm">
+    <form [formGroup]="editAccountForm" (ngSubmit)="onSubmit()">
 
         <!-- Section -->
         <div class="w-full">
@@ -71,7 +71,7 @@
                 </mat-form-field>
             </div>
             
-                        <!-- Email -->
+            <!-- Email -->
             <div class="sm:col-span-4">
                 <mat-form-field
                     class="w-full"
@@ -87,7 +87,7 @@
                 </mat-form-field>
             </div>
 
-            <!-- Photo -->
+           <!-- Photo -->
 <div class="sm:col-span-4">
     <!-- Label para Foto de perfil -->
     <label for="photo" class="text-lg font-medium text-gray-700 mb-2 block">Foto de perfil</label>
@@ -195,8 +195,8 @@
                 class="ml-4"
                 mat-flat-button
                 type="submit"
-                (click)="onSubmit()"
-                [color]="'primary'">Actualizar
+                [color]="'primary'">
+                Actualizar
             </button>
         </div>
     </form>

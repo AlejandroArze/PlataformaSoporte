@@ -4,6 +4,7 @@ const userService = require("../service/user");
 const jsonResponse = require("../http/response/jsonResponse");
 // Importa el Data Transfer Object (DTO) que define la estructura de un usuario
 const UserDTO = require("../http/request/user/responseDTO");
+const { updateDTO } = require('../http/request/user/updateDTO');
 const { User } = require('../models'); 
 const bcrypt = require('bcrypt');
 const loginSchema = require("../http/request/user/loginDTO");
@@ -228,11 +229,11 @@ class UserController {
             );
         }
     }*/
-        static async show(req, res) {
+       /* static async show(req, res) {
             try {
                 const userData = await userService.show(req.params.usuarios_id);
                 const { usuarios_id, nombres, apellidos, usuario, email, role, image, estado } = userData;
-        
+                console.log('Datos del usuario antes de enviar:', userData);
                 const user = {
                     usuarios_id,
                     nombres,
@@ -250,7 +251,45 @@ class UserController {
                     jsonResponse.validationResponse(res, 409, "Validation error", error.details.map(err => err.message)) :
                     jsonResponse.errorResponse(res, 500, error.message);
             }
-        }
+        }*/
+            static async show(req, res) {
+                try {
+                    // Obtiene el ID del usuario a través de req.params
+                    console.log('ID del usuario en la solicitud:', req.params.usuarios_id);
+            
+                    const { usuarios_id, nombres, apellidos, usuario, email, role, image, estado } = await userService.show(req.params.usuarios_id);
+                    
+                    console.log('Datos del usuario obtenidos:', { usuarios_id, nombres, apellidos, usuario, email, role, image, estado });
+            
+                    // Crea un DTO con los datos obtenidos del usuario, asegurando que `estado` sea número
+                    const user = new UserDTO(usuarios_id, nombres, apellidos, usuario, email, parseInt(estado, 10), role, image);
+                    
+                    console.log('DTO creado con los datos del usuario:', user);
+            
+                    // Retorna una respuesta exitosa en formato JSON indicando que el usuario existe
+                    return jsonResponse.successResponse(
+                        res,
+                        200,
+                        "User exists",
+                        user
+                    );
+                } catch (error) {
+                    console.error('Error al obtener los datos del usuario:', error);
+                    
+                    // Si hay un error de validación de Joi, retorna una respuesta de validación
+                    return Joi.isError(error) ? jsonResponse.validationResponse(
+                        res,
+                        409,
+                        "Validation error",
+                        error.details.map(err => err.message)
+                    ) : jsonResponse.errorResponse(
+                        res,
+                        500,
+                        error.message
+                    );
+                }
+            }
+            
         
         
 
@@ -287,95 +326,97 @@ static async getAll(req, res) {
         );
     }
 }
-    
-
-/*static async getAll(req, res) {
-    try {
-        // Obtén los parámetros de paginación de la solicitud
-        const { page = 1, limit = 10 } = req.query;
-
-        // Convierte los valores a enteros y asegura que sean válidos
-        const pageNumber = parseInt(page, 10) || 1;
-        const limitNumber = parseInt(limit, 10) || 10;
-
-        // Calcula el desplazamiento (offset) para la consulta
-        const offset = (pageNumber - 1) * limitNumber;
-
-        // Obtén los usuarios con paginación desde la base de datos
-        const { rows: usuarios, count: totalUsers } = await User.findAndCountAll({
-            limit: limitNumber,
-            offset,
-            order: [['nombres', 'ASC']], // Ordena los usuarios si es necesario
-        });
-
-        // Si no hay usuarios, retorna una respuesta adecuada
-        if (!usuarios || usuarios.length === 0) {
-            return jsonResponse.successResponse(
-                res,
-                200,
-                "No users found",
-                []
-            );
-        }
-
-        // Calcula si hay más páginas disponibles
-        const hasMore = offset + usuarios.length < totalUsers;
-
-        // Respuesta con usuarios, página actual y si hay más
-        return jsonResponse.successResponse(
-            res,
-            200,
-            "Users retrieved successfully",
-            {
-                users: usuarios,
-                currentPage: pageNumber,
-                hasMore,
-            }
-        );
-    } catch (error) {
-        // Maneja el error adecuadamente
-        return jsonResponse.errorResponse(res, 500, error.message);
-    }
-}*/
 
 
 
     // Método estático asíncrono para actualizar la información de un usuario
+    // Método estático asíncrono para actualizar la información de un usuario
+
     static async update(req, res) {
         try {
-            // Asegura que el campo `estado` sea tratado como número
-            const { email, usuario, nombres, apellidos, password, role, image, estado } = req.body;
+            const { email, usuario, nombres, apellidos, password, role, estado } = req.body;
             const estadoInt = parseInt(estado, 10);
-            const id= req.params.usuarios_id;
-            console.log("id ",id)
+            const id = req.params.usuarios_id;
+
+            console.log("ID del usuario:", id);
+
+            // Verifica si se subió una nueva imagen; si no, conserva la imagen existente
+            let imagePath = req.file ? `/uploads/${req.file.filename}` : (req.body.image || "/uploads/default-profile.png");
+
+            console.log("Ruta de la imagen guardada:", imagePath);
 
             // Actualiza el usuario en la base de datos
-            await userService.update({ usuarios_id: req.params.usuarios_id,email, usuario, nombres, apellidos, password, role, image, estado: estadoInt }, req.params.usuarios_id);
-            
-            // Crea un nuevo DTO con los datos actualizados del usuario
-            const updatedUser = new UserDTO(id, email, usuario, nombres, apellidos, role, image, estadoInt);
+            await userService.update({
+                email,
+                usuario,
+                nombres,
+                apellidos,
+                password,
+                role,
+                image: imagePath,
+                estado: estadoInt
+            }, id);
 
-            // Retorna una respuesta exitosa en formato JSON indicando que el usuario ha sido actualizado
-            return jsonResponse.successResponse(
-                res,
-                200,
-                "User has been updated",
-                updatedUser
-            );
+            // Crea un DTO con los datos actualizados del usuario
+            const updatedUser = new UserDTO(id, email, usuario, nombres, apellidos, role, imagePath, estadoInt);
+
+            // Retorna una respuesta exitosa
+            return jsonResponse.successResponse(res, 200, "User has been updated", updatedUser);
         } catch (error) {
-            // Si hay un error de validación de Joi, retorna una respuesta de validación
-            return Joi.isError(error) ? jsonResponse.validationResponse(
+            console.error('Error al actualizar el usuario:', error);
+            return Joi.isError(error)
+                ? jsonResponse.validationResponse(res, 409, "Validation error", error.details.map(err => err.message))
+                : jsonResponse.errorResponse(res, 500, error.message);
+        }
+    }
+
+    // Controlador para actualizar el estado
+static async updateStatus(req, res) {
+    try {
+        const { estado } = req.body;
+        const estadoInt = parseInt(estado, 10);
+        const id = req.params.usuarios_id;
+
+        console.log("ID del usuario:", id);
+        console.log("Nuevo estado:", estadoInt);
+
+        // Validar el nuevo estado
+        const estadoSchema = Joi.object({
+            estado: Joi.number().integer().required()
+        });
+
+        try {
+            await estadoSchema.validateAsync({ estado: estadoInt }, { abortEarly: false });
+        } catch (validationError) {
+            console.error("Errores de validación:", validationError);
+            return jsonResponse.validationResponse(
                 res,
                 409,
                 "Validation error",
-                error.details.map(err => err.message)
-            ) : jsonResponse.errorResponse(
-                res,
-                500,
-                error.message
+                validationError.details.map(err => err.message)
             );
         }
+
+        // Actualiza solo el estado del usuario en la base de datos
+        const updatedState = await userService.updateStatus({ estado: estadoInt }, id);
+
+        // Retorna una respuesta exitosa con el estado actualizado
+        return jsonResponse.successResponse(
+            res,
+            200,
+            "User status has been updated",
+            updatedState
+        );
+    } catch (error) {
+        console.error('Error al actualizar el estado del usuario:', error);
+        return jsonResponse.errorResponse(res, 500, error.message);
     }
+}
+
+    
+
+    
+
 
     // Método estático asíncrono para eliminar un usuario
     static async destroy(req, res) {

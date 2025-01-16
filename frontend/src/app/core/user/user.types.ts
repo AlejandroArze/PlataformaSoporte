@@ -4,6 +4,7 @@ export interface User
     name: string;
     email: string;
     avatar?: string;
+    image?: string;
     status?: string;
 }
 /*

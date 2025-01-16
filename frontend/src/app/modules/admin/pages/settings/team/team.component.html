@@ -25,7 +25,9 @@
                 matPrefix></mat-icon>
             <input
                 matInput
-                [placeholder]="'Nombre de usuario/ CI / Correo'">
+                [(ngModel)]="searchTerm"
+                [placeholder]="'Nombre de usuario/ Correo'"
+                (input)="searchMembers()">
             <button
                 mat-icon-button
                 matSuffix>
@@ -91,7 +93,8 @@
                     </div>
                     <!-- Eliminar -->
                     <div class="order-1 sm:order-2 sm:ml-3">
-                        <button mat-icon-button>
+                        <button mat-icon-button
+                        (click)="toggleUserStatus(member)">
                             <mat-icon
                                 class="text-hint"
                                 [svgIcon]="'heroicons_outline:trash'"></mat-icon>

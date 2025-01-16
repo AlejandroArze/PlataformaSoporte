@@ -12,6 +12,8 @@ import { environment } from '../../../../../../environments/environment';
 import { ChangeDetectorRef,  Output, EventEmitter } from '@angular/core';
 import { SettingsService } from '../Settings.Service';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { FormsModule } from '@angular/forms';
+
 
 
 @Component({
@@ -20,7 +22,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
     encapsulation  : ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     standalone     : true,
-    imports        : [ScrollingModule, MatFormFieldModule, MatIconModule, MatInputModule, MatButtonModule, NgFor, NgIf, MatSelectModule, MatOptionModule, TitleCasePipe],
+    imports        : [ScrollingModule, MatFormFieldModule, MatIconModule, MatInputModule, MatButtonModule, NgFor, NgIf, MatSelectModule, MatOptionModule, TitleCasePipe, FormsModule],
 
 })
 export class SettingsTeamComponent implements OnInit
@@ -33,6 +35,8 @@ export class SettingsTeamComponent implements OnInit
 
     members: any[];
     roles: any[];
+    searchTerm: string = '';
+
     
 
     /**
@@ -50,7 +54,8 @@ export class SettingsTeamComponent implements OnInit
     ngOnInit(): void {
       this.http.get<any>(`${environment.baseUrl}/users`).subscribe(
         (response) => {
-          this.members = response.data.map((user) => {
+          
+          this.members = response.data.filter(user => user.estado === 1).map((user) => {
             return {
               id: user.usuarios_id,
               //avatar: user.image || 'assets/images/avatars/default-profile.png',
@@ -74,7 +79,7 @@ export class SettingsTeamComponent implements OnInit
     reloadUsers(): void {
       this.http.get<any>(`${environment.baseUrl}/users`).subscribe(
         (response) => {
-          this.members = response.data.map((user) => {
+          this.members = response.data.filter(user => user.estado === 1).map((user) => {
             return {
               avatar: user.image
                 ? `${environment.baseUrl}${user.image}` // Construye la URL completa si hay una imagen
@@ -126,6 +131,24 @@ export class SettingsTeamComponent implements OnInit
       console.log('ID del usuario seleccionado:', userId); // Log para verificar
     }
       */
+
+    toggleUserStatus(user: any): void { 
+      const newStatus = 0; // Establece el nuevo estado a 0
+    
+      this.http.patch<any>(`${environment.baseUrl}/user/${user.id}/status`, 
+          { estado: newStatus }).subscribe( 
+          (response) => { 
+              console.log('Estado del usuario actualizado:', response); 
+              this.reloadUsers(); // Recargar la lista de usuarios para reflejar los cambios
+          }, 
+          (error) => { 
+              console.error('Error al actualizar el estado del usuario:', error); 
+          }
+      );
+    }
+    
+    
+  
     
 
     
@@ -146,6 +169,18 @@ export class SettingsTeamComponent implements OnInit
         return 'Rol desconocido';
     }
   }
+
+  searchMembers(): void {
+    if (this.searchTerm.trim() === '') {
+      this.reloadUsers(); // Si no hay búsqueda, recarga todos los usuarios
+    } else {
+      this.members = this.members.filter((member) =>
+        member.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        member.email.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    }
+  }
+  
   
 
   

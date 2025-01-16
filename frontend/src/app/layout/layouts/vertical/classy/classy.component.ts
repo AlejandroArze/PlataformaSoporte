@@ -19,6 +19,7 @@ import { SearchComponent } from 'app/layout/common/search/search.component';
 import { ShortcutsComponent } from 'app/layout/common/shortcuts/shortcuts.component';
 import { UserComponent } from 'app/layout/common/user/user.component';
 import { Subject, takeUntil } from 'rxjs';
+import { environment } from 'environments/environment';
 
 @Component({
     selector     : 'classy-layout',
@@ -93,6 +94,8 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
                 // Check if the screen is small
                 this.isScreenSmall = !matchingAliases.includes('md');
             });
+
+            
     }
 
     /**
@@ -103,6 +106,11 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
+    }
+
+
+    getImageUrl(imagePath: string): string {
+        return imagePath ? `${environment.baseUrl}${imagePath}` : '';
     }
 
     // -----------------------------------------------------------------------------------------------------

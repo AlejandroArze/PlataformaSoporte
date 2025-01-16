@@ -16,6 +16,7 @@ import { environment } from '../../../../../../environments/environment';
   templateUrl: './edit-account.component.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  //changeDetection: ChangeDetectionStrategy.Default,
   standalone: true,
   imports: [
     FormsModule,
@@ -64,32 +65,61 @@ export class EditAccountComponent implements OnInit {
 
   loadUserData(userId: string): void {
     this._httpClient.get<any>(`${environment.baseUrl}/user/${userId}`).subscribe(
-      (userData: any) => {
-        if (userData) {
-          console.log('Datos del usuario recibidos:', userData);
-
-          this.editAccountForm.patchValue({
-            name: userData.nombres || 'dfdf',
-            lastname: userData.apellidos || '',
-            username: userData.usuario || '',
-            email: userData.email || '',
-            roles: userData.role || '',
-            status: userData.estado || ''
-          });
-          this.cdr.detectChanges();  // Asegúrate de que la vista se actualice
-          console.log('Formulario después de patchValue:', this.editAccountForm.value);
+      (response: any) => {
+        // Log para ver cómo se recibe la respuesta
+        console.log('Respuesta del servidor:', response);
+        
+        // Desestructurar correctamente los datos dentro de la propiedad 'data'
+        const { apellidos, email, estado, image, nombres, role, usuario, usuarios_id } = response.data || {};
+  
+        // Logs de los valores recibidos
+        console.log('Apellidos:', apellidos);
+        console.log('Email:', email);
+        console.log('Estado:', estado);
+        console.log('Imagen:', image);
+        console.log('Nombres:', nombres);
+        console.log('Role:', role);
+        console.log('Usuario:', usuario);
+        console.log('ID de usuario:', usuarios_id);
+  
+        // Verificar que los datos existan antes de proceder
+        if (response.data) {
+          // Imprimir los valores desestructurados para asegurarse de que están correctos
+          console.log('Datos del usuario recibidos en el frontend:', response.data);
+  
+          // Convertir estado a '1' o '0' como cadenas para que coincidan con las opciones
+          const estadoForm = estado === 1 ? '1' : '0'; // Asegurarse de que se usa '1' o '0'
+  
+          // Asignar valores al formulario
+          this.editAccountForm.controls['name'].setValue(nombres || '');
+          this.editAccountForm.controls['lastname'].setValue(apellidos || '');
+          this.editAccountForm.controls['username'].setValue(usuario || '');
+          this.editAccountForm.controls['email'].setValue(email || '');
+          this.editAccountForm.controls['roles'].setValue(role || '');
+          this.editAccountForm.controls['status'].setValue(estadoForm || '0'); // Asegurarse de que '0' se use si no hay estado
+  
+          this.cdr.detectChanges();  // Asegurarte de que la vista se actualice
+          console.log('Formulario después de asignar valores:', this.editAccountForm.value);
+  
           // Mostrar vista previa de la imagen si está disponible
-          if (userData.image) {
-            this.imagePreview = `${environment.baseUrl}${userData.image}`;
-            this.imageName = userData.image.split('/').pop();
+          if (image) {
+            this.imagePreview = `${environment.baseUrl}${image}`;
+            this.imageName = image.split('/').pop();
           }
+        } else {
+          console.error('No se recibieron datos válidos del usuario');
         }
       },
       (error) => {
-        console.error('Error al obtener los datos del usuario', error);
+        console.error('Error al obtener los datos del usuario:', error);
       }
     );
   }
+  
+  
+  
+  
+  
 
   // Maneja la selección de archivos
   onFileSelected(event: any): void {
@@ -108,7 +138,10 @@ export class EditAccountComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log('Formulario válido:', this.editAccountForm.valid);
+    
     if (this.editAccountForm.valid && this.userId) {
+      console.log('Formulario datos:', this.editAccountForm.value);
       const formData = new FormData();
       formData.append('email', this.editAccountForm.get('email')?.value);
       formData.append('usuario', this.editAccountForm.get('username')?.value);
@@ -116,7 +149,7 @@ export class EditAccountComponent implements OnInit {
       formData.append('apellidos', this.editAccountForm.get('lastname')?.value);
       formData.append('password', this.editAccountForm.get('password')?.value);
       formData.append('role', this.editAccountForm.get('roles')?.value);
-      formData.append('estado', this.editAccountForm.get('status')?.value);
+      formData.append('estado', this.editAccountForm.get('status')?.value);    
 
       // Si hay una imagen seleccionada, se agrega al FormData
       const fileInput = <HTMLInputElement>document.getElementById('photo');
@@ -126,6 +159,7 @@ export class EditAccountComponent implements OnInit {
       } else {
         formData.append('image', '/uploads/default-profile.png');
       }
+      console.log('id', this.userId);
 
       // Hacer la solicitud PUT utilizando el ID del usuario para actualizarlo
       this._httpClient.put(`${environment.baseUrl}/user/${this.userId}`, formData).subscribe(
@@ -140,4 +174,10 @@ export class EditAccountComponent implements OnInit {
       console.log('Formulario inválido');
     }
   }
+
+ 
+
+
+
+  
 }

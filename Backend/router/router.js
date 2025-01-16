@@ -45,8 +45,11 @@ router.post("/user", authMiddleware([1,2,3]), upload.single('image'), user.store
 // Ruta para obtener todos los usuarios
 router.get("/users", authMiddleware([1,2,3]), user.getAll); // buscar todos lso usuarios 
 router.get("/user/:usuarios_id", authMiddleware([1,2,3]), user.show); // Obtener un usuario por ID
-router.put("/user/:usuarios_id", authMiddleware([1,2,3]), user.update); // Actualizar un usuario por ID
+router.put("/user/:usuarios_id", authMiddleware([1,2,3]), upload.single('image'), user.update); // Actualizar un usuario por ID
 router.delete("/user/:usuarios_id", authMiddleware([1]), user.destroy); // Eliminar un usuario por ID
+// Ruta para actualizar solo el estado de un usuario por ID
+router.patch("/user/:usuarios_id/status", authMiddleware([1,2,3]), user.updateStatus);
+
 
 
 // Login de usuario

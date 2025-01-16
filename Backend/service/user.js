@@ -160,6 +160,40 @@ class UserService {
         }
     }
 
+
+    //
+    // Método para actualizar solo el estado de un usuario por su ID
+    static async updateStatus(data, id) {
+    const DB = await sequelize.transaction(); // Inicia una transacción de base de datos
+    console.log("Servicer: ", data);
+    console.log("Servicer2: ", id);
+
+    try {
+        // Valida el ID del usuario
+        await idDTO.validateAsync({ usuarios_id: id });
+
+        // Actualiza solo el estado del usuario con el nuevo estado proporcionado
+        const [updated] = await User.update(
+            { estado: data.estado },
+            { where: { usuarios_id: id } } // Condición para actualizar el registro por ID
+        );
+
+        await DB.commit(); // Confirma la transacción
+
+        if (updated) {
+            // Devuelve solo el estado actualizado como respuesta
+            return { estado: data.estado };
+        } else {
+            throw new Error('Usuario no encontrado');
+        }
+    } catch (error) {
+        await DB.rollback(); // Deshace los cambios si hay un error
+        throw error; // Lanza el error para manejarlo
+    }
+}
+
+
+
     // Método para eliminar un usuario por su ID
     static async destroy(id) {
         console.log("Servicer3: ",id)
