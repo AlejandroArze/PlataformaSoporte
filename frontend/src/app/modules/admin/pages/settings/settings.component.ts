@@ -55,129 +55,37 @@ export class SettingsComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
-         // Obtener el rol del usuario
-         const userRoles = this._getUserRoles();
-         const role = userRoles[0]; // Obtener el primer rol si es que hay más de uno.
-        // Setup available panels
-        this.panels = [
+        // Obtener el rol del usuario
+        const userRoles = this._getUserRoles();
+        const role = userRoles[0];
+
+        // Configuración base de paneles
+        const basePanels = [
             {
                 id         : 'account',
                 icon       : 'heroicons_outline:user-circle',
                 title      : 'Cuenta',
-                description: 'Gestiona tu perfil público e información privada.',
+                description: 'Gestiona tu perfil público e información privada',
             },
             {
                 id         : 'security',
                 icon       : 'heroicons_outline:lock-closed',
                 title      : 'Seguridad',
-                description: 'Gestiona tu contraseña y las preferencias de verificación en dos pasos.',
-            },
-            {
-                id         : 'team',
-                icon       : 'heroicons_outline:user-group',
-                title      : 'Equipo',
-                description: 'Gestiona tu equipo actual y cambia roles/permisos. ',
+                description: 'Gestiona tu contraseña y las preferencias de verificación en dos pasos',
             },
         ];
 
-        //superadmin
-        // Setup available panels
-        this.panels1 = [
-            {
-                id         : 'account',
-                icon       : 'heroicons_outline:user-circle',
-                title      : 'Cuenta',
-                description: 'Gestiona tu perfil público e información privada.',
-            },
-            {
-                id         : 'create-account',
-                icon       : 'heroicons_outline:user-circle',
-                title      : 'Crear Cuenta',
-                description: 'Gestiona tu perfil público e información privada.',
-            },
-            {
-                id         : 'edit-account',
-                icon       : 'heroicons_outline:user-circle',
-                title      : 'Editar Cuenta',
-                description: 'Gestiona tu perfil público e información privada.',
-            },
-            {
-                id         : 'security',
-                icon       : 'heroicons_outline:lock-closed',
-                title      : 'Seguridad',
-                description: 'Gestiona tu contraseña y las preferencias de verificación en dos pasos.',
-            },
-            {
+        // Agregar panel de equipo para roles administrativos
+        if (role === 1 || role === 2) {
+            basePanels.push({
                 id         : 'team',
                 icon       : 'heroicons_outline:user-group',
                 title      : 'Equipo',
-                description: 'Gestiona tu equipo actual y cambia roles/permisos. ',
-            },
-        ];
-
-        //admin
-        // Setup available panels
-        this.panels2 = [
-            {
-                id         : 'account',
-                icon       : 'heroicons_outline:user-circle',
-                title      : 'Cuenta',
-                description: 'Gestiona tu perfil público e información privada.',
-            },
-            {
-                id         : 'security',
-                icon       : 'heroicons_outline:lock-closed',
-                title      : 'Seguridad',
-                description: 'Gestiona tu contraseña y las preferencias de verificación en dos pasos.',
-            },
-            {
-                id         : 'create-account',
-                icon       : 'heroicons_outline:user-circle',
-                title      : 'Crear Cuenta',
-                description: 'Gestiona tu perfil público e información privada.',
-            },
-            {
-                id         : 'edit-account',
-                icon       : 'heroicons_outline:user-circle',
-                title      : 'Editar Cuenta',
-                description: 'Gestiona tu perfil público e información privada.',
-            },
-            {
-                id         : 'team',
-                icon       : 'heroicons_outline:user-group',
-                title      : 'Equipo',
-                description: 'Gestiona tu equipo actual y cambia roles/permisos. ',
-            },
-        ];
-        //tecnico
-        // Setup available panels
-        this.panels3 = [
-            {
-                id         : 'account',
-                icon       : 'heroicons_outline:user-circle',
-                title      : 'Cuenta',
-                description: 'Gestiona tu perfil público e información privada.',
-            },
-            {
-                id         : 'security',
-                icon       : 'heroicons_outline:lock-closed',
-                title      : 'Seguridad',
-                description: 'Gestiona tu contraseña y las preferencias de verificación en dos pasos.',
-            },
-        ];
-
-        // Asignar los paneles según el rol
-        if (role === 1) {
-            this.panels = this.panels1;
-        } else if (role === 2) {
-            this.panels = this.panels2;
-        } else if (role === 3) {
-            this.panels = this.panels3;
-        } else {
-            // Asignar un conjunto de paneles por defecto si no se encuentra el rol
-            this.panels = this.panels1; 
+                description: 'Gestiona tu equipo y los miembros',
+            });
         }
 
+        this.panels = basePanels;
 
         // Subscribe to media changes
         this._fuseMediaWatcherService.onMediaChange$
@@ -200,7 +108,6 @@ export class SettingsComponent implements OnInit, OnDestroy
                 this._changeDetectorRef.markForCheck();
             });
     }
-
 
     private _getUserRoles(): number[] {
         const token = localStorage.getItem('token');
@@ -248,16 +155,10 @@ export class SettingsComponent implements OnInit, OnDestroy
         }
     }
 
-
-
-      // Método para manejar el evento emitido desde el componente hijo (SettingsTeamComponent)
-  onPanelChanged(panelId: string): void {
-    this.selectedPanel = panelId;  // Cambiar el panel cuando se emite el evento
-  }
-
-
-
-    
+    // Método para manejar el evento emitido desde el componente hijo (SettingsTeamComponent)
+    onPanelChanged(panelId: string): void {
+        this.selectedPanel = panelId;  // Cambiar el panel cuando se emite el evento
+    }
 
     /**
      * Get the details of the panel
@@ -268,8 +169,6 @@ export class SettingsComponent implements OnInit, OnDestroy
     {
         return this.panels.find(panel => panel.id === id)|| { title: 'Panel no encontrado' };
     }
-
-    
 
     /**
      * Track by function for ngFor loops

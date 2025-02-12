@@ -1,167 +1,147 @@
-<div class="w-full max-w-3xl">
-
-    <!-- Form -->
-    <form [formGroup]="accountForm">
-
-        <!-- Section -->
-        <div class="w-full">
-            <div class="text-xl">Perfil</div>
-        </div>
-        <div class="grid sm:grid-cols-4 gap-6 w-full mt-8">
-            <!-- Name -->
-            <div class="sm:col-span-4">
-                <mat-form-field
-                    class="w-full"
-                    [subscriptSizing]="'dynamic'">
-                    <mat-label>Nombres</mat-label>
-                    <mat-icon
-                        class="icon-size-5"
-                        [svgIcon]="'heroicons_solid:user'"
-                        matPrefix></mat-icon>
-                    <input
-                        [formControlName]="'name'"
-                        matInput>
-                </mat-form-field>
-            </div>
-            <!-- Apellidos -->
-            <div class="sm:col-span-4">
-                <mat-form-field
-                    class="w-full"
-                    [subscriptSizing]="'dynamic'">
-                    <mat-label>Apellidos</mat-label>
-                    <mat-icon
-                        class="icon-size-5"
-                        [svgIcon]="'heroicons_solid:user'"
-                        matPrefix></mat-icon>
-                    <input
-                        [formControlName]="'lastname'"
-                        matInput>
-                </mat-form-field>
-            </div>
-           
-            <!-- User -->
-            <div class="sm:col-span-2">
-                <mat-form-field
-                    class="w-full"
-                    [subscriptSizing]="'dynamic'">
-                    <mat-label>Usuario</mat-label>
-                    <mat-icon
-                        class="icon-size-5"
-                        [svgIcon]="'heroicons_solid:user-circle'"
-                        matPrefix></mat-icon>
-                    <input
-                        [formControlName]="'username'"
-                        matInput>
-                </mat-form-field>
-            </div>
-            <!-- Password -->
-            <div class="sm:col-span-2">
-                <mat-form-field
-                    class="w-full"
-                    [subscriptSizing]="'dynamic'">
-                    <mat-label>Contraseña</mat-label>
-                    <mat-icon
-                        class="icon-size-5"
-                        [svgIcon]="'heroicons_solid:lock-closed'"
-                        matPrefix></mat-icon>
-                    <input
-                        [formControlName]="'password'"
-                        type="password"
-                        matInput>
-                </mat-form-field>
-            </div>
-            
-                        <!-- Email -->
-            <div class="sm:col-span-4">
-                <mat-form-field
-                    class="w-full"
-                    [subscriptSizing]="'dynamic'">
-                    <mat-label>Correo Electrónico</mat-label>
-                    <mat-icon
-                        class="icon-size-5"
-                        [svgIcon]="'heroicons_solid:envelope'"
-                        matPrefix></mat-icon>
-                    <input
-                        [formControlName]="'email'"
-                        matInput>
-                </mat-form-field>
-            </div>
-
-            <!-- Photo -->
-<div class="sm:col-span-4">
-    <!-- Label para Foto de perfil -->
-    <label for="photo" class="text-lg font-medium text-gray-700 mb-2 block">Foto de perfil</label>
-  
-    <!-- Input de tipo file estilizado -->
-    <div class="flex items-center space-x-3 mb-4">
-      <button
-        mat-raised-button
-        color="primary"
-        (click)="fileInput.click()"
-        class="flex items-center space-x-2 px-4 py-2 rounded-lg border border-gray-300 hover:bg-blue-50"
-      >
-        <mat-icon class="icon-size-5">photo_camera</mat-icon>
-        <span>Seleccionar Foto</span>
-      </button>
-      <input
-        type="file"
-        #fileInput
-        accept="image/*"
-        id="photo"
-        [formControlName]="'photo'"
-        (change)="onFileSelected($event)"
-        class="hidden"
-      />
+<div class="w-full max-w-3xl p-6 sm:p-8 bg-card shadow rounded-2xl">
+    <!-- Sección Principal -->
+    <div class="w-full mb-8">
+        <h2 class="text-3xl font-bold tracking-tight leading-none">Mi Cuenta</h2>
+        <p class="mt-2 text-secondary">Gestiona tu información personal y preferencias</p>
     </div>
-  
-      <!-- Vista previa de la imagen -->
-  <div *ngIf="imagePreview" class="flex justify-center mt-4">
-    <img
-      [src]="imagePreview"
-      alt="Vista previa de la foto"
-      class="rounded-full w-32 h-32 object-cover border-4 border-gray-300 shadow-lg"
-    />
-  </div>
-  <div *ngIf="!imagePreview">
-    <p class="text-center text-gray-500">No se ha seleccionado ninguna imagen.</p>
-  </div>
 
-  <!-- Nombre de la imagen -->
-  <div *ngIf="imageName" class="mt-2 text-center text-sm text-gray-500">
-    <p>Imagen seleccionada: {{ imageName }}</p>
-  </div>
+    <!-- Formulario Principal -->
+    <form [formGroup]="accountForm" (ngSubmit)="onSubmit()" class="space-y-8">
+        <!-- Información Personal -->
+        <div class="space-y-6">
+            <!-- Foto de perfil -->
+            <div class="flex flex-col items-center space-y-4">
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200">
+                    <img *ngIf="imagePreview" [src]="imagePreview" 
+                         class="w-full h-full object-cover"
+                         alt="Foto de perfil">
+                    <div *ngIf="!imagePreview" 
+                         class="w-full h-full flex items-center justify-center bg-gray-100">
+                        <mat-icon class="text-4xl text-gray-400">person</mat-icon>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button type="button"
+                            mat-flat-button
+                            color="primary"
+                            (click)="fileInput.click()">
+                        <mat-icon class="mr-2">photo_camera</mat-icon>
+                        Cambiar foto
+                    </button>
+                    <input #fileInput
+                           type="file"
+                           accept="image/*"
+                           class="hidden"
+                           (change)="onFileSelected($event)">
+                </div>
+                <span *ngIf="imageName" class="text-sm text-gray-500">
+                    {{ imageName }}
+                </span>
+            </div>
 
+            <!-- Campos de información -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <mat-form-field appearance="outline">
+                    <mat-label>Nombres</mat-label>
+                    <input matInput formControlName="name">
+                    <mat-icon matPrefix>person</mat-icon>
+                    <mat-error *ngIf="accountForm.get('name').hasError('required')">
+                        Este campo es requerido
+                    </mat-error>
+                </mat-form-field>
 
-  
-  </div>
-  
-           
-  
+                <mat-form-field appearance="outline">
+                    <mat-label>Apellidos</mat-label>
+                    <input matInput formControlName="lastname">
+                    <mat-icon matPrefix>person</mat-icon>
+                    <mat-error *ngIf="accountForm.get('lastname').hasError('required')">
+                        Este campo es requerido
+                    </mat-error>
+                </mat-form-field>
 
+                <mat-form-field appearance="outline">
+                    <mat-label>Usuario</mat-label>
+                    <input matInput formControlName="username">
+                    <mat-icon matPrefix>account_circle</mat-icon>
+                    <mat-error *ngIf="accountForm.get('username').hasError('required')">
+                        Este campo es requerido
+                    </mat-error>
+                </mat-form-field>
 
-  
+                <mat-form-field appearance="outline">
+                    <mat-label>Correo Electrónico</mat-label>
+                    <input matInput formControlName="email" type="email">
+                    <mat-icon matPrefix>email</mat-icon>
+                    <mat-error *ngIf="accountForm.get('email').hasError('required')">
+                        Este campo es requerido
+                    </mat-error>
+                    <mat-error *ngIf="accountForm.get('email').hasError('email')">
+                        Ingrese un correo electrónico válido
+                    </mat-error>
+                </mat-form-field>
+            </div>
         </div>
 
-        <!-- Divider -->
-        <div class="my-10 border-t"></div>
+        <!-- Sección de Contraseña -->
+        <div class="border-t pt-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-xl font-semibold">Cambiar Contraseña</h3>
+                    <p class="text-secondary">¡Solo puedes cambiar tu contraseña dos veces en 24 horas!</p>
+                </div>
+                <button type="button"
+                        mat-flat-button
+                        color="primary"
+                        (click)="togglePasswordSection()">
+                    {{ showPasswordSection ? 'Cancelar' : 'Cambiar contraseña' }}
+                </button>
+            </div>
 
-        <!-- Divider -->
-        <div class="mt-11 mb-10 border-t"></div>
+            <div *ngIf="showPasswordSection" class="space-y-4" [formGroup]="passwordForm">
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Contraseña actual</mat-label>
+                    <input matInput type="password" formControlName="currentPassword">
+                    <mat-icon matPrefix>lock</mat-icon>
+                </mat-form-field>
 
-        <!-- Actions -->
-        <div class="flex items-center justify-end">
-            <button
-                mat-stroked-button
-                type="button">
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Nueva contraseña</mat-label>
+                    <input matInput type="password" formControlName="newPassword">
+                    <mat-icon matPrefix>lock_reset</mat-icon>
+                    <mat-hint>Mínimo 8 caracteres. Debe incluir números, letras y caracteres especiales.</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Confirmar nueva contraseña</mat-label>
+                    <input matInput type="password" formControlName="confirmPassword">
+                    <mat-icon matPrefix>lock_reset</mat-icon>
+                </mat-form-field>
+
+                <div class="flex justify-end">
+                    <button type="button"
+                            mat-flat-button
+                            color="primary"
+                            [disabled]="passwordForm.invalid"
+                            (click)="changePassword()">
+                        Actualizar contraseña
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-3 border-t pt-6">
+            <button type="button"
+                    mat-stroked-button
+                    (click)="resetForm()">
                 Cancelar
             </button>
-            <button
-                class="ml-4"
-                mat-flat-button
-                type="button"
-                [color]="'primary'">Guardar
+            <button type="submit"
+                    mat-flat-button
+                    color="primary"
+                    [disabled]="accountForm.invalid">
+                Guardar cambios
             </button>
         </div>
     </form>
-
 </div>

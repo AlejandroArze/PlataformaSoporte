@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
@@ -35,11 +35,14 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 })
 export class EditAccountComponent implements OnInit {
   @Output() panelChanged = new EventEmitter<string>();
-  //@Output() panelChanged: EventEmitter<string> = new EventEmitter<string>(); // Emitir cambios de panel
+  @Output() accountUpdated = new EventEmitter<void>();
+  @Output() cancelled = new EventEmitter<void>();
+  @Input() userId: string;
   editAccountForm: FormGroup;
+  passwordForm: FormGroup;
+  showPasswordSection: boolean = false;
   imagePreview: string | null = null;
   imageName: string | null = null;
-  userId: string | null = null;
   message: string | null = null;
 
   constructor(
@@ -50,8 +53,26 @@ export class EditAccountComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('ID de usuario recibido:', this.userId);
     this.checkSessionStorage();
-    this.userId = sessionStorage.getItem('selectedUserId');
+    this.initializeForms();
+    
+    // Obtener el ID del usuario del sessionStorage si no se proporcionó como Input
+    const storedUserId = sessionStorage.getItem('selectedUserId');
+    if (storedUserId && !this.userId) {
+      this.userId = storedUserId;
+      console.log('ID de usuario desde sessionStorage:', this.userId);
+    }
+
+    if (this.userId) {
+      this.loadUserData();
+    } else {
+      console.error('No se encontró ID de usuario');
+      this.message = 'No se pudo cargar la información del usuario';
+    }
+  }
+
+  initializeForms(): void {
     this.editAccountForm = this._formBuilder.group({
       name: ['', Validators.required],
       lastname: ['', Validators.required],
@@ -63,62 +84,50 @@ export class EditAccountComponent implements OnInit {
       status: ['', Validators.required],
     });
 
-    if (this.userId) {
-      this.loadUserData(this.userId);
-    } else {
-      console.error('ID de usuario no encontrado en sessionStorage');
-    }
+    this.passwordForm = this._formBuilder.group({
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', Validators.required]
+    }, { validator: this.passwordMatchValidator });
   }
 
-  loadUserData(userId: string): void {
-    this._httpClient.get<any>(`${environment.baseUrl}/user/${userId}`).subscribe(
+  loadUserData(): void {
+    console.log('Cargando datos del usuario con ID:', this.userId);
+    
+    this._httpClient.get(`${environment.baseUrl}/user/${this.userId}`).subscribe(
       (response: any) => {
-        // Log para ver cómo se recibe la respuesta
         console.log('Respuesta del servidor:', response);
         
-        // Desestructurar correctamente los datos dentro de la propiedad 'data'
-        const { apellidos, email, estado, image, nombres, role, usuario, usuarios_id } = response.data || {};
-  
-        // Logs de los valores recibidos
-        console.log('Apellidos:', apellidos);
-        console.log('Email:', email);
-        console.log('Estado:', estado);
-        console.log('Imagen:', image);
-        console.log('Nombres:', nombres);
-        console.log('Role:', role);
-        console.log('Usuario:', usuario);
-        console.log('ID de usuario:', usuarios_id);
-  
-        // Verificar que los datos existan antes de proceder
         if (response.data) {
-          // Imprimir los valores desestructurados para asegurarse de que están correctos
-          console.log('Datos del usuario recibidos en el frontend:', response.data);
-  
-          // Convertir estado a '1' o '0' como cadenas para que coincidan con las opciones
-          const estadoForm = estado === 1 ? '1' : '0'; // Asegurarse de que se usa '1' o '0'
-  
-          // Asignar valores al formulario
-          this.editAccountForm.controls['name'].setValue(nombres || '');
-          this.editAccountForm.controls['lastname'].setValue(apellidos || '');
-          this.editAccountForm.controls['username'].setValue(usuario || '');
-          this.editAccountForm.controls['email'].setValue(email || '');
-          this.editAccountForm.controls['roles'].setValue(role || '');
-          this.editAccountForm.controls['status'].setValue(estadoForm || '0'); // Asegurarse de que '0' se use si no hay estado
-  
-          this.cdr.detectChanges();  // Asegurarte de que la vista se actualice
-          console.log('Formulario después de asignar valores:', this.editAccountForm.value);
-  
-          // Mostrar vista previa de la imagen si está disponible
-          if (image) {
-            this.imagePreview = `${environment.baseUrl}${image}`;
-            this.imageName = image.split('/').pop();
+          const userData = response.data;
+          console.log('Datos del usuario obtenidos:', userData);
+
+          // Actualizar el formulario con los datos
+          this.editAccountForm.patchValue({
+            name: userData.nombres,
+            lastname: userData.apellidos,
+            username: userData.usuario,
+            email: userData.email,
+            roles: userData.role,
+            status: userData.estado.toString()
+          });
+
+          // Manejar la imagen del perfil
+          if (userData.image) {
+            this.imagePreview = `${environment.baseUrl}${userData.image}`;
+            this.imageName = userData.image.split('/').pop();
           }
+
+          this.cdr.detectChanges();
+          console.log('Formulario actualizado:', this.editAccountForm.value);
         } else {
           console.error('No se recibieron datos válidos del usuario');
+          this.message = 'No se pudieron cargar los datos del usuario';
         }
       },
-      (error) => {
-        console.error('Error al obtener los datos del usuario:', error);
+      error => {
+        console.error('Error al cargar datos del usuario:', error);
+        this.message = 'Error al cargar los datos del usuario';
       }
     );
   }
@@ -148,48 +157,37 @@ export class EditAccountComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log('Formulario válido:', this.editAccountForm.valid);
-    
     if (this.editAccountForm.valid && this.userId) {
-      console.log('Formulario datos:', this.editAccountForm.value);
+      console.log('Enviando formulario con datos:', this.editAccountForm.value);
+      
       const formData = new FormData();
-      formData.append('email', this.editAccountForm.get('email')?.value);
-      formData.append('usuario', this.editAccountForm.get('username')?.value);
-      formData.append('nombres', this.editAccountForm.get('name')?.value);
-      formData.append('apellidos', this.editAccountForm.get('lastname')?.value);
-      formData.append('password', this.editAccountForm.get('password')?.value);
-      formData.append('role', this.editAccountForm.get('roles')?.value);
-      formData.append('estado', this.editAccountForm.get('status')?.value);    
-
-      // Si hay una imagen seleccionada, se agrega al FormData
-      const fileInput = <HTMLInputElement>document.getElementById('photo');
-      const file = fileInput?.files?.[0];
-      if (file) {
-        formData.append('image', file);
-      } else {
-        formData.append('image', '/uploads/default-profile.png');
-      }
-      console.log('id', this.userId);
-
-      // Hacer la solicitud PUT utilizando el ID del usuario para actualizarlo
-      this._httpClient.put(`${environment.baseUrl}/user/${this.userId}`, formData).subscribe(
-        (response) => {
-          
-          // Limpiar formulario
-          this.editAccountForm.reset();
-          this.imagePreview = null;
-          this.imageName = null;
-          this.goToTeam();
-          sessionStorage.clear();
-          console.log('Usuario actualizado con éxito', response);
-
-        },
-        (error) => {
-          console.error('Error al actualizar usuario', error);
+      
+      // Agregar todos los campos del formulario al FormData
+      Object.keys(this.editAccountForm.controls).forEach(key => {
+        if (key !== 'photo') {
+          formData.append(key, this.editAccountForm.get(key).value);
         }
-      );
+      });
+
+      // Agregar la imagen si existe
+      const fileInput = document.querySelector('#photo') as HTMLInputElement;
+      if (fileInput?.files?.length > 0) {
+        formData.append('image', fileInput.files[0]);
+      }
+
+      this._httpClient.put(`${environment.baseUrl}/user/${this.userId}`, formData)
+        .subscribe(
+          response => {
+            console.log('Usuario actualizado exitosamente:', response);
+            this.accountUpdated.emit();
+          },
+          error => {
+            console.error('Error al actualizar usuario:', error);
+            this.message = 'Error al actualizar el usuario';
+          }
+        );
     } else {
-      console.log('Formulario inválido');
+      console.log('Formulario inválido o ID de usuario no disponible');
     }
   }
 
@@ -205,4 +203,41 @@ export class EditAccountComponent implements OnInit {
     }
   }
   
+  // Validador personalizado para confirmar contraseña
+  passwordMatchValidator(g: FormGroup) {
+    return g.get('newPassword').value === g.get('confirmPassword').value
+      ? null : {'mismatch': true};
+  }
+
+  togglePasswordSection(): void {
+    this.showPasswordSection = !this.showPasswordSection;
+  }
+
+  // Actualizar el método changePassword para implementar la funcionalidad
+  changePassword(): void {
+    if (this.passwordForm.valid && this.userId) {
+      const passwordData = {
+        currentPassword: this.passwordForm.get('currentPassword').value,
+        newPassword: this.passwordForm.get('newPassword').value
+      };
+
+      this._httpClient.post(`${environment.baseUrl}/user/${this.userId}/change-password`, passwordData)
+        .subscribe(
+          (response) => {
+            console.log('Contraseña actualizada con éxito');
+            this.passwordForm.reset();
+            this.showPasswordSection = false;
+          },
+          (error) => {
+            console.error('Error al actualizar la contraseña:', error);
+          }
+        );
+    }
+  }
+
+  saveChanges(): void {
+    if (this.editAccountForm.valid) {
+      this.onSubmit();
+    }
+  }
 }

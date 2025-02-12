@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { TextFieldModule } from '@angular/cdk/text-field';
-import { ChangeDetectionStrategy, inject, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, inject, Component, OnInit, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
@@ -11,7 +11,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 import { environment } from '../../../../../../environments/environment';
-
 
 @Component({
     selector       : 'create-account', // Cambiado de 'settings-account' a 'create-account'
@@ -33,7 +32,10 @@ import { environment } from '../../../../../../environments/environment';
     ],
 })
 export class CreateAccountComponent implements OnInit { // Nombre de la clase ajustado
-  createAccountForm: UntypedFormGroup;
+    @Output() accountCreated = new EventEmitter<void>();
+    @Output() cancelled = new EventEmitter<void>(); // Añadir este EventEmitter
+    
+    createAccountForm: UntypedFormGroup;
     imagePreview: string | null = null;
     imageName: string | null = null;
 
@@ -57,13 +59,14 @@ export class CreateAccountComponent implements OnInit { // Nombre de la clase aj
         this.createAccountForm = this._formBuilder.group({
             name     : ['', Validators.required],
             lastname : ['', Validators.required],
-            username : [''], // Sin valor inicial y sin validador required
-            password : [''], // Sin valor inicial y sin validador required
+            username : ['', Validators.required],
+            password : ['', [Validators.required, Validators.minLength(8)]],
+            confirmPassword: ['', Validators.required],
             email    : ['', [Validators.required, Validators.email]],
             photo    : [null],
             roles    : ['', Validators.required],
-            status   : ['', Validators.required]
-        });
+            status   : ['1', Validators.required] // Valor por defecto '1' para ACTIVO
+        }, { validator: this.passwordMatchValidator });
     }
 
     /**
@@ -88,44 +91,39 @@ export class CreateAccountComponent implements OnInit { // Nombre de la clase aj
     if (this.createAccountForm.valid) {
         const formData = new FormData();
         
-        // Solo incluir username y password si tienen valor
-        const username = this.createAccountForm.get('username')?.value;
-        const password = this.createAccountForm.get('password')?.value;
-        
-        formData.append('email', this.createAccountForm.get('email')?.value);
-        if (username) formData.append('usuario', username);
-        formData.append('nombres', this.createAccountForm.get('name')?.value);
-        formData.append('apellidos', this.createAccountForm.get('lastname')?.value);
-        if (password) formData.append('password', password);
-        formData.append('role', this.createAccountForm.get('roles')?.value);
-        formData.append('estado', this.createAccountForm.get('status')?.value);
+        // Agregar los campos del formulario al FormData
+        Object.keys(this.createAccountForm.controls).forEach(key => {
+            if (key !== 'confirmPassword' && key !== 'photo') {
+                formData.append(key, this.createAccountForm.get(key).value);
+            }
+        });
 
-        const fileInput = <HTMLInputElement>document.getElementById('photo');
-        const file = fileInput?.files?.[0];
-        if (file) {
-            formData.append('image', file);
-        } else {
-            formData.append('image', '/uploads/default-profile.png');
+        // Agregar la foto si existe
+        const fileInput = document.querySelector('#photo') as HTMLInputElement;
+        if (fileInput?.files?.length > 0) {
+            formData.append('image', fileInput.files[0]);
         }
 
+        // Enviar la solicitud al servidor
         this._httpClient.post(`${environment.baseUrl}/user`, formData)
-            .subscribe({
-                next: (response) => {
-                    console.log('Usuario creado con éxito', response);
+            .subscribe(
+                (response) => {
+                    console.log('Usuario creado exitosamente', response);
+                    this.createAccountForm.reset();
+                    this.imagePreview = null;
+                    this.imageName = null;
+                    this.accountCreated.emit();
                 },
-                error: (error) => {
+                (error) => {
                     console.error('Error al crear usuario', error);
                 }
-            });
+            );
     }
   }
-  
 
-  
-  
-  
-  
-
-  
-  
+  // Validador personalizado para confirmar contraseña
+  passwordMatchValidator(g: UntypedFormGroup) {
+    return g.get('password').value === g.get('confirmPassword').value
+        ? null : { 'passwordMismatch': true };
+  }
 }
