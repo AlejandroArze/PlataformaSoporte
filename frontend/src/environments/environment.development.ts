@@ -1,4 +1,4 @@
 export const environment = {
-     baseUrl: "http://localhost:3001/api/v1",
-     baseUrlAlt: "http://localhost:3001"
+     baseUrl: "http://192.168.220.88:3001/api/v1",
+     baseUrlAlt: "http://192.168.220.88:3001"
 };
