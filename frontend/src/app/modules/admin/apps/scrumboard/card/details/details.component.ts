@@ -547,8 +547,14 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
 
     getBienes(): void {
         const codigoBienes = this.searchEquipoCtrl.value;
-        if (codigoBienes) {
-            this._scrumboardService.getBienes(codigoBienes)
+        
+        // Limpiar espacios en blanco al inicio y al final del código
+        const codigoBienesLimpio = typeof codigoBienes === 'string' 
+            ? codigoBienes.trim() 
+            : (codigoBienes as { codigo: string }).codigo.trim();
+        
+        if (codigoBienesLimpio) {
+            this._scrumboardService.getBienes(codigoBienesLimpio)
                 .subscribe({
                     next: (response) => {
                         this.bienes = response;

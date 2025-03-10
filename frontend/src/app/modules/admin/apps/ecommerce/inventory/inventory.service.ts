@@ -1577,9 +1577,12 @@ updateEquipment434(equipos_id: number, equipment: InventoryEquipment): Observabl
       );
   }
   getBienes(codBienes: string): Observable<BienesResponse | null> {
+    // Limpiar espacios en blanco al inicio y al final del código de bienes
+    const codigoBienLimpio = codBienes.trim();
+
     const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
 
-    const body = `cod_bienes=${encodeURIComponent(codBienes)}`;
+    const body = `cod_bienes=${encodeURIComponent(codigoBienLimpio)}`;
 
     return this._httpClient.post<BienesResponse>(`${this.baseUrlAlt}/api/proxy`, body, { headers }).pipe(
       tap((response) => {
@@ -1588,7 +1591,7 @@ updateEquipment434(equipos_id: number, equipment: InventoryEquipment): Observabl
         }
       })
     );
-    }
+  }
     // Método para buscar empleados en el backend utilizando el nombre completo como filtro
     getEmpleados(nombreCompleto: string): Observable<Empleado[]> {
 
