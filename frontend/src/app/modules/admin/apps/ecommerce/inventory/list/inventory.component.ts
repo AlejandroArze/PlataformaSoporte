@@ -698,17 +698,22 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
         if(codigo==null){
              codigo = this.selectedEquipmentForm.get('codigo')?.value;
         }
-        //const codigoBien = this.selectedEquipmentForm.get('codigo')?.value;
+        
+        // Limpiar espacios en blanco al inicio y al final del código
+        codigo = codigo.trim();
+        
         console.log('Valor de código de bienes antes de validar:', codigo);
 
-    
-        if (codigo.trim()) {
+        if (codigo) {
           this.bienesService.getBienes(codigo).subscribe({
             next: (response) => {
               this.bienes = response;
               console.log('Bienes encontrados:', this.bienes);
-              this._changeDetectorRef.markForCheck();  // Forzar la detección de cambios
               
+              // Actualizar el formulario con el código limpio
+              this.selectedEquipmentForm.controls['codigo'].setValue(codigo);
+              
+              this._changeDetectorRef.markForCheck();  // Forzar la detección de cambios
             },
             error: (err) => {
               console.error('Error al obtener bienes:', err);
