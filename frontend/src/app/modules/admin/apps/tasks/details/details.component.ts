@@ -803,7 +803,7 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
 
     /**
      * Elimina la tarea
-     */
+     */  // Método para eliminar la tarea
     deleteTask4(): void  // Método para eliminar la tarea
     {
         // Abre el diálogo de confirmación
@@ -1368,6 +1368,10 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             throw new Error('No hay servicio seleccionado');
         }
 
+        // Obtener datos actualizados del servicio
+        const serviceResponse = await this._tasksService.getTaskById(this.servicio.servicios_id).toPromise();
+        const servicioActualizado = serviceResponse.data;
+
         const doc = new jsPDF() as jsPDFWithPlugin;
         const pageWidth = doc.internal.pageSize.width;
         const today = new Date();
@@ -1392,29 +1396,36 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             doc.setFontSize(12);
             doc.text(`Fecha de generación: ${today.toLocaleDateString()} ${today.toLocaleTimeString()}`, pageWidth/2, 35, { align: 'center' });
 
+            // Obtener el nombre del técnico asignado
+            const tecnicoAsignado = this.tecnicos.find(t => t.id === servicioActualizado.tecnicoAsignado)?.nombre || 'Sin asignar';
+
+            // Formatear las fechas
+            const fechaRegistro = servicioActualizado.fechaRegistro ? new Date(servicioActualizado.fechaRegistro).toLocaleDateString() : 'N/A';
+            const fechaInicio = servicioActualizado.fechaInicio ? new Date(servicioActualizado.fechaInicio).toLocaleDateString() : 'N/A';
+            const fechaTerminado = servicioActualizado.fechaTerminado ? new Date(servicioActualizado.fechaTerminado).toLocaleDateString() : 'N/A';
+
             // Información del servicio
             const data = [
-               
-                ['Tipo de Servicio', this.servicio.tipo || 'N/A'],
-                ['Estado', this.servicio.estado || 'N/A'],
-                ['Gestión', this.servicio.gestion?.toString() || 'N/A'],
-                ['Fecha de Registro', new Date(this.servicio.fechaRegistro).toLocaleDateString() || 'N/A'],
-                ['Fecha de Inicio', this.servicio.fechaInicio || 'N/A'],
-                ['Fecha de Terminado', this.servicio.fechaTerminado || 'N/A'],                
-                ['Nombre Solicitante', this.servicio.nombreSolicitante || 'N/A'],
-                ['CI Solicitante', this.servicio.ciSolicitante || 'N/A'],
-                ['Cargo Solicitante', this.servicio.cargoSolicitante || 'N/A'],
-                ['Tipo Solicitante', this.servicio.tipoSolicitante || 'N/A'],
-                ['Oficina Solicitante', this.servicio.oficinaSolicitante || 'N/A'],
-                ['Teléfono Solicitante', this.servicio.telefonoSolicitante || 'N/A'],
-                ['Problema', this.servicio.problema || 'N/A'],
-                ['Observaciones', this.servicio.observaciones || 'N/A'],
-                ['Informe', this.servicio.informe || 'N/A'],
-                ['Técnico Asignado', this.servicio.tecnicoAsignadoString || 'N/A'],
-                ['Técnico Registro', this.servicio.tecnicoRegistroString || 'N/A'],
                 
-                
-            ];
+                ['Tipo de Servicio', servicioActualizado.tipo || this.servicio.tipo || 'N/A'],
+                ['Estado', servicioActualizado.estado || this.servicio.estado || 'N/A'],
+                ['ID Servicio', servicioActualizado.servicios_id || 'N/A'],
+                ['Fecha de Registro', fechaRegistro || new Date(this.servicio.fechaRegistro).toLocaleDateString() || 'N/A'],
+                ['Fecha de Inicio', fechaInicio || this.servicio.fechaInicio || 'N/A'],
+                ['Fecha de Término', fechaTerminado || this.servicio.fechaTerminado || 'N/A'],
+                ['Nombre Solicitante', servicioActualizado.nombreSolicitante || this.servicio.nombreSolicitante || 'N/A'],
+                ['CI Solicitante', servicioActualizado.ciSolicitante || this.servicio.ciSolicitante || 'N/A'],
+                ['Cargo Solicitante', servicioActualizado.cargoSolicitante || this.servicio.cargoSolicitante || 'N/A'],
+                ['Tipo de Solicitante', servicioActualizado.tipoSolicitante || this.servicio.tipoSolicitante || 'N/A'],
+                ['Oficina Solicitante', servicioActualizado.oficinaSolicitante || this.servicio.oficinaSolicitante || 'N/A'],
+                ['Teléfono Solicitante', servicioActualizado.telefonoSolicitante || this.servicio.telefonoSolicitante || 'N/A'],
+                ['Problema', servicioActualizado.problema || this.servicio.problema || 'N/A'],
+                ['Observaciones', servicioActualizado.observaciones || this.servicio.observaciones || 'N/A'],
+                ['Informe', servicioActualizado.informe || this.servicio.informe || 'N/A'],
+                ['Técnico Asignado', tecnicoAsignado || this.servicio.tecnicoAsignadoString || 'N/A'],
+                ['Técnico Registro', servicioActualizado.tecnicoRegistroString || this.servicio.tecnicoRegistroString || 'N/A']
+            ]
+            
 
             doc.autoTable({
                 startY: 45,
@@ -1443,9 +1454,9 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
                     ['Tipo Hardware', this.bienes.data.tipo || 'N/A'],
                     ['Descripción', this.bienes.data.observacion || 'N/A'],
                     ['Unidad', this.bienes.data.unidad || 'N/A'],
-                    ['Marca (Bienes)', this.bienes.data.caracteristicas?.MARCA || 'N/A'],
-                    ['Modelo (Bienes)', this.bienes.data.caracteristicas?.MODELO || 'N/A'],
-                    ['Serie (Bienes)', this.bienes.data.caracteristicas?.SERIE || 'N/A']
+                    ['Marca', this.bienes.data.caracteristicas?.MARCA || 'N/A'],
+                    ['Modelo', this.bienes.data.caracteristicas?.MODELO || 'N/A'],
+                    ['Serie', this.bienes.data.caracteristicas?.SERIE || 'N/A']
                 ];
 
                 doc.autoTable({

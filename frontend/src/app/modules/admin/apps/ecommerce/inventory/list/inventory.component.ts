@@ -1304,6 +1304,10 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
             throw new Error('No hay equipo seleccionado');
         }
 
+        // Obtener datos actualizados del equipo
+        const equipmentResponse = await this._inventoryService.getEquipmentById(this.selectedEquipment.equipos_id).toPromise();
+        const equipoActualizado = equipmentResponse.data;
+
         const doc = new jsPDF() as jsPDFWithPlugin;
         const pageWidth = doc.internal.pageSize.width;
         const today = new Date();
@@ -1330,28 +1334,27 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
 
             // Información del equipo
             const data = [
-                ['Código de Bienes', this.selectedEquipment.codigo || 'N/A'],
-                ['Serie', this.selectedEquipment.serie || 'N/A'],
-                ['Tipo', this.selectedEquipmentForm?.get('tipo')?.value || this.selectedEquipment.tipoDescripcion || 'N/A'],
-                ['Marca', this.selectedEquipment.marca || 'N/A'],
-                ['Modelo', this.selectedEquipment.modelo || 'N/A'],
-                ['Funcionario Usuario', this.selectedEquipment.funcionariousuario || 'N/A'],
-                ['Funcionario Asignado', this.selectedEquipment.funcionarioasignado || 'N/A'],
-                ['Oficina', this.selectedEquipment.oficina || 'N/A'],
-                ['Procesador', this.selectedEquipment.procesador || 'N/A'],
-                ['Memoria RAM', this.selectedEquipment.memoria || 'N/A'],
-                ['Disco Duro', this.selectedEquipment.discoduro || 'N/A'],
-                ['Tarjeta Madre', this.selectedEquipment.tarjetamadre || 'N/A'],
-                ['Tarjeta de Video', this.selectedEquipment.tarjetavideo || 'N/A'],
-                ['Sistema Operativo', this.selectedEquipment.so || 'N/A'],
-                ['Antivirus', this.selectedEquipment.antivirus || 'N/A'],
-                ['MAC', this.selectedEquipment.mac || 'N/A'],
-                ['IP', this.selectedEquipment.ip || 'N/A'],
-                ['Lector DVD', this.selectedEquipment.lector ? 'Sí' : 'No'],   
-                ['Fecha de Registro', this.selectedEquipment.fecharegistro || 'N/A'],
-                ['Garantía', this.selectedEquipment.garantia || 'N/A'],
-                ['Responsable del Registro', this.selectedEquipment.responsabledelregistroString || 'N/A'],
-                
+                ['Código de Bienes', equipoActualizado.codigo || 'N/A'],
+                ['Serie', equipoActualizado.serie || 'N/A'],
+                ['Tipo', equipoActualizado.tipoDescripcion || 'N/A'],
+                ['Marca', equipoActualizado.marca || 'N/A'],
+                ['Modelo', equipoActualizado.modelo || 'N/A'],
+                ['Funcionario Usuario', equipoActualizado.funcionariousuario || 'N/A'],
+                ['Funcionario Asignado', equipoActualizado.funcionarioasignado || 'N/A'],
+                ['Oficina', equipoActualizado.oficina || 'N/A'],
+                ['Procesador', equipoActualizado.procesador || 'N/A'],
+                ['Memoria RAM', equipoActualizado.memoria || 'N/A'],
+                ['Disco Duro', equipoActualizado.discoduro || 'N/A'],
+                ['Tarjeta Madre', equipoActualizado.tarjetamadre || 'N/A'],
+                ['Tarjeta de Video', equipoActualizado.tarjetavideo || 'N/A'],
+                ['Sistema Operativo', equipoActualizado.so || 'N/A'],
+                ['Antivirus', equipoActualizado.antivirus || 'N/A'],
+                ['MAC', equipoActualizado.mac || 'N/A'],
+                ['IP', equipoActualizado.ip || 'N/A'],
+                ['Lector DVD', equipoActualizado.lector ? 'Sí' : 'No'],   
+                ['Fecha de Registro', equipoActualizado.fecharegistro || 'N/A'],
+                ['Garantía', equipoActualizado.garantia || 'N/A'],
+                ['Responsable del Registro', equipoActualizado.responsabledelregistroString || 'N/A'],
             ];
 
             doc.autoTable({
