@@ -332,7 +332,7 @@ export class FinanceComponent implements OnInit, OnDestroy, AfterViewInit {
                     cellPadding: 2,
                 },
                 headStyles: {
-                    fillColor: [63, 81, 181],
+                    fillColor: [109, 85, 159],
                     textColor: 255,
                     fontSize: 8,
                     fontStyle: 'bold',
@@ -406,7 +406,7 @@ export class FinanceComponent implements OnInit, OnDestroy, AfterViewInit {
                     cellPadding: 2,
                 },
                 headStyles: {
-                    fillColor: [63, 81, 181],
+                    fillColor: [109, 85, 159],
                     textColor: 255,
                     fontSize: 8,
                     fontStyle: 'bold',

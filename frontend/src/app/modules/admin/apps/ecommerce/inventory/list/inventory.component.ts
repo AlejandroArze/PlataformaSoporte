@@ -1355,7 +1355,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                 body: data,
                 theme: 'grid',
                 headStyles: {
-                    fillColor: [63, 81, 181],
+                    fillColor: [109, 85, 159],
                     textColor: 255,
                     fontSize: 10,
                     fontStyle: 'bold',
@@ -1387,7 +1387,7 @@ export class InventoryListComponent implements OnInit, AfterViewInit, OnDestroy 
                     body: bienesData,
                     theme: 'grid',
                     headStyles: {
-                        fillColor: [63, 81, 181],
+                        fillColor: [109, 85, 159],
                         textColor: 255,
                         fontSize: 10,
                         fontStyle: 'bold',
