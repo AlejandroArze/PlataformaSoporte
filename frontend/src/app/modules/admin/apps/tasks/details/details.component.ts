@@ -1400,9 +1400,9 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
             const tecnicoAsignado = this.tecnicos.find(t => t.id === servicioActualizado.tecnicoAsignado)?.nombre || 'Sin asignar';
 
             // Formatear las fechas
-            const fechaRegistro = servicioActualizado.fechaRegistro ? new Date(servicioActualizado.fechaRegistro).toLocaleDateString() : 'N/A';
-            const fechaInicio = servicioActualizado.fechaInicio ? new Date(servicioActualizado.fechaInicio).toLocaleDateString() : 'N/A';
-            const fechaTerminado = servicioActualizado.fechaTerminado ? new Date(servicioActualizado.fechaTerminado).toLocaleDateString() : 'N/A';
+            const fechaRegistro = this.formatDisplayDate(servicioActualizado.fechaRegistro);
+            const fechaInicio = this.formatDisplayDate(servicioActualizado.fechaInicio);
+            const fechaTerminado = this.formatDisplayDate(servicioActualizado.fechaTerminado);
 
             // Información del servicio
             const data = [
@@ -1410,9 +1410,9 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
                 ['Tipo de Servicio', servicioActualizado.tipo || this.servicio.tipo || 'N/A'],
                 ['Estado', servicioActualizado.estado || this.servicio.estado || 'N/A'],
                 ['ID Servicio', servicioActualizado.servicios_id || 'N/A'],
-                ['Fecha de Registro', fechaRegistro || new Date(this.servicio.fechaRegistro).toLocaleDateString() || 'N/A'],
-                ['Fecha de Inicio', fechaInicio || this.servicio.fechaInicio || 'N/A'],
-                ['Fecha de Término', fechaTerminado || this.servicio.fechaTerminado || 'N/A'],
+                ['Fecha de Registro', fechaRegistro],
+                ['Fecha de Inicio', fechaInicio],
+                ['Fecha de Término', fechaTerminado],
                 ['Nombre Solicitante', servicioActualizado.nombreSolicitante || this.servicio.nombreSolicitante || 'N/A'],
                 ['CI Solicitante', servicioActualizado.ciSolicitante || this.servicio.ciSolicitante || 'N/A'],
                 ['Cargo Solicitante', servicioActualizado.cargoSolicitante || this.servicio.cargoSolicitante || 'N/A'],
@@ -1574,5 +1574,60 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
                 : 'Asignado a técnico inactivo',
             color: selectedTecnico.estado === 1 ? 'text-red-500' : 'text-green-500'
         };
+    }
+
+    // Método privado para formatear fechas de manera consistente
+    private formatDate(dateString: string | null | undefined): string {
+        if (!dateString || dateString.trim() === '' || dateString.trim() === ' ') {
+            return '';
+        }
+
+        try {
+            const date = new Date(dateString);
+            return isNaN(date.getTime()) ? '' : date.toISOString();
+        } catch {
+            return '';
+        }
+    }
+
+    // Método para formatear fechas en los reportes
+    private formatDisplayDate(dateString: string | null | undefined): string {
+        const formattedDate = this.formatDate(dateString);
+        if (!formattedDate) return 'N/A';
+
+        try {
+            return new Date(formattedDate).toLocaleDateString();
+        } catch {
+            return 'N/A';
+        }
+    }
+
+    // Método para formatear fechas para la API
+    private formatDateForApi(date: Date): string {
+        if (!date) return '';
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // Método para ajustar la fecha final
+    private adjustEndDate(endDate: Date): Date {
+        if (!endDate) return new Date();
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const compareDate = new Date(endDate);
+        compareDate.setHours(0, 0, 0, 0);
+        
+        // Si la fecha fin es el día actual, agregar un día más
+        if (compareDate.getTime() === today.getTime()) {
+            const adjustedDate = new Date(endDate);
+            adjustedDate.setDate(adjustedDate.getDate() + 1);
+            return adjustedDate;
+        }
+        
+        return endDate;
     }
 }

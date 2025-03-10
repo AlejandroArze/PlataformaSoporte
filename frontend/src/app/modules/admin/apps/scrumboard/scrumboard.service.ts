@@ -86,6 +86,47 @@ export class ScrumboardService {
 
     constructor(private _httpClient: HttpClient) {}
 
+    // Método privado para formatear fechas de manera consistente
+    private formatDate(dateString: string | null | undefined): string {
+        if (!dateString || dateString.trim() === '' || dateString.trim() === ' ') {
+            return '';
+        }
+
+        try {
+            const date = new Date(dateString);
+            return isNaN(date.getTime()) ? '' : date.toISOString();
+        } catch {
+            return '';
+        }
+    }
+
+    // Método para mapear una tarjeta con fechas manejadas consistentemente
+    private mapCardWithConsistentDates(item: any): Card {
+        return {
+            id: (item.servicios_id || item.id)?.toString() || '',
+            nombreSolicitante: item.nombreSolicitante || item.solicitante || '',
+            solicitante: item.nombreSolicitante || item.solicitante || '',
+            carnet: item.ciSolicitante || item.carnet || '',
+            cargo: item.cargoSolicitante || item.cargo || '',
+            tipoSolicitante: item.tipoSolicitante || '',
+            problema: item.problema || '',
+            tipo: item.tipo || 'ASISTENCIA',
+            estado: item.estado || 'SIN ASIGNAR',
+            tecnicoAsignado: item.tecnicoAsignado || 0,
+            fechaRegistro: this.formatDate(item.fechaRegistro),
+            fechaInicio: this.formatDate(item.fechaInicio),
+            fechaTerminado: this.formatDate(item.fechaTerminado),
+            informe: item.informe || '',
+            observacionesProblema: item.observaciones || item.observacionesProblema || '',
+            codigoBienes: item.equipo || item.codigoBienes || '',
+            oficinaSolicitante: item.oficinaSolicitante || '',
+            telefonoSolicitante: item.telefonoSolicitante || '',
+            listId: '',
+            position: 0,
+            tecnicoRegistro: item.tecnicoRegistro || 3
+        } as Card;
+    }
+
     /**
      * Obtener tarjetas por estado
      */
@@ -116,29 +157,7 @@ export class ScrumboardService {
 
         return this._httpClient.get<ServiceResponse>(`${this.apiUrl}/service/board`, { params }).pipe(
             map(response => {
-                const newCards = response.data.data.map(item => ({
-                        id: item.servicios_id.toString(),
-                        nombreSolicitante: item.nombreSolicitante || '',
-                        solicitante: item.nombreSolicitante || '',
-                        carnet: item.ciSolicitante || '',
-                        cargo: item.cargoSolicitante || '',
-                        tipoSolicitante: item.tipoSolicitante || '',
-                        problema: item.problema || '',
-                        tipo: item.tipo as TipoServicio,
-                        estado: item.estado as EstadoServicio,
-                        tecnicoAsignado: item.tecnicoAsignado || 0,
-                        fechaRegistro: item.fechaRegistro || '',
-                        fechaInicio: item.fechaInicio || '',
-                        fechaTerminado: item.fechaTerminado || '',
-                        informe: item.informe || '',
-                        observacionesProblema: item.observaciones || '',
-                        codigoBienes: item.equipo || '',
-                        oficinaSolicitante: item.oficinaSolicitante || '',
-                        telefonoSolicitante: item.telefonoSolicitante || '',
-                        listId: '',
-                        position: 0,
-                        tecnicoRegistro: item.tecnicoRegistro || 3
-                } as Card));
+                const newCards = response.data.data.map(item => this.mapCardWithConsistentDates(item));
 
                 // Mantener las tarjetas existentes de otros estados
                 const currentCards = this.cards$.value;
@@ -390,36 +409,16 @@ export class ScrumboardService {
         }
 
         return this._httpClient.get<ServiceResponse>(`${this.apiUrl}/service/board`, { params }).pipe(
-            map(response => response.data.data.map(item => {
-                if (typeof item === 'number') {
-                    console.error('Item inesperado:', item);
-                    return null;
-                }
-
-                return {
-                    id: item.servicios_id.toString(),
-                    nombreSolicitante: item.nombreSolicitante || '',
-                    solicitante: item.nombreSolicitante || '',
-                    carnet: item.ciSolicitante || '',
-                    cargo: item.cargoSolicitante || '',
-                    tipoSolicitante: item.tipoSolicitante || '',
-                    problema: item.problema || '',
-                    tipo: item.tipo as TipoServicio,
-                    estado: item.estado as EstadoServicio,
-                    tecnicoAsignado: item.tecnicoAsignado || 0,
-                    fechaRegistro: item.fechaRegistro || '',
-                    fechaInicio: item.fechaInicio || '',
-                    fechaTerminado: item.fechaTerminado || '',
-                    informe: item.informe || '',
-                    observacionesProblema: item.observaciones || '',
-                    codigoBienes: item.equipo || '',
-                    oficinaSolicitante: item.oficinaSolicitante || '',
-                    telefonoSolicitante: item.telefonoSolicitante || '',
-                    listId: '',
-                    position: 0,
-                    tecnicoRegistro: item.tecnicoRegistro || 3
-                } as Card;
-            }).filter(card => card !== null)),
+            map(response => response.data.data
+                .map(item => {
+                    if (typeof item === 'number') {
+                        console.error('Item inesperado:', item);
+                        return null;
+                    }
+                    return this.mapCardWithConsistentDates(item);
+                })
+                .filter(card => card !== null)
+            ),
             tap(cards => {
                 this.cards$.next(cards);
             })
@@ -436,30 +435,7 @@ export class ScrumboardService {
                 if (typeof item === 'number') {
                     throw new Error('Formato de respuesta inválido');
                 }
-
-                return {
-                    id: item.servicios_id.toString(),
-                    nombreSolicitante: item.nombreSolicitante || '',
-                    solicitante: item.nombreSolicitante || '',
-                    carnet: item.ciSolicitante || '',
-                    cargo: item.cargoSolicitante || '',
-                    tipoSolicitante: item.tipoSolicitante || '',
-                    problema: item.problema || '',
-                    tipo: item.tipo as TipoServicio,
-                    estado: item.estado as EstadoServicio,
-                    tecnicoAsignado: item.tecnicoAsignado || 0,
-                    fechaRegistro: item.fechaRegistro || '',
-                    fechaInicio: item.fechaInicio || '',
-                    fechaTerminado: item.fechaTerminado || '',
-                    informe: item.informe || '',
-                    observacionesProblema: item.observaciones || '',
-                    codigoBienes: item.equipo || '',
-                    oficinaSolicitante: item.oficinaSolicitante || '',
-                    telefonoSolicitante: item.telefonoSolicitante || '',
-                    listId: '',
-                    position: 0,
-                    tecnicoRegistro: item.tecnicoRegistro || 3
-                } as Card;
+                return this.mapCardWithConsistentDates(item);
             })
         );
     }
@@ -733,29 +709,7 @@ export class ScrumboardService {
                 
                 console.log('Datos del servicio a mapear:', serviceData);
                 
-                const mappedCard: Card = {
-                    id: serviceData.servicios_id?.toString() || serviceData.id?.toString() || id,
-                    nombreSolicitante: serviceData.nombreSolicitante || serviceData.solicitante || '',
-                    solicitante: serviceData.nombreSolicitante || serviceData.solicitante || '',
-                    carnet: serviceData.ciSolicitante || serviceData.carnet || '',
-                    cargo: serviceData.cargoSolicitante || serviceData.cargo || '',
-                    tipoSolicitante: serviceData.tipoSolicitante || '',
-                    problema: serviceData.problema || '',
-                    tipo: serviceData.tipo || 'ASISTENCIA',
-                    estado: serviceData.estado || 'SIN ASIGNAR',
-                    tecnicoAsignado: serviceData.tecnicoAsignado || 0,
-                    fechaRegistro: serviceData.fechaRegistro || new Date().toISOString(),
-                    fechaInicio: serviceData.fechaInicio || '',
-                    fechaTerminado: serviceData.fechaTerminado || '',
-                    informe: serviceData.informe || '',
-                    observacionesProblema: serviceData.observaciones || serviceData.observacionesProblema || '',
-                    codigoBienes: serviceData.equipo || serviceData.codigoBienes || '',
-                    oficinaSolicitante: serviceData.oficinaSolicitante || '',
-                    telefonoSolicitante: serviceData.telefonoSolicitante || '',
-                    listId: '',
-                    position: 0,
-                    tecnicoRegistro: serviceData.tecnicoRegistro || 3
-                };
+                const mappedCard = this.mapCardWithConsistentDates(serviceData);
                 
                 console.log('Tarjeta mapeada:', mappedCard);
                 console.groupEnd();

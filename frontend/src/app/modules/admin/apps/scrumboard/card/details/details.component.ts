@@ -682,6 +682,32 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
         });
     }
 
+    // Método privado para formatear fechas de manera consistente
+    private formatDate(dateString: string | null | undefined): string {
+        if (!dateString || dateString.trim() === '' || dateString.trim() === ' ') {
+            return '';
+        }
+
+        try {
+            const date = new Date(dateString);
+            return isNaN(date.getTime()) ? '' : date.toISOString();
+        } catch {
+            return '';
+        }
+    }
+
+    // Método para formatear fechas en los reportes
+    private formatDisplayDate(dateString: string | null | undefined): string {
+        const formattedDate = this.formatDate(dateString);
+        if (!formattedDate) return 'N/A';
+
+        try {
+            return new Date(formattedDate).toLocaleDateString();
+        } catch {
+            return 'N/A';
+        }
+    }
+
     private async generarPDFCompleto(): Promise<jsPDFWithPlugin> {
         if (!this.data.card) {
             throw new Error('No hay servicio seleccionado');
@@ -715,9 +741,9 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
             const tecnicoAsignado = this.tecnicos.find(t => t.id === this.data.card.tecnicoAsignado)?.nombre || 'Sin asignar';
 
             // Formatear las fechas
-            const fechaRegistro = this.data.card.fechaRegistro ? new Date(this.data.card.fechaRegistro).toLocaleDateString() : 'N/A';
-            const fechaInicio = this.data.card.fechaInicio ? new Date(this.data.card.fechaInicio).toLocaleDateString() : 'N/A';
-            const fechaTerminado = this.data.card.fechaTerminado ? new Date(this.data.card.fechaTerminado).toLocaleDateString() : 'N/A';
+            const fechaRegistro = this.formatDisplayDate(this.data.card.fechaRegistro);
+            const fechaInicio = this.formatDisplayDate(this.data.card.fechaInicio);
+            const fechaTerminado = this.formatDisplayDate(this.data.card.fechaTerminado);
 
             // Información del servicio
             const data = [
