@@ -358,6 +358,15 @@ static async getAll(req, res) {
                 return jsonResponse.errorResponse(res, 404, "Usuario no encontrado");
             }
 
+            // Verificar que la nueva contraseña sea igual a la contraseña actual
+            if (password && !(await bcrypt.compare(password, currentUser.password))) {
+                return jsonResponse.errorResponse(
+                    res, 
+                    400, 
+                    "La contraseña proporcionada es diferente a la contraseña actual"
+                );
+            }
+
             // Verifica si se subió una nueva imagen; si no, mantiene la imagen existente
             let imagePath = req.file ? `/uploads/${req.file.filename}` : currentUser.image;
 
@@ -369,7 +378,7 @@ static async getAll(req, res) {
                 usuario,
                 nombres,
                 apellidos,
-                password,
+                password, // Mantener la contraseña actual
                 role,
                 image: imagePath,
                 estado: estadoInt
