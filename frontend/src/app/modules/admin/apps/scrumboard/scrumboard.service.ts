@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, tap, switchMap, catchError, forkJoin, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap, switchMap, catchError, forkJoin, of, Subject, throwError } from 'rxjs';
 import { Board, Card, EstadoServicio, TipoServicio, Equipo } from './scrumboard.models';
 import { environment } from 'environments/environment';
 
@@ -682,7 +682,99 @@ export class ScrumboardService {
      * Obtener servicio por ID
      */
     getServiceById(id: string): Observable<Card> {
-        return this._httpClient.get<Card>(`${this.apiUrl}/servicios/${id}`);
+        console.group('ScrumboardService - getServiceById');
+        console.log('Iniciando búsqueda de servicio con ID:', id);
+        console.log('URL completa:', `${this.apiUrl}/service/${id}`);
+
+        // Obtener el token de autenticación
+        const token = localStorage.getItem('accessToken');
+        
+        // Configurar los headers con el token de autorización
+        const headers = new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        });
+
+        return this._httpClient.get<any>(`${this.apiUrl}/service/${id}`, { headers }).pipe(
+            tap({
+                next: (response) => {
+                    console.log('Respuesta completa de la API:', response);
+                    
+                    // Verificaciones detalladas de la respuesta
+                    if (!response) {
+                        console.warn('Respuesta vacía de la API');
+                    } else if (typeof response === 'string') {
+                        console.warn('Respuesta es un string:', response);
+                    } else if (response.data) {
+                        console.log('Datos del servicio:', response.data);
+                    } else {
+                        console.warn('Respuesta no tiene propiedad data:', response);
+                    }
+                },
+                error: (error) => {
+                    console.error('Error en la solicitud:', {
+                        status: error.status,
+                        message: error.message,
+                        url: `${this.apiUrl}/service/${id}`,
+                        responseText: error.error instanceof ErrorEvent ? error.error.message : error.error,
+                        headers: error.headers,
+                        body: error.error
+                    });
+                }
+            }),
+            map((response) => {
+                if (!response) {
+                    console.warn('No se encontró el servicio');
+                    throw new Error(`No se encontró el servicio con ID ${id}`);
+                }
+                
+                // Manejar diferentes estructuras de respuesta
+                const serviceData = response.data || response;
+                
+                console.log('Datos del servicio a mapear:', serviceData);
+                
+                const mappedCard: Card = {
+                    id: serviceData.servicios_id?.toString() || serviceData.id?.toString() || id,
+                    nombreSolicitante: serviceData.nombreSolicitante || serviceData.solicitante || '',
+                    solicitante: serviceData.nombreSolicitante || serviceData.solicitante || '',
+                    carnet: serviceData.ciSolicitante || serviceData.carnet || '',
+                    cargo: serviceData.cargoSolicitante || serviceData.cargo || '',
+                    tipoSolicitante: serviceData.tipoSolicitante || '',
+                    problema: serviceData.problema || '',
+                    tipo: serviceData.tipo || 'ASISTENCIA',
+                    estado: serviceData.estado || 'SIN ASIGNAR',
+                    tecnicoAsignado: serviceData.tecnicoAsignado || 0,
+                    fechaRegistro: serviceData.fechaRegistro || new Date().toISOString(),
+                    fechaInicio: serviceData.fechaInicio || '',
+                    fechaTerminado: serviceData.fechaTerminado || '',
+                    informe: serviceData.informe || '',
+                    observacionesProblema: serviceData.observaciones || serviceData.observacionesProblema || '',
+                    codigoBienes: serviceData.equipo || serviceData.codigoBienes || '',
+                    oficinaSolicitante: serviceData.oficinaSolicitante || '',
+                    telefonoSolicitante: serviceData.telefonoSolicitante || '',
+                    listId: '',
+                    position: 0,
+                    tecnicoRegistro: serviceData.tecnicoRegistro || 3
+                };
+                
+                console.log('Tarjeta mapeada:', mappedCard);
+                console.groupEnd();
+                return mappedCard;
+            }),
+            catchError((error) => {
+                console.error(`Error al obtener servicio con ID ${id}:`, error);
+                console.groupEnd();
+                
+                // Lanzar un error más descriptivo
+                return throwError(() => {
+                    const errorMessage = error.error?.message || 
+                        `No se pudo encontrar el servicio con ID ${id}. 
+                        Status: ${error.status}, 
+                        Mensaje: ${error.message}`;
+                    return new Error(errorMessage);
+                });
+            })
+        );
     }
 
     /**

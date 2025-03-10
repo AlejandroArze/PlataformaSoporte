@@ -68,6 +68,7 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
     searchTerm: string = '';
     canSelectTecnico: boolean = true;
     showEquiposDropdown = false;
+    loading = false;
 
     @ViewChild('searchInput') searchInput: ElementRef;
 
@@ -807,30 +808,164 @@ export class ScrumboardCardDetailsComponent implements OnInit, OnDestroy {
 
     async generarPDF(): Promise<void> {
         try {
-            const doc = await this.generarPDFCompleto();
-            const pdfBuffer = doc.output('arraybuffer');
-            const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
-            
-            // Crear URL para el blob
-            const blobUrl = window.URL.createObjectURL(blob);
-            
-            // Abrir en nueva pestaña
-            window.open(blobUrl, '_blank');
-            
-            // Crear el link de descarga
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = `servicio_${this.data.card.id}_${new Date().toISOString().split('T')[0]}.pdf`;
-            
-            // Simular click para mostrar el diálogo nativo de descarga
-            link.click();
-            
-            // Limpiar
-            setTimeout(() => {
-                window.URL.revokeObjectURL(blobUrl);
-            }, 2000);
-        } catch (error) {
-            console.error('Error al generar el PDF:', error);
+            console.group('Generación de PDF - Depuración');
+            console.log('Datos de la tarjeta actual:', this.data.card);
+
+            // Verificar que el ID de la tarjeta sea válido
+            if (!this.data.card || !this.data.card.id) {
+                console.warn('No se puede generar el PDF: Información de la tarjeta no disponible');
+                this._snackBar.open('No se puede generar el PDF: Información de la tarjeta no disponible', 'Cerrar', { 
+                    duration: 3000,
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom'
+                });
+                console.groupEnd();
+                return;
+            }
+
+            // Convertir el ID a string para la llamada al servicio
+            const cardId = this.data.card.id.toString();
+            console.log('ID del servicio a buscar:', cardId);
+
+            // Mostrar indicador de carga
+            this.loading = true;
+
+            try {
+                // Obtener los datos actualizados del servicio
+                console.log('Iniciando llamada a getServiceById con ID:', cardId);
+                const cardResponse = await this._scrumboardService.getServiceById(cardId)
+                    .toPromise()
+                    .then(response => {
+                        console.log('Respuesta de getServiceById:', response);
+                        return response;
+                    })
+                    .catch(error => {
+                        console.error('Error en getServiceById:', error);
+                        throw error;
+                    });
+
+                // Verificar si se obtuvieron datos
+                if (!cardResponse) {
+                    console.warn(`No se encontró información para el servicio con ID ${cardId}`);
+                    this._snackBar.open(`No se encontró información para el servicio con ID ${cardId}`, 'Cerrar', { 
+                        duration: 3000,
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom'
+                    });
+                    this.loading = false;
+                    console.groupEnd();
+                    return;
+                }
+
+                console.log('Datos del servicio obtenidos:', cardResponse);
+
+                // Obtener información adicional de bienes si existe código de bienes
+                let bienesInfo = null;
+                if (cardResponse.codigoBienes) {
+                    try {
+                        console.log('Buscando información de bienes para código:', cardResponse.codigoBienes);
+                        bienesInfo = await this._scrumboardService.getBienes(cardResponse.codigoBienes)
+                            .toPromise()
+                            .then(response => {
+                                console.log('Respuesta de getBienes:', response);
+                                return response;
+                            })
+                            .catch(error => {
+                                console.warn('No se pudo obtener información de bienes:', error);
+                                return null;
+                            });
+                    } catch (error) {
+                        console.warn('Error al obtener bienes:', error);
+                    }
+                }
+
+                // Actualizar los datos de la tarjeta con la respuesta más reciente
+                this.data.card = {
+                    ...this.data.card,
+                    ...cardResponse
+                };
+
+                // Generar PDF con los datos actualizados
+                const pdfData = {
+                    ...cardResponse,
+                    bienesInfo: bienesInfo?.data || null
+                };
+
+                console.log('Datos para generar PDF:', pdfData);
+
+                // Generar el PDF
+                const doc = await this.generarPDFCompleto();
+                
+                // Generar el blob del PDF
+                const pdfBuffer = doc.output('arraybuffer');
+                const blob = new Blob([pdfBuffer], { type: 'application/pdf' });
+                
+                // Crear URL para el blob
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                // Abrir en nueva pestaña
+                window.open(blobUrl, '_blank');
+                
+                // Crear el link de descarga
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = `servicio_${cardId}_${new Date().toISOString().split('T')[0]}.pdf`;
+                
+                // Simular click para mostrar el diálogo nativo de descarga
+                link.click();
+                
+                // Limpiar
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(blobUrl);
+                }, 2000);
+
+                this._snackBar.open('PDF generado exitosamente', 'Cerrar', { 
+                    duration: 2000,
+                    horizontalPosition: 'center',
+                    verticalPosition: 'bottom'
+                });
+
+                console.groupEnd();
+
+            } catch (error) {
+                console.error('Error al obtener datos del servicio:', error);
+
+                // Manejar errores específicos
+                if (error.status === 404) {
+                    console.warn(`Servicio no encontrado. El servicio con ID ${cardId} no existe.`);
+                    this._snackBar.open(`Servicio no encontrado. El servicio con ID ${cardId} no existe.`, 'Cerrar', { 
+                        duration: 5000,
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom'
+                    });
+                } else if (error.status === 500) {
+                    console.warn('Error interno del servidor.');
+                    this._snackBar.open('Error interno del servidor. Intente nuevamente más tarde.', 'Cerrar', { 
+                        duration: 3000,
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom'
+                    });
+                } else {
+                    console.warn('Error inesperado al generar el PDF.');
+                    this._snackBar.open('No se pudo generar el PDF. Ocurrió un error inesperado.', 'Cerrar', { 
+                        duration: 3000,
+                        horizontalPosition: 'center',
+                        verticalPosition: 'bottom'
+                    });
+                }
+
+                console.groupEnd();
+            } finally {
+                this.loading = false;
+            }
+
+        } catch (generalError) {
+            console.error('Error general al generar el PDF:', generalError);
+            this._snackBar.open('Ocurrió un error inesperado al generar el PDF.', 'Cerrar', { 
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom'
+            });
         }
     }
 
