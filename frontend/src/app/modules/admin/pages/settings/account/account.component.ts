@@ -381,18 +381,43 @@ export class SettingsAccountComponent implements OnInit {
                     localStorage.setItem('user', JSON.stringify(response));
                     window.dispatchEvent(new Event('userDataUpdated'));
                     
+                     // Cerrar modal
+                    // Oculta el diálogo de confirmación de contraseña
                     this.showPasswordConfirmation = false;
+                    // Limpia los datos pendientes para evitar envíos duplicados
                     this.pendingFormData = null;
+                    // Reinicia el formulario de contraseña para que esté listo para una nueva entrada
                     this.passwordForm.reset();
+                    
+                    // Notificar éxito
+                    // Muestra una notificación al usuario indicando que el perfil se ha actualizado exitosamente
                     this.showNotification('Perfil actualizado exitosamente', 'success');
+                    // Detecta cambios en el componente para actualizar la vista
                     this.cdr.detectChanges();
                 },
                 error: (error) => {
+                    // Se registra un error en la consola si la actualización del perfil falla
                     console.error('❌ Error al actualizar el perfil:', error);
-                    if (error.status === 401) {
+                    
+                    // Verifica si el error es debido a una contraseña incorrecta (401) o un error del servidor (500)
+                    if (error.status === 401 || error.status === 500) {
+                        // Establece un error en el campo de contraseña actual para indicar que es incorrecta
                         this.passwordForm.get('currentPassword').setErrors({ 'incorrect': true });
+                        // Muestra una notificación al usuario indicando que la contraseña actual es incorrecta
                         this.showNotification('La contraseña actual es incorrecta', 'error');
+                    }else {
+                        // Manejar otros tipos de errores
+                        const errorMessage = error.error?.message || error.message || 'Error desconocido';
+                        this.showNotification(`Error: ${errorMessage}`, 'error');
                     }
+                    this.showPasswordConfirmation = false;
+                    // Limpia los datos pendientes para evitar envíos duplicados
+                    this.pendingFormData = null;
+                    // Reinicia el formulario de contraseña para que esté listo para una nueva entrada
+                    this.passwordForm.reset();
+                    
+
+                    // Detecta cambios en el componente para actualizar la vista
                     this.cdr.detectChanges();
                 }
             });
