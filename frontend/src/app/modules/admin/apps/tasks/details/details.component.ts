@@ -1224,13 +1224,15 @@ export class TasksDetailsComponent implements OnInit, AfterViewInit, OnDestroy
                                 }
                             });
                     }
-
-                    this._snackBar.open('Empleado encontrado correctamente', 'Cerrar', {
+                    
+                    this._snackBar.open('Buscando Empleado', 'Cerrar', {
                         duration: 3000,
                         panelClass: ['success-snackbar'],
                         horizontalPosition: 'center',
                         verticalPosition: 'bottom'
                     });
+                
+
                 } else {
                     console.log('No se encontraron resultados para el CI:', ci);
                     this._snackBar.open('No se encontró ningún empleado con ese CI', 'Cerrar', {
